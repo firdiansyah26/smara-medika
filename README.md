@@ -3,7 +3,12 @@
 > **Smara** (Sanskerta: *smṛti* — ingatan, sesuatu yang tercatat) + **Medika** (medis)
 > — *"Catatan/ingatan medis"*
 
-**SmaraMedika** adalah aplikasi **Rekam Medis Elektronik (RME)** modern untuk klinik, praktik dokter mandiri, dan fasilitas kesehatan. Dibangun dengan teknologi web terkini agar cepat, aman, dan mudah digunakan oleh tenaga kesehatan.
+**SmaraMedika** adalah **platform Rekam Medis Elektronik (RME) multi-tenant** untuk jaringan fasilitas kesehatan — Rumah Sakit, Klinik, dan Apotek. Banyak fasilitas berada dalam satu platform dengan data terisolasi per fasilitas, namun bisa saling terhubung melalui **rekanan** untuk **transfer obat antar-fasilitas (dengan tracking)** dan **berbagi akses pasien** secara terkontrol. Dibangun dengan teknologi web terkini agar cepat, aman, dan mudah digunakan oleh tenaga kesehatan.
+
+**Sorotan:**
+- 🏢 **Multi-tenant** — satu platform, banyak RS/Klinik/Apotek; 1 user bisa tergabung di banyak fasilitas
+- 🔄 **Transfer obat antar rekanan** — pesan obat dari fasilitas rekanan + pelacakan status sampai diterima
+- 👥 **Berbagi pasien terkontrol** — cari pasien lintas fasilitas, detail via persetujuan pemilik
 
 ---
 
@@ -33,6 +38,21 @@ Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 ---
 
 ## ✨ Fitur Utama
+
+### 🏢 Multi-Tenant & Keanggotaan
+- Banyak fasilitas (RS / Klinik / Apotek) dalam satu platform
+- **1 user bisa tergabung di banyak tenant** dengan peran berbeda per tenant
+- Tenant switcher (pilih fasilitas aktif) & isolasi data per fasilitas
+
+### 🔄 Rekanan & Transfer Obat Antar-Fasilitas
+- Manajemen rekanan (partnership) antar fasilitas
+- Order obat ke apotek/RS rekanan saat stok tidak tersedia
+- **Tracking status** order: diajukan → dikonfirmasi → disiapkan → dikirim → diterima
+- Stok bertambah otomatis saat obat diterima
+
+### 👥 Berbagi Pasien Lintas Fasilitas (Terkontrol)
+- Pencarian pasien lintas tenant (info terbatas)
+- Permintaan & persetujuan akses detail pasien ke fasilitas pemilik
 
 ### 👤 Autentikasi & Manajemen Pengguna
 - Login / logout dengan keamanan password ter-hash

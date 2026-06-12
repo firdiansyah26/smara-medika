@@ -2,10 +2,10 @@
 
 ## Gambaran Umum
 
-SmaraMedika adalah aplikasi **full-stack monolith** berbasis **Next.js (App Router)**, di mana frontend dan backend API berada dalam satu codebase. Pendekatan ini dipilih karena:
+SmaraMedika adalah aplikasi **full-stack monolith multi-tenant** berbasis **Next.js (App Router)**, di mana frontend dan backend API berada dalam satu codebase. Satu instance melayani **banyak fasilitas** (RS/klinik/apotek) dengan data terisolasi per fasilitas. Pendekatan ini dipilih karena:
 - Lebih sederhana untuk dikembangkan & di-deploy (satu repo, satu proses)
 - Type-safety end-to-end (TypeScript + Prisma + Zod)
-- Cocok untuk tim kecil & skala klinik
+- Cocok untuk tim kecil & skala klinik hingga jaringan fasilitas
 
 ```
 ┌──────────────────────────────────────────────────┐
@@ -95,6 +95,34 @@ smaramedika/
 ├── .env.example
 └── package.json
 ```
+
+---
+
+## 🏢 Multi-Tenancy
+
+SmaraMedika menggunakan strategi **shared database, shared schema** dengan **row-level isolation** — yaitu setiap baris data operasional memiliki kolom `tenantId`. Ini paling sederhana untuk dirawat & cukup untuk skala target.
+
+```
+1 User ──< Membership >── N Tenant     (peran melekat pada Membership, bukan User)
+```
+
+### Konsep Inti
+- **User** = akun global (login sekali). **Tenant** = fasilitas (RS/klinik/apotek).
+- **Membership** menghubungkan user ↔ tenant dengan **peran per tenant**. Maka 1 user bisa jadi *Dokter di RS A* sekaligus *Apoteker di Apotek B*.
+- **Tenant aktif**: setelah login, user memilih tenant yang sedang dipakai (tenant switcher). Tenant aktif disimpan di sesi/konteks.
+
+### Tenant Context & Isolasi Data
+- Setiap request membawa **tenant aktif** (dari sesi). Helper `getTenantContext()` menyediakan `userId`, `tenantId`, dan `role`.
+- **Aturan emas:** setiap query operasional WAJIB difilter `tenantId` aktif. Service layer bertanggung jawab menerapkan filter ini — jangan pernah query tanpa scope tenant.
+- Pengecualian terkontrol: **pencarian pasien lintas tenant** (hanya info terbatas) dan **transfer obat antar rekanan** — keduanya melalui jalur khusus dengan otorisasi tersendiri.
+
+### Akses Lintas Tenant (Terkontrol)
+- **Pasien:** dimiliki tenant pembuat. Tenant lain hanya melihat info terbatas via pencarian; detail butuh `PatientAccessRequest` yang disetujui pemilik.
+- **Transfer obat:** hanya antar tenant yang berstatus rekanan `ACTIVE` (`TenantPartnership`).
+
+### Implikasi RBAC
+- Otorisasi = fungsi dari **(tenant aktif, peran di tenant itu)**.
+- Cek di `middleware.ts` (route) **dan** service layer (operasi). Lihat `SECURITY.md`.
 
 ---
 

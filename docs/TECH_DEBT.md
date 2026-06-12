@@ -43,6 +43,22 @@ Generate No. RM perlu transaction agar tidak duplikat saat registrasi bersamaan.
 UI hardcoded bahasa Indonesia. Belum ada struktur multi-bahasa.
 **Rencana:** Pertimbangkan `next-intl` bila dibutuhkan ekspansi.
 
+### TD-008 · 🔴 · Dampak: **Tinggi** — Risiko kebocoran data antar tenant
+Isolasi multi-tenant bergantung pada filter `tenantId` di setiap query. Lupa satu filter = data bocor ke tenant lain.
+**Rencana:** Bungkus akses Prisma dengan helper `tenantScoped()` / Prisma extension yang otomatis menyuntikkan `tenantId`. Tambah test khusus isolasi tenant.
+
+### TD-009 · 🔴 · Dampak: Sedang — Transisi status order belum ada state machine
+Perubahan status DrugOrder rawan transisi tidak valid (mis. langsung RECEIVED tanpa SHIPPED).
+**Rencana:** Implementasi validasi state machine eksplisit + cek sisi (requester vs supplier) per transisi.
+
+### TD-010 · 🔴 · Dampak: Sedang — Konsistensi stok saat transfer
+Pengurangan/penambahan stok saat kirim & terima harus atomik agar stok tidak salah.
+**Rencana:** Gunakan `$transaction` + pengecekan stok; tangani race condition order paralel.
+
+### TD-011 · 🔴 · Dampak: Sedang — Cakupan & masa berlaku akses pasien
+PatientAccessRequest yang disetujui perlu cakupan (data apa saja) & kedaluwarsa yang jelas, plus pencabutan (revoke).
+**Rencana:** Definisikan scope & `expiresAt`; jadwalkan auto-expire; catat akses di audit log.
+
 ---
 
 ## 🧭 Keputusan Teknis (ADR Ringkas)
@@ -59,6 +75,15 @@ Relasional kuat (data medis sangat relasional), ACID, dukungan JSON, full-text s
 ### Mengapa shadcn/ui (bukan MUI/Chakra)?
 Komponen di-copy ke repo (kontrol penuh), aksesibel, di atas Tailwind, tanpa lock-in.
 
+### Mengapa multi-tenancy "shared DB + row-level (tenantId)" (bukan DB/schema per tenant)?
+Paling sederhana dirawat & migrasi, cukup untuk skala target. Trade-off: isolasi bergantung pada disiplin query (lihat TD-008), bukan batas fisik DB. Bila ada tenant besar/regulasi khusus, bisa dipindah ke schema/DB terpisah nanti.
+
+### Mengapa peran di Membership (bukan di User)?
+Agar 1 user bisa punya peran berbeda di banyak tenant (mis. Dokter di RS A, Apoteker di Apotek B). Otorisasi = fungsi dari (tenant aktif, peran di tenant itu).
+
+### Mengapa transfer obat hanya antar rekanan (bukan marketplace terbuka)?
+Sesuai kebutuhan: lebih terkontrol, kepercayaan jelas, dan menghindari kompleksitas verifikasi/penyalahgunaan marketplace. Marketplace terbuka bisa dipertimbangkan di masa depan.
+
 ---
 
 ## ⚠️ Risiko yang Harus Diperhatikan
@@ -66,6 +91,9 @@ Komponen di-copy ke repo (kontrol penuh), aksesibel, di atas Tailwind, tanpa loc
 | Risiko | Mitigasi |
 |--------|----------|
 | Kebocoran data medis | Enkripsi, RBAC ketat, audit log, HTTPS |
+| Kebocoran data antar tenant | Filter `tenantId` wajib, helper tenant-scoped, test isolasi |
+| Transisi status order tidak valid | State machine eksplisit + validasi sisi |
+| Stok tidak konsisten saat transfer | Operasi atomik (`$transaction`) |
 | Kehilangan data | Backup otomatis harian + uji restore |
 | Race condition (No. RM, antrian) | Database transaction + unique constraint |
 | Kepatuhan regulasi (UU PDP, RME) | Review hukum sebelum produksi |

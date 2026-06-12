@@ -26,14 +26,20 @@ Roadmap bertahap agar aplikasi bisa dikembangkan & dirilis secara inkremental.
 ---
 
 ## 🎯 Fase 2 — MVP (Fitur Inti P0)
-**Target: klinik bisa pakai untuk pencatatan dasar**
+**Target: beberapa fasilitas bisa beroperasi mandiri di satu platform**
 
+- [ ] **Multi-Tenant (fondasi)**
+  - [ ] Model Tenant + tipe (RS/Klinik/Apotek)
+  - [ ] Membership (user ↔ tenant, peran per tenant)
+  - [ ] 1 user bisa di banyak tenant
+  - [ ] Tenant switcher (pilih tenant aktif)
+  - [ ] Isolasi data per `tenantId` (tenant context + scoping)
 - [ ] **Auth & RBAC**
   - [ ] Login/logout
   - [ ] Middleware proteksi route
-  - [ ] Role-based access (5 peran)
-  - [ ] Audit log dasar
-- [ ] **Manajemen User** (CRUD oleh admin)
+  - [ ] Role-based access per tenant (6 peran: Owner/Admin/Dokter/Perawat/Resepsionis/Apoteker)
+  - [ ] Audit log dasar (per tenant)
+- [ ] **Manajemen Anggota Tenant** (undang + atur peran)
 - [ ] **Manajemen Pasien**
   - [ ] Registrasi (No. RM otomatis)
   - [ ] Daftar + pencarian
@@ -49,17 +55,32 @@ Roadmap bertahap agar aplikasi bisa dikembangkan & dirilis secara inkremental.
 
 ---
 
-## 🔜 Fase 3 — Operasional Klinik (P1)
-**Target: alur kerja klinik harian**
+## 🔜 Fase 3 — Operasional & Jaringan Antar-Fasilitas (P1) ⭐
+**Target: alur kerja harian + fitur jaringan (rekanan, transfer obat, berbagi pasien)**
 
+**Operasional klinik:**
 - [ ] Antrian & pendaftaran kunjungan
 - [ ] Status kunjungan (menunggu → diperiksa → selesai)
 - [ ] Jadwal praktik dokter
-- [ ] Resep elektronik + master obat
+- [ ] Resep elektronik + master obat + stok per tenant
 - [ ] Riwayat pengobatan
 - [ ] Cetak resep & resume medis
 - [ ] Laporan kunjungan + export PDF/Excel
 - [ ] Lupa password (email)
+
+**Berbagi pasien lintas tenant:**
+- [ ] Pencarian pasien lintas tenant (info terbatas)
+- [ ] Permintaan akses detail pasien
+- [ ] Persetujuan/penolakan akses oleh tenant pemilik
+
+**Rekanan & transfer obat (fitur unggulan):**
+- [ ] Manajemen rekanan (ajukan/setujui/putus)
+- [ ] Cari stok obat di rekanan
+- [ ] Buat order transfer obat (multi-item)
+- [ ] Konfirmasi/tolak order oleh penyedia
+- [ ] Tracking status order (timeline lengkap)
+- [ ] Penerimaan obat → stok bertambah otomatis
+- [ ] Riwayat & laporan transfer obat
 
 ---
 

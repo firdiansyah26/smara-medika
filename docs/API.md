@@ -7,6 +7,7 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 - Base URL: `/api`
 - Format: JSON
 - Auth: semua endpoint (kecuali login) membutuhkan sesi valid (cookie/JWT via Auth.js)
+- **Tenant context:** endpoint operasional membutuhkan **tenant aktif** (dari sesi atau header `X-Tenant-Id`). Server memvalidasi user adalah anggota tenant tsb & memfilter data sesuai `tenantId`.
 - Validasi input: **Zod** di setiap handler
 
 ### Format Response Sukses
@@ -47,14 +48,19 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | POST | `/api/auth/logout` | Logout | semua |
 | GET | `/api/auth/me` | Info user aktif | semua |
 
-### 👥 User (Manajemen Staf)
+### 🏢 Tenant & Keanggotaan
 | Method | Endpoint | Deskripsi | Role |
 |--------|----------|-----------|------|
-| GET | `/api/users` | Daftar user | ADMIN |
-| POST | `/api/users` | Buat user | ADMIN |
-| GET | `/api/users/:id` | Detail user | ADMIN |
-| PATCH | `/api/users/:id` | Update user | ADMIN |
-| DELETE | `/api/users/:id` | Nonaktifkan user | ADMIN |
+| GET | `/api/me/tenants` | Daftar tenant yang diikuti user (untuk switcher) | semua |
+| POST | `/api/tenants/switch` | Set tenant aktif di sesi | semua |
+| GET | `/api/tenants/:id` | Profil tenant | anggota |
+| PATCH | `/api/tenants/:id` | Update profil tenant | OWNER, ADMIN |
+| GET | `/api/tenants/:id/members` | Daftar anggota tenant | OWNER, ADMIN |
+| POST | `/api/tenants/:id/members` | Undang anggota + peran | OWNER, ADMIN |
+| PATCH | `/api/tenants/:id/members/:mid` | Ubah peran/status anggota | OWNER, ADMIN |
+| DELETE | `/api/tenants/:id/members/:mid` | Nonaktifkan anggota | OWNER, ADMIN |
+
+> Manajemen "staf" = manajemen **Membership** per tenant (bukan user global). Pembuatan akun user global terjadi saat undangan/registrasi.
 
 ### 🧑 Pasien
 | Method | Endpoint | Deskripsi | Role |
@@ -66,6 +72,14 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | GET | `/api/patients/:id/encounters` | Riwayat kunjungan | semua |
 | GET | `/api/patients/:id/allergies` | Daftar alergi | semua |
 | POST | `/api/patients/:id/allergies` | Tambah alergi | DOKTER, PERAWAT |
+
+### 🔍 Pencarian & Akses Pasien Lintas Tenant
+| Method | Endpoint | Deskripsi | Role |
+|--------|----------|-----------|------|
+| GET | `/api/patients/search-global?nik=&name=` | Cari pasien lintas tenant (**info terbatas**) | semua |
+| POST | `/api/patient-access-requests` | Minta akses detail pasien ke tenant pemilik | DOKTER, ADMIN |
+| GET | `/api/patient-access-requests?type=incoming\|outgoing` | Daftar permintaan masuk/keluar | OWNER, ADMIN, DOKTER |
+| PATCH | `/api/patient-access-requests/:id` | Setujui/tolak/cabut akses | OWNER, ADMIN (pemilik) |
 
 ### 📋 Rekam Medis (Encounter)
 | Method | Endpoint | Deskripsi | Role |
@@ -85,6 +99,28 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | POST | `/api/drugs` | Tambah obat | APOTEKER, ADMIN |
 | POST | `/api/encounters/:id/prescriptions` | Buat resep | DOKTER |
 | GET | `/api/prescriptions/:id` | Detail resep | semua |
+
+### 🤝 Rekanan (Partnership)
+| Method | Endpoint | Deskripsi | Role |
+|--------|----------|-----------|------|
+| GET | `/api/partnerships` | Daftar rekanan tenant aktif | OWNER, ADMIN, APOTEKER |
+| POST | `/api/partnerships` | Ajukan rekanan ke tenant lain | OWNER, ADMIN |
+| PATCH | `/api/partnerships/:id` | Setujui/tolak/putus rekanan | OWNER, ADMIN |
+
+### 💊 Stok & Transfer Obat Antar-Rekanan
+| Method | Endpoint | Deskripsi | Role |
+|--------|----------|-----------|------|
+| GET | `/api/partners/stock?drug=&partnerId=` | Cari stok obat di rekanan | DOKTER, APOTEKER, ADMIN |
+| POST | `/api/drug-orders` | Buat order transfer obat (multi-item) | DOKTER, APOTEKER, ADMIN |
+| GET | `/api/drug-orders?type=incoming\|outgoing&status=` | Daftar order masuk/keluar | APOTEKER, ADMIN |
+| GET | `/api/drug-orders/:id` | Detail order + item + tracking | anggota terkait |
+| PATCH | `/api/drug-orders/:id/status` | Ubah status (confirm/prepare/ship/receive/reject/cancel) | sesuai peran & sisi |
+| GET | `/api/drug-orders/:id/tracking` | Riwayat tracking (timeline) | anggota terkait |
+
+**Aturan transisi status** (`PATCH /status`):
+- Penyedia (supplier): `REQUESTED → CONFIRMED → PREPARING → SHIPPED → IN_TRANSIT → DELIVERED`, atau `→ REJECTED`
+- Pemohon (requester): `DELIVERED → RECEIVED` (stok bertambah), atau `→ CANCELLED` (sebelum SHIPPED)
+- Setiap perubahan otomatis menambah entri `DrugOrderTracking`.
 
 ### 🔎 Referensi
 | Method | Endpoint | Deskripsi | Role |
@@ -122,6 +158,46 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
     "mrNumber": "RM-202606-00042",
     "name": "Budi Santoso"
   }
+}
+```
+
+---
+
+## Contoh: Buat Order Transfer Obat
+
+**Request** `POST /api/drug-orders` (tenant aktif = RS A)
+```json
+{
+  "supplierTenantId": "tenant_apotek_b",
+  "note": "Kebutuhan obat kaki untuk pasien rawat jalan",
+  "items": [
+    { "drugId": "drug_obat_kaki_x", "quantity": 20 }
+  ]
+}
+```
+
+**Response** `201 Created`
+```json
+{
+  "success": true,
+  "data": {
+    "id": "clx...",
+    "orderNumber": "TRF-202606-00012",
+    "status": "REQUESTED",
+    "supplierTenantId": "tenant_apotek_b"
+  }
+}
+```
+
+**Lacak status** `GET /api/drug-orders/clx.../tracking`
+```json
+{
+  "success": true,
+  "data": [
+    { "status": "REQUESTED", "createdAt": "2026-06-12T08:00:00Z" },
+    { "status": "CONFIRMED", "note": "Stok tersedia", "createdAt": "2026-06-12T08:15:00Z" },
+    { "status": "SHIPPED", "note": "Kurir: JNE, resi 123", "createdAt": "2026-06-12T10:00:00Z" }
+  ]
 }
 ```
 
