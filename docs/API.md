@@ -133,6 +133,22 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | GET | `/api/dashboard/summary` | Statistik ringkas | semua |
 | GET | `/api/reports/visits?from=&to=` | Laporan kunjungan | ADMIN, DOKTER |
 
+### 🔗 Manajemen Shared API (Internal — Admin Tenant)
+Endpoint untuk **mengelola** akses Shared API tenant (bukan API publiknya sendiri).
+
+| Method | Endpoint | Deskripsi | Role |
+|--------|----------|-----------|------|
+| GET | `/api/api-keys` | Daftar API key tenant (tanpa secret) | OWNER, ADMIN |
+| POST | `/api/api-keys` | Buat API key (secret tampil **sekali**) | OWNER, ADMIN |
+| DELETE | `/api/api-keys/:id` | Cabut (revoke) API key | OWNER, ADMIN |
+| POST | `/api/api-keys/:id/rotate` | Rotasi key | OWNER, ADMIN |
+| GET | `/api/webhooks` | Daftar endpoint webhook | OWNER, ADMIN |
+| POST | `/api/webhooks` | Tambah endpoint webhook | OWNER, ADMIN |
+| PATCH | `/api/webhooks/:id` | Ubah/nonaktifkan webhook | OWNER, ADMIN |
+| GET | `/api/api-logs?keyId=&from=&to=` | Log pemakaian API | OWNER, ADMIN |
+
+> **Public API (`/api/v1/*`)** — API yang dikonsumsi pihak ketiga (autentikasi via API key, scope, rate limit, webhook). Spesifikasi lengkapnya ada di **[SHARED_API.md](./SHARED_API.md)**, terpisah dari API internal di atas yang berbasis sesi user.
+
 ---
 
 ## Contoh: Buat Pasien

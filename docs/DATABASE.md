@@ -29,6 +29,10 @@ Tenant ──< TenantPartnership >── Tenant   (rekanan antar fasilitas)
 Tenant ──< DrugOrder (pemohon) / (penyedia)
 DrugOrder ──< DrugOrderItem ──> Drug
 DrugOrder ──< DrugOrderTracking          (riwayat status / tracking)
+
+Tenant ──< ApiKey                        (Shared API: kunci publik per tenant)
+Tenant ──< WebhookEndpoint ──< WebhookDelivery
+Tenant ──< ApiRequestLog                 (audit pemakaian API)
 ```
 
 ---
@@ -215,6 +219,70 @@ Sama seperti desain sebelumnya, **plus `tenantId`** pada Encounter (& diturunkan
 | changes | Json? | before/after |
 | ipAddress | String? | |
 | createdAt | DateTime | |
+
+---
+
+## Entitas Shared API (Integrasi Pihak Ketiga)
+
+Mendukung fitur API publik per tenant. Detail teknis: lihat `SHARED_API.md`.
+
+### ApiKey
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant (pemilik key) |
+| name | String | label key (mis. "Integrasi SIM-RS") |
+| prefix | String | bagian publik key (untuk identifikasi & tampil) |
+| hashedSecret | String | hash secret (argon2/bcrypt) — secret asli tak disimpan |
+| mode | Enum | LIVE, TEST |
+| scopes | String[] | daftar scope (mis. `patients:read`) |
+| ipAllowlist | String[]? | pembatasan IP (opsional) |
+| status | Enum | ACTIVE, REVOKED |
+| lastUsedAt | DateTime? | pemakaian terakhir |
+| expiresAt | DateTime? | kedaluwarsa (opsional) |
+| createdById | String | FK → User |
+| createdAt / updatedAt | DateTime | |
+
+> **Index** `prefix` (unik) untuk lookup cepat saat autentikasi.
+
+### WebhookEndpoint
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| url | String | tujuan webhook |
+| secret | String | untuk HMAC signature |
+| events | String[] | event yang dilanggan (mis. `drug_order.status_changed`) |
+| isActive | Boolean | |
+| createdAt / updatedAt | DateTime | |
+
+### WebhookDelivery (Riwayat Pengiriman)
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| endpointId | String | FK → WebhookEndpoint |
+| event | String | nama event |
+| payload | Json | isi yang dikirim |
+| status | Enum | PENDING, SUCCESS, FAILED, DEAD_LETTER |
+| attempts | Int | jumlah percobaan |
+| responseCode | Int? | status HTTP respons consumer |
+| nextRetryAt | DateTime? | jadwal retry berikutnya |
+| createdAt | DateTime | |
+
+### ApiRequestLog (Audit Pemakaian API)
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| apiKeyId | String? | FK → ApiKey |
+| method | String | GET/POST/... |
+| path | String | endpoint |
+| statusCode | Int | hasil |
+| latencyMs | Int? | durasi proses |
+| ipAddress | String? | |
+| createdAt | DateTime | |
+
+> Volume `ApiRequestLog` bisa besar → pertimbangkan retensi/partisi (lihat `TECH_DEBT.md`).
 
 ---
 

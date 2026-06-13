@@ -197,6 +197,24 @@ Setiap perubahan status tercatat lengkap (waktu, oleh siapa, catatan) sebagai **
 
 ---
 
+## 10. Shared API (Integrasi Pihak Ketiga) 🟢 P2
+
+API publik **per tenant** agar sistem eksternal (SIM-RS lain, aplikasi mitra) bisa terintegrasi. Detail teknis: lihat **[SHARED_API.md](./SHARED_API.md)**.
+
+| Fitur | Prioritas | Deskripsi |
+|-------|:---:|-----------|
+| Kelola API Key | 🟢 P2 | Buat/cabut/rotasi API key per tenant (OWNER/ADMIN) |
+| Scope & izin granular | 🟢 P2 | Batasi key per resource (`patients:read`, dst) |
+| Endpoint publik `/api/v1` | 🟢 P2 | Akses pasien, encounter, stok, order obat (tenant-scoped) |
+| Rate limiting & kuota | 🟢 P2 | Batas request per key + header sisa kuota |
+| Webhook | 🟢 P2 | Notifikasi event ke sistem luar (HMAC + retry) |
+| Log pemakaian API | 🟢 P2 | Audit setiap request (key, endpoint, status, latency) |
+| Portal/dokumentasi developer | 🟢 P2 | Halaman dev + OpenAPI + kelola key/webhook |
+
+> Penting: API key **tidak menembus** isolasi tenant maupun consent (akses pasien lintas tenant & rekanan tetap berlaku).
+
+---
+
 ## Definisi MVP (Fase 1)
 
 MVP SmaraMedika mencakup fitur **🔴 P0**:

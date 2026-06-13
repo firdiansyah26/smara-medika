@@ -59,6 +59,26 @@ Pengurangan/penambahan stok saat kirim & terima harus atomik agar stok tidak sal
 PatientAccessRequest yang disetujui perlu cakupan (data apa saja) & kedaluwarsa yang jelas, plus pencabutan (revoke).
 **Rencana:** Definisikan scope & `expiresAt`; jadwalkan auto-expire; catat akses di audit log.
 
+### TD-012 · 🔴 · Dampak: **Tinggi** — Keamanan & rotasi API key (Shared API)
+Secret key wajib di-hash & hanya tampil sekali; kebocoran key = risiko akses data tenant. Rotasi/revokasi harus cepat.
+**Rencana:** Hash secret (argon2), simpan hanya `prefix`; dukung rotasi + grace period; revoke instan; opsi IP allowlist & `expiresAt`. Lihat `SHARED_API.md`.
+
+### TD-013 · 🔴 · Dampak: Sedang — Infrastruktur rate limiting
+Rate limit in-memory tidak konsisten di multi-instance (skala horizontal).
+**Rencana:** Mulai in-memory (single instance), pindah ke **Redis** (token bucket/sliding window) saat scale-out.
+
+### TD-014 · 🔴 · Dampak: Sedang — Keandalan webhook
+Pengiriman webhook bisa gagal (consumer down). Tanpa retry/dead-letter, event hilang.
+**Rencana:** Queue + retry exponential backoff + dead-letter + halaman status pengiriman (`WebhookDelivery`). HMAC signature wajib.
+
+### TD-015 · 🔴 · Dampak: Rendah — Volume ApiRequestLog
+Log pemakaian API bisa tumbuh sangat besar.
+**Rencana:** Kebijakan retensi, partisi/arsip, atau ringkasan agregat; hindari simpan payload penuh.
+
+### TD-016 · 🔴 · Dampak: Sedang — Versioning & kompatibilitas Public API
+Perubahan kontrak `/v1` berisiko merusak integrasi mitra.
+**Rencana:** Kontrak OpenAPI sebagai sumber kebenaran; kebijakan deprecation + header `Sunset`; uji kontrak.
+
 ---
 
 ## 🧭 Keputusan Teknis (ADR Ringkas)
@@ -84,6 +104,15 @@ Agar 1 user bisa punya peran berbeda di banyak tenant (mis. Dokter di RS A, Apot
 ### Mengapa transfer obat hanya antar rekanan (bukan marketplace terbuka)?
 Sesuai kebutuhan: lebih terkontrol, kepercayaan jelas, dan menghindari kompleksitas verifikasi/penyalahgunaan marketplace. Marketplace terbuka bisa dipertimbangkan di masa depan.
 
+### Mengapa Shared API pakai API key (bukan OAuth2/OIDC penuh) di awal?
+API key + scope jauh lebih sederhana untuk integrasi server-to-server mitra, cukup untuk kebutuhan awal. OAuth2/OIDC (alur user-delegated) bisa ditambahkan kemudian bila ada use case pihak ketiga yang bertindak atas nama user.
+
+### Mengapa API key tenant-scoped & tidak menembus consent?
+Menjaga model keamanan tetap konsisten: API hanyalah saluran lain ke data tenant. Isolasi antar tenant & consent (akses pasien lintas tenant, rekanan) tetap satu-satunya gerbang berbagi data — mencegah API jadi celah bypass.
+
+### Mengapa webhook pakai HMAC signature?
+Agar consumer dapat memverifikasi keaslian & integritas payload tanpa perlu memanggil balik API; sederhana, standar, dan tahan terhadap spoofing.
+
 ---
 
 ## ⚠️ Risiko yang Harus Diperhatikan
@@ -94,6 +123,8 @@ Sesuai kebutuhan: lebih terkontrol, kepercayaan jelas, dan menghindari kompleksi
 | Kebocoran data antar tenant | Filter `tenantId` wajib, helper tenant-scoped, test isolasi |
 | Transisi status order tidak valid | State machine eksplisit + validasi sisi |
 | Stok tidak konsisten saat transfer | Operasi atomik (`$transaction`) |
+| Kebocoran API key | Hash secret, rotasi/revoke cepat, IP allowlist, audit |
+| Event webhook hilang | Retry + dead-letter + HMAC signature |
 | Kehilangan data | Backup otomatis harian + uji restore |
 | Race condition (No. RM, antrian) | Database transaction + unique constraint |
 | Kepatuhan regulasi (UU PDP, RME) | Review hukum sebelum produksi |
