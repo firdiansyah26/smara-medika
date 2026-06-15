@@ -7,6 +7,12 @@ export const LOCALE_STORAGE_KEY = "smara-locale";
 type FeatureText = { title: string; desc: string };
 
 export type Dictionary = {
+  common: {
+    search: string;
+    comingSoon: string;
+    demoNotice: string;
+    viewAll: string;
+  };
   nav: { features: string; signIn: string };
   hero: {
     badge: string;
@@ -17,17 +23,78 @@ export type Dictionary = {
     ctaSecondary: string;
   };
   tenantTypes: string[]; // [Rumah Sakit, Klinik, Apotek]
-  brandCard: {
-    meaning: string;
-    points: string[];
-  };
+  brandCard: { meaning: string; points: string[] };
   features: { heading: string; subtitle: string; items: FeatureText[] };
   cta: { heading: string; paragraph: string; button: string };
   footer: string;
+  login: {
+    title: string;
+    subtitle: string;
+    email: string;
+    emailPlaceholder: string;
+    password: string;
+    passwordPlaceholder: string;
+    submit: string;
+    forgot: string;
+    backHome: string;
+    note: string;
+  };
+  app: {
+    nav: {
+      dashboard: string;
+      patients: string;
+      records: string;
+      drugTransfer: string;
+      partners: string;
+      sharedApi: string;
+      settings: string;
+    };
+    topbar: {
+      searchPlaceholder: string;
+      switchTenant: string;
+      signOut: string;
+    };
+  };
+  dashboardHome: {
+    greeting: string;
+    subtitle: string;
+    stats: {
+      patientsToday: string;
+      activeVisits: string;
+      pendingOrders: string;
+      partners: string;
+    };
+    recentTitle: string;
+    recentEmpty: string;
+  };
+  patients: {
+    title: string;
+    subtitle: string;
+    add: string;
+    searchPlaceholder: string;
+    columns: {
+      mrNumber: string;
+      name: string;
+      gender: string;
+      age: string;
+      phone: string;
+      lastVisit: string;
+    };
+    male: string;
+    female: string;
+    years: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
   id: {
+    common: {
+      search: "Cari",
+      comingSoon: "segera hadir",
+      demoNotice:
+        "Data di bawah ini adalah contoh (mock). Akan terhubung ke database saat PostgreSQL & autentikasi disiapkan.",
+      viewAll: "Lihat semua",
+    },
     nav: { features: "Fitur", signIn: "Masuk" },
     hero: {
       badge: "Platform RME Multi-Tenant",
@@ -81,12 +148,76 @@ export const dictionaries: Record<Locale, Dictionary> = {
     cta: {
       heading: "Siap mendigitalkan layanan kesehatan Anda?",
       paragraph:
-        "SmaraMedika masih dalam pengembangan. Halaman masuk & pendaftaran akan tersedia pada rilis berikutnya.",
-      button: "Masuk · segera hadir",
+        "Masuk untuk mencoba pratinjau aplikasi. Pendaftaran fasilitas akan tersedia pada rilis berikutnya.",
+      button: "Masuk",
     },
     footer: "Platform Rekam Medis Elektronik",
+    login: {
+      title: "Masuk ke SmaraMedika",
+      subtitle: "Kelola rekam medis fasilitas Anda dengan aman.",
+      email: "Email",
+      emailPlaceholder: "nama@fasilitas.id",
+      password: "Kata sandi",
+      passwordPlaceholder: "••••••••",
+      submit: "Masuk",
+      forgot: "Lupa kata sandi?",
+      backHome: "Kembali ke beranda",
+      note: "Pratinjau UI — autentikasi asli aktif saat database disiapkan.",
+    },
+    app: {
+      nav: {
+        dashboard: "Dashboard",
+        patients: "Pasien",
+        records: "Rekam Medis",
+        drugTransfer: "Transfer Obat",
+        partners: "Rekanan",
+        sharedApi: "Shared API",
+        settings: "Pengaturan",
+      },
+      topbar: {
+        searchPlaceholder: "Cari pasien, No. RM…",
+        switchTenant: "Ganti fasilitas",
+        signOut: "Keluar",
+      },
+    },
+    dashboardHome: {
+      greeting: "Selamat datang",
+      subtitle: "Ringkasan aktivitas fasilitas Anda hari ini.",
+      stats: {
+        patientsToday: "Pasien hari ini",
+        activeVisits: "Kunjungan aktif",
+        pendingOrders: "Order obat tertunda",
+        partners: "Rekanan aktif",
+      },
+      recentTitle: "Kunjungan terbaru",
+      recentEmpty: "Belum ada kunjungan.",
+    },
+    patients: {
+      title: "Pasien",
+      subtitle: "Daftar pasien fasilitas aktif.",
+      add: "Tambah Pasien",
+      searchPlaceholder: "Cari nama / NIK / No. RM…",
+      columns: {
+        mrNumber: "No. RM",
+        name: "Nama",
+        gender: "Jenis Kelamin",
+        age: "Usia",
+        phone: "Telepon",
+        lastVisit: "Kunjungan Terakhir",
+      },
+      male: "Laki-laki",
+      female: "Perempuan",
+      years: "th",
+    },
   },
   en: {
+    common: {
+      search: "Search",
+      comingSoon: "coming soon",
+      demoNotice:
+        "The data below is sample (mock) data. It will connect to the database once PostgreSQL & authentication are set up.",
+      viewAll: "View all",
+    },
     nav: { features: "Features", signIn: "Sign in" },
     hero: {
       badge: "Multi-Tenant EMR Platform",
@@ -140,9 +271,66 @@ export const dictionaries: Record<Locale, Dictionary> = {
     cta: {
       heading: "Ready to digitize your healthcare services?",
       paragraph:
-        "SmaraMedika is still under development. Sign-in & registration pages will be available in the next release.",
-      button: "Sign in · coming soon",
+        "Sign in to try the app preview. Facility registration will be available in the next release.",
+      button: "Sign in",
     },
     footer: "Electronic Medical Records Platform",
+    login: {
+      title: "Sign in to SmaraMedika",
+      subtitle: "Manage your facility's medical records securely.",
+      email: "Email",
+      emailPlaceholder: "name@facility.id",
+      password: "Password",
+      passwordPlaceholder: "••••••••",
+      submit: "Sign in",
+      forgot: "Forgot password?",
+      backHome: "Back to home",
+      note: "UI preview — real authentication activates once the database is set up.",
+    },
+    app: {
+      nav: {
+        dashboard: "Dashboard",
+        patients: "Patients",
+        records: "Medical Records",
+        drugTransfer: "Drug Transfer",
+        partners: "Partners",
+        sharedApi: "Shared API",
+        settings: "Settings",
+      },
+      topbar: {
+        searchPlaceholder: "Search patients, MR no…",
+        switchTenant: "Switch facility",
+        signOut: "Sign out",
+      },
+    },
+    dashboardHome: {
+      greeting: "Welcome",
+      subtitle: "A summary of your facility's activity today.",
+      stats: {
+        patientsToday: "Patients today",
+        activeVisits: "Active visits",
+        pendingOrders: "Pending drug orders",
+        partners: "Active partners",
+      },
+      recentTitle: "Recent visits",
+      recentEmpty: "No visits yet.",
+    },
+    patients: {
+      title: "Patients",
+      subtitle: "Patient list for the active facility.",
+      add: "Add Patient",
+      searchPlaceholder: "Search name / NIK / MR no…",
+      columns: {
+        mrNumber: "MR No.",
+        name: "Name",
+        gender: "Gender",
+        age: "Age",
+        phone: "Phone",
+        lastVisit: "Last Visit",
+      },
+      male: "Male",
+      female: "Female",
+      years: "yo",
+    },
   },
 };

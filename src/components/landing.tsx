@@ -1,47 +1,9 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import Link from "next/link";
 import { Logo } from "@/components/logo";
-import {
-  DEFAULT_LOCALE,
-  dictionaries,
-  LOCALE_STORAGE_KEY,
-  LOCALES,
-  type Locale,
-} from "@/lib/i18n";
-
-// --- Store bahasa berbasis localStorage (pola useSyncExternalStore) ---
-let cachedLocale: Locale | null = null;
-const localeListeners = new Set<() => void>();
-
-function readStoredLocale(): Locale {
-  if (typeof window === "undefined") return DEFAULT_LOCALE;
-  const v = window.localStorage.getItem(LOCALE_STORAGE_KEY) as Locale | null;
-  return v && LOCALES.includes(v) ? v : DEFAULT_LOCALE;
-}
-
-function getLocaleSnapshot(): Locale {
-  if (cachedLocale === null) cachedLocale = readStoredLocale();
-  return cachedLocale;
-}
-
-function getLocaleServerSnapshot(): Locale {
-  return DEFAULT_LOCALE;
-}
-
-function subscribeLocale(callback: () => void) {
-  localeListeners.add(callback);
-  return () => localeListeners.delete(callback);
-}
-
-function setStoredLocale(l: Locale) {
-  cachedLocale = l;
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(LOCALE_STORAGE_KEY, l);
-    document.documentElement.lang = l;
-  }
-  localeListeners.forEach((cb) => cb());
-}
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useLocale } from "@/lib/use-locale";
 
 const tenantEmojis = ["🏥", "🩺", "💊"];
 
@@ -70,43 +32,8 @@ const featureIcons: React.ReactNode[] = [
   />,
 ];
 
-function LanguageSwitcher({
-  locale,
-  onChange,
-}: {
-  locale: Locale;
-  onChange: (l: Locale) => void;
-}) {
-  return (
-    <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white p-0.5 text-xs font-semibold">
-      {LOCALES.map((l) => (
-        <button
-          key={l}
-          type="button"
-          onClick={() => onChange(l)}
-          aria-pressed={locale === l}
-          className={
-            "rounded-md px-2.5 py-1 uppercase transition-colors " +
-            (locale === l
-              ? "bg-brand text-white"
-              : "text-muted hover:text-ink")
-          }
-        >
-          {l}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 export function Landing() {
-  const locale = useSyncExternalStore(
-    subscribeLocale,
-    getLocaleSnapshot,
-    getLocaleServerSnapshot,
-  );
-
-  const t = dictionaries[locale];
+  const { t } = useLocale();
 
   return (
     <div className="flex min-h-full flex-col bg-white text-ink">
@@ -121,13 +48,13 @@ export function Landing() {
             >
               {t.nav.features}
             </a>
-            <LanguageSwitcher locale={locale} onChange={setStoredLocale} />
-            <a
-              href="#masuk"
+            <LanguageSwitcher />
+            <Link
+              href="/login"
               className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
             >
               {t.nav.signIn}
-            </a>
+            </Link>
           </nav>
         </div>
       </header>
@@ -151,12 +78,12 @@ export function Landing() {
               {t.hero.paragraph}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a
-                href="#masuk"
+              <Link
+                href="/login"
                 className="rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
               >
                 {t.hero.ctaPrimary}
-              </a>
+              </Link>
               <a
                 href="#fitur"
                 className="rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-brand/40 hover:text-brand-deep"
@@ -266,9 +193,12 @@ export function Landing() {
             {t.cta.paragraph}
           </p>
           <div className="mt-8">
-            <span className="inline-flex cursor-not-allowed items-center gap-2 rounded-xl bg-white/95 px-6 py-3 text-sm font-semibold text-brand-deep">
+            <Link
+              href="/login"
+              className="inline-flex items-center gap-2 rounded-xl bg-white/95 px-6 py-3 text-sm font-semibold text-brand-deep transition-colors hover:bg-white"
+            >
               {t.cta.button}
-            </span>
+            </Link>
           </div>
         </div>
       </section>
