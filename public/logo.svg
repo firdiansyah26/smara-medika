@@ -1,0 +1,15 @@
+<svg width="220" height="48" viewBox="0 0 220 48" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SmaraMedika">
+  <defs>
+    <linearGradient id="smaraLogo" x1="2" y1="3" x2="22" y2="21" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14B8A6"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(2 12) scale(1)">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 1 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z" fill="url(#smaraLogo)"/>
+    <path d="M4 12.6h3.4l1.5-3.3 2.2 6.2 1.7-3.9.9 1h4.2" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="34" y="31" font-family="Geist, Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.3">
+    <tspan fill="#0F172A">Smara</tspan><tspan fill="#0D9488">Medika</tspan>
+  </text>
+</svg>

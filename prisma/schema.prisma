@@ -1,0 +1,511 @@
+// SmaraMedika — Skema Database (PostgreSQL)
+// Mengacu pada docs/DATABASE.md. Platform multi-tenant: hampir semua entitas
+// operasional memiliki tenantId untuk isolasi data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum TenantType {
+  RUMAH_SAKIT
+  KLINIK
+  APOTEK
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  DOKTER
+  PERAWAT
+  RESEPSIONIS
+  APOTEKER
+}
+
+enum Gender {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum BloodType {
+  A
+  B
+  AB
+  O
+}
+
+enum EncounterStatus {
+  MENUNGGU
+  DIPERIKSA
+  SELESAI
+}
+
+enum DiagnosisType {
+  PRIMER
+  SEKUNDER
+}
+
+enum AllergySeverity {
+  RINGAN
+  SEDANG
+  BERAT
+}
+
+enum AccessRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+enum PartnershipStatus {
+  PENDING
+  ACTIVE
+  REJECTED
+  INACTIVE
+}
+
+enum OrderStatus {
+  REQUESTED
+  CONFIRMED
+  PREPARING
+  SHIPPED
+  IN_TRANSIT
+  DELIVERED
+  RECEIVED
+  REJECTED
+  CANCELLED
+}
+
+enum AuditAction {
+  CREATE
+  READ
+  UPDATE
+  DELETE
+  LOGIN
+}
+
+enum ApiKeyMode {
+  LIVE
+  TEST
+}
+
+enum ApiKeyStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum WebhookDeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  DEAD_LETTER
+}
+
+// ============================================================
+// Multi-tenant (fondasi)
+// ============================================================
+
+model Tenant {
+  id        String     @id @default(cuid())
+  name      String
+  type      TenantType
+  code      String     @unique
+  address   String?
+  city      String?
+  phone     String?
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  memberships      Membership[]
+  patients         Patient[]
+  encounters       Encounter[]
+  drugStocks       DrugStock[]
+  prescriptions    Prescription[]
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
+  apiRequestLogs   ApiRequestLog[]
+  auditLogs        AuditLog[]
+
+  accessRequestsAsOwner     PatientAccessRequest[] @relation("AccessOwner")
+  accessRequestsAsRequester PatientAccessRequest[] @relation("AccessRequester")
+  partnershipsInitiated     TenantPartnership[]    @relation("PartnershipRequester")
+  partnershipsReceived      TenantPartnership[]    @relation("PartnershipAddressee")
+  ordersRequested           DrugOrder[]            @relation("OrderRequester")
+  ordersSupplied            DrugOrder[]            @relation("OrderSupplier")
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  password        String
+  name            String
+  isPlatformAdmin Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  memberships Membership[]
+  encounters  Encounter[]  @relation("EncounterDoctor")
+  auditLogs   AuditLog[]
+}
+
+model Membership {
+  id          String   @id @default(cuid())
+  userId      String
+  tenantId    String
+  role        Role
+  isActive    Boolean  @default(true)
+  invitedById String?
+  createdAt   DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tenantId])
+  @@index([tenantId])
+}
+
+// ============================================================
+// Klinis (scoped per tenant)
+// ============================================================
+
+model Patient {
+  id               String     @id @default(cuid())
+  tenantId         String
+  mrNumber         String
+  nik              String?
+  name             String
+  birthDate        DateTime
+  gender           Gender
+  bloodType        BloodType?
+  phone            String?
+  address          String?
+  city             String?
+  emergencyContact String?
+  bpjsNumber       String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  deletedAt        DateTime?
+
+  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  encounters     Encounter[]
+  allergies      Allergy[]
+  accessRequests PatientAccessRequest[]
+
+  @@unique([tenantId, mrNumber])
+  @@index([nik])
+  @@index([tenantId])
+}
+
+model PatientAccessRequest {
+  id                String              @id @default(cuid())
+  patientId         String
+  ownerTenantId     String
+  requesterTenantId String
+  requestedById     String
+  respondedById     String?
+  reason            String?
+  status            AccessRequestStatus @default(PENDING)
+  expiresAt         DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  patient         Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  ownerTenant     Tenant  @relation("AccessOwner", fields: [ownerTenantId], references: [id])
+  requesterTenant Tenant  @relation("AccessRequester", fields: [requesterTenantId], references: [id])
+
+  @@index([ownerTenantId, status])
+  @@index([requesterTenantId, status])
+}
+
+model Encounter {
+  id         String          @id @default(cuid())
+  tenantId   String
+  patientId  String
+  doctorId   String
+  visitDate  DateTime        @default(now())
+  status     EncounterStatus @default(MENUNGGU)
+  subjective String?
+  objective  String?
+  assessment String?
+  plan       String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  deletedAt  DateTime?
+
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient       Patient        @relation(fields: [patientId], references: [id])
+  doctor        User           @relation("EncounterDoctor", fields: [doctorId], references: [id])
+  vitalSign     VitalSign?
+  diagnoses     Diagnosis[]
+  prescriptions Prescription[]
+
+  @@index([tenantId, visitDate])
+  @@index([patientId])
+}
+
+model VitalSign {
+  id              String  @id @default(cuid())
+  encounterId     String  @unique
+  systolic        Int?
+  diastolic       Int?
+  temperature     Float?
+  heartRate       Int?
+  respiratoryRate Int?
+  spo2            Int?
+  weight          Float?
+  height          Float?
+
+  encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+}
+
+model Diagnosis {
+  id          String        @id @default(cuid())
+  encounterId String
+  icdCode     String
+  icdName     String
+  type        DiagnosisType @default(PRIMER)
+  notes       String?
+
+  encounter Encounter @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  @@index([encounterId])
+}
+
+model Allergy {
+  id        String           @id @default(cuid())
+  patientId String
+  allergen  String
+  reaction  String?
+  severity  AllergySeverity?
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+// ============================================================
+// Farmasi & transfer obat
+// ============================================================
+
+model Drug {
+  id          String  @id @default(cuid())
+  name        String
+  genericName String?
+  unit        String
+  category    String?
+
+  stocks         DrugStock[]
+  prescriptionItems PrescriptionItem[]
+  orderItems     DrugOrderItem[]
+}
+
+model DrugStock {
+  id       String   @id @default(cuid())
+  tenantId String
+  drugId   String
+  quantity Int      @default(0)
+  price    Decimal? @db.Decimal(12, 2)
+  minStock Int?
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  drug   Drug   @relation(fields: [drugId], references: [id])
+
+  @@unique([tenantId, drugId])
+}
+
+model Prescription {
+  id          String   @id @default(cuid())
+  tenantId    String
+  encounterId String
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  encounter Encounter          @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+  items     PrescriptionItem[]
+
+  @@index([encounterId])
+}
+
+model PrescriptionItem {
+  id             String  @id @default(cuid())
+  prescriptionId String
+  drugId         String
+  dosage         String?
+  frequency      String?
+  quantity       Int     @default(1)
+  instruction    String?
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  drug         Drug         @relation(fields: [drugId], references: [id])
+
+  @@index([prescriptionId])
+}
+
+model TenantPartnership {
+  id                String            @id @default(cuid())
+  requesterTenantId String
+  addresseeTenantId String
+  status            PartnershipStatus @default(PENDING)
+  requestedById     String
+  respondedById     String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  requesterTenant Tenant @relation("PartnershipRequester", fields: [requesterTenantId], references: [id])
+  addresseeTenant Tenant @relation("PartnershipAddressee", fields: [addresseeTenantId], references: [id])
+
+  @@unique([requesterTenantId, addresseeTenantId])
+}
+
+model DrugOrder {
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
+  requesterTenantId String
+  supplierTenantId  String
+  status            OrderStatus @default(REQUESTED)
+  requestedById     String
+  note              String?
+  totalAmount       Decimal?    @db.Decimal(14, 2)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  requesterTenant Tenant              @relation("OrderRequester", fields: [requesterTenantId], references: [id])
+  supplierTenant  Tenant              @relation("OrderSupplier", fields: [supplierTenantId], references: [id])
+  items           DrugOrderItem[]
+  trackings       DrugOrderTracking[]
+
+  @@index([requesterTenantId, status])
+  @@index([supplierTenantId, status])
+}
+
+model DrugOrderItem {
+  id       String   @id @default(cuid())
+  orderId  String
+  drugId   String
+  quantity Int
+  price    Decimal? @db.Decimal(12, 2)
+
+  order DrugOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  drug  Drug      @relation(fields: [drugId], references: [id])
+
+  @@index([orderId])
+}
+
+model DrugOrderTracking {
+  id          String      @id @default(cuid())
+  orderId     String
+  status      OrderStatus
+  note        String?
+  changedById String?
+  createdAt   DateTime    @default(now())
+
+  order DrugOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+}
+
+// ============================================================
+// Audit
+// ============================================================
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  tenantId  String?
+  userId    String
+  action    AuditAction
+  entity    String
+  entityId  String?
+  changes   Json?
+  ipAddress String?
+  createdAt DateTime    @default(now())
+
+  tenant Tenant? @relation(fields: [tenantId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+
+  @@index([tenantId, createdAt])
+}
+
+// ============================================================
+// Shared API (integrasi pihak ketiga) — lihat docs/SHARED_API.md
+// ============================================================
+
+model ApiKey {
+  id           String       @id @default(cuid())
+  tenantId     String
+  name         String
+  prefix       String       @unique
+  hashedSecret String
+  mode         ApiKeyMode   @default(LIVE)
+  scopes       String[]
+  ipAllowlist  String[]
+  status       ApiKeyStatus @default(ACTIVE)
+  lastUsedAt   DateTime?
+  expiresAt    DateTime?
+  createdById  String
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+}
+
+model WebhookEndpoint {
+  id        String   @id @default(cuid())
+  tenantId  String
+  url       String
+  secret    String
+  events    String[]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant     Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+
+  @@index([tenantId])
+}
+
+model WebhookDelivery {
+  id           String                @id @default(cuid())
+  endpointId   String
+  event        String
+  payload      Json
+  status       WebhookDeliveryStatus @default(PENDING)
+  attempts     Int                   @default(0)
+  responseCode Int?
+  nextRetryAt  DateTime?
+  createdAt    DateTime              @default(now())
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId, status])
+}
+
+model ApiRequestLog {
+  id         String   @id @default(cuid())
+  tenantId   String
+  apiKeyId   String?
+  method     String
+  path       String
+  statusCode Int
+  latencyMs  Int?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+}

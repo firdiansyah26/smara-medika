@@ -1,26 +1,25 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* === Palet Brand SmaraMedika — "Teal Care" === */
+@theme {
+  --color-brand: #0d9488; /* teal (primary) */
+  --color-brand-cyan: #06b6d4; /* cyan (gradient) */
+  --color-brand-deep: #0f766e; /* teal deep (aksen teks) */
+  --color-mint: #ecfdf5; /* mint (background lembut) */
+  --color-ink: #0f172a; /* slate (teks utama) */
+  --color-muted: #64748b; /* slate-500 (teks sekunder) */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
 }
