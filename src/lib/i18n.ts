@@ -133,6 +133,41 @@ export type Dictionary = {
       ageLabel: string;
     };
   };
+  records: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    newVisit: string;
+    columns: { date: string; patient: string; status: string; diagnoses: string };
+    status: { MENUNGGU: string; DIPERIKSA: string; SELESAI: string };
+    editor: {
+      back: string;
+      save: string;
+      saving: string;
+      saved: string;
+      statusLabel: string;
+      soapTitle: string;
+      subjective: string;
+      objective: string;
+      assessment: string;
+      plan: string;
+      vitalsTitle: string;
+      bloodPressure: string;
+      temperature: string;
+      heartRate: string;
+      respiratoryRate: string;
+      spo2: string;
+      weight: string;
+      height: string;
+      diagnosesTitle: string;
+      searchIcd: string;
+      noDiagnoses: string;
+      type: string;
+      primer: string;
+      sekunder: string;
+      add: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -307,6 +342,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
         ageLabel: "Umur",
       },
     },
+    records: {
+      title: "Rekam Medis",
+      subtitle: "Kunjungan & catatan medis fasilitas aktif.",
+      empty: "Belum ada kunjungan.",
+      newVisit: "Kunjungan Baru",
+      columns: {
+        date: "Tanggal",
+        patient: "Pasien",
+        status: "Status",
+        diagnoses: "Diagnosa",
+      },
+      status: { MENUNGGU: "Menunggu", DIPERIKSA: "Diperiksa", SELESAI: "Selesai" },
+      editor: {
+        back: "Kembali",
+        save: "Simpan",
+        saving: "Menyimpan…",
+        saved: "Tersimpan",
+        statusLabel: "Status kunjungan",
+        soapTitle: "Catatan SOAP",
+        subjective: "Subjective (keluhan)",
+        objective: "Objective (pemeriksaan)",
+        assessment: "Assessment (penilaian)",
+        plan: "Plan (rencana)",
+        vitalsTitle: "Tanda Vital",
+        bloodPressure: "Tekanan darah (sistol/diastol)",
+        temperature: "Suhu (°C)",
+        heartRate: "Nadi (x/mnt)",
+        respiratoryRate: "Napas (x/mnt)",
+        spo2: "SpO₂ (%)",
+        weight: "Berat (kg)",
+        height: "Tinggi (cm)",
+        diagnosesTitle: "Diagnosa (ICD-10)",
+        searchIcd: "Cari kode/nama ICD-10…",
+        noDiagnoses: "Belum ada diagnosa.",
+        type: "Tipe",
+        primer: "Primer",
+        sekunder: "Sekunder",
+        add: "Tambah",
+      },
+    },
   },
   en: {
     common: {
@@ -477,6 +552,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
         administration: "Administration",
         registered: "Registered",
         ageLabel: "Age",
+      },
+    },
+    records: {
+      title: "Medical Records",
+      subtitle: "Visits & medical notes for the active facility.",
+      empty: "No visits yet.",
+      newVisit: "New Visit",
+      columns: {
+        date: "Date",
+        patient: "Patient",
+        status: "Status",
+        diagnoses: "Diagnoses",
+      },
+      status: { MENUNGGU: "Waiting", DIPERIKSA: "In progress", SELESAI: "Done" },
+      editor: {
+        back: "Back",
+        save: "Save",
+        saving: "Saving…",
+        saved: "Saved",
+        statusLabel: "Visit status",
+        soapTitle: "SOAP Notes",
+        subjective: "Subjective (complaint)",
+        objective: "Objective (examination)",
+        assessment: "Assessment",
+        plan: "Plan",
+        vitalsTitle: "Vital Signs",
+        bloodPressure: "Blood pressure (sys/dia)",
+        temperature: "Temperature (°C)",
+        heartRate: "Heart rate (bpm)",
+        respiratoryRate: "Resp. rate (/min)",
+        spo2: "SpO₂ (%)",
+        weight: "Weight (kg)",
+        height: "Height (cm)",
+        diagnosesTitle: "Diagnoses (ICD-10)",
+        searchIcd: "Search ICD-10 code/name…",
+        noDiagnoses: "No diagnoses yet.",
+        type: "Type",
+        primer: "Primary",
+        sekunder: "Secondary",
+        add: "Add",
       },
     },
   },
