@@ -85,6 +85,47 @@ export type Dictionary = {
     male: string;
     female: string;
     years: string;
+    form: {
+      newTitle: string;
+      editTitle: string;
+      name: string;
+      nik: string;
+      birthDate: string;
+      gender: string;
+      bloodType: string;
+      phone: string;
+      address: string;
+      city: string;
+      bpjs: string;
+      emergencyContact: string;
+      selectGender: string;
+      selectBlood: string;
+      save: string;
+      saving: string;
+      cancel: string;
+      optional: string;
+    };
+    detail: {
+      back: string;
+      edit: string;
+      deleteBtn: string;
+      deleteConfirm: string;
+      infoTitle: string;
+      visitsTitle: string;
+      allergiesTitle: string;
+      noVisits: string;
+      noAllergies: string;
+      addAllergyTitle: string;
+      allergen: string;
+      reaction: string;
+      severity: string;
+      selectSeverity: string;
+      sevRingan: string;
+      sevSedang: string;
+      sevBerat: string;
+      addAllergyBtn: string;
+      notFound: string;
+    };
   };
 };
 
@@ -212,6 +253,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Laki-laki",
       female: "Perempuan",
       years: "th",
+      form: {
+        newTitle: "Pasien Baru",
+        editTitle: "Edit Pasien",
+        name: "Nama lengkap",
+        nik: "NIK",
+        birthDate: "Tanggal lahir",
+        gender: "Jenis kelamin",
+        bloodType: "Golongan darah",
+        phone: "Telepon",
+        address: "Alamat",
+        city: "Kota",
+        bpjs: "No. BPJS",
+        emergencyContact: "Kontak darurat",
+        selectGender: "Pilih jenis kelamin",
+        selectBlood: "Pilih golongan darah",
+        save: "Simpan",
+        saving: "Menyimpan…",
+        cancel: "Batal",
+        optional: "opsional",
+      },
+      detail: {
+        back: "Kembali",
+        edit: "Edit",
+        deleteBtn: "Hapus",
+        deleteConfirm: "Hapus pasien ini? (arsip, bisa dipulihkan)",
+        infoTitle: "Informasi Pasien",
+        visitsTitle: "Riwayat Kunjungan",
+        allergiesTitle: "Riwayat Alergi",
+        noVisits: "Belum ada kunjungan.",
+        noAllergies: "Belum ada alergi tercatat.",
+        addAllergyTitle: "Tambah alergi",
+        allergen: "Alergen",
+        reaction: "Reaksi",
+        severity: "Tingkat",
+        selectSeverity: "Pilih tingkat",
+        sevRingan: "Ringan",
+        sevSedang: "Sedang",
+        sevBerat: "Berat",
+        addAllergyBtn: "Tambah",
+        notFound: "Pasien tidak ditemukan.",
+      },
     },
   },
   en: {
@@ -337,6 +419,47 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Male",
       female: "Female",
       years: "yo",
+      form: {
+        newTitle: "New Patient",
+        editTitle: "Edit Patient",
+        name: "Full name",
+        nik: "National ID (NIK)",
+        birthDate: "Date of birth",
+        gender: "Gender",
+        bloodType: "Blood type",
+        phone: "Phone",
+        address: "Address",
+        city: "City",
+        bpjs: "BPJS no.",
+        emergencyContact: "Emergency contact",
+        selectGender: "Select gender",
+        selectBlood: "Select blood type",
+        save: "Save",
+        saving: "Saving…",
+        cancel: "Cancel",
+        optional: "optional",
+      },
+      detail: {
+        back: "Back",
+        edit: "Edit",
+        deleteBtn: "Delete",
+        deleteConfirm: "Delete this patient? (archived, recoverable)",
+        infoTitle: "Patient Information",
+        visitsTitle: "Visit History",
+        allergiesTitle: "Allergy History",
+        noVisits: "No visits yet.",
+        noAllergies: "No allergies recorded.",
+        addAllergyTitle: "Add allergy",
+        allergen: "Allergen",
+        reaction: "Reaction",
+        severity: "Severity",
+        selectSeverity: "Select severity",
+        sevRingan: "Mild",
+        sevSedang: "Moderate",
+        sevBerat: "Severe",
+        addAllergyBtn: "Add",
+        notFound: "Patient not found.",
+      },
     },
   },
 };
