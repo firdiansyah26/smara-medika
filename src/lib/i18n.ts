@@ -38,6 +38,8 @@ export type Dictionary = {
     forgot: string;
     backHome: string;
     note: string;
+    invalid: string;
+    demoHint: string;
   };
   app: {
     nav: {
@@ -162,7 +164,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       submit: "Masuk",
       forgot: "Lupa kata sandi?",
       backHome: "Kembali ke beranda",
-      note: "Pratinjau UI — autentikasi asli aktif saat database disiapkan.",
+      note: "Autentikasi aktif (Auth.js). Masuk dengan akun terdaftar.",
+      invalid: "Email atau kata sandi salah.",
+      demoHint: "Akun demo: andi@sehatsentosa.id / password123",
     },
     app: {
       nav: {
@@ -285,7 +289,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       submit: "Sign in",
       forgot: "Forgot password?",
       backHome: "Back to home",
-      note: "UI preview — real authentication activates once the database is set up.",
+      note: "Authentication is active (Auth.js). Sign in with a registered account.",
+      invalid: "Invalid email or password.",
+      demoHint: "Demo account: andi@sehatsentosa.id / password123",
     },
     app: {
       nav: {
