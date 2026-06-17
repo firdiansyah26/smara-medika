@@ -166,6 +166,24 @@ export type Dictionary = {
       primer: string;
       sekunder: string;
       add: string;
+      vitalAlertsTitle: string;
+      vitalAlerts: {
+        bpLow: string;
+        bpElevated: string;
+        bpHigh: string;
+        bpCrisis: string;
+        tempLow: string;
+        tempFever: string;
+        hrLow: string;
+        hrHigh: string;
+        rrLow: string;
+        rrHigh: string;
+        spo2Low: string;
+        spo2Crit: string;
+        bmiUnder: string;
+        bmiOver: string;
+        bmiObese: string;
+      };
     };
   };
 };
@@ -380,6 +398,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         primer: "Primer",
         sekunder: "Sekunder",
         add: "Tambah",
+        vitalAlertsTitle: "Catatan tanda vital",
+        vitalAlerts: {
+          bpLow: "Tekanan darah rendah (hipotensi). Pertimbangkan evaluasi.",
+          bpElevated: "Tekanan darah meningkat. Pantau & sarankan gaya hidup sehat.",
+          bpHigh: "Tekanan darah tinggi (hipertensi). Harap evaluasi lebih lanjut.",
+          bpCrisis: "Krisis hipertensi! Perlu penanganan segera.",
+          tempLow: "Suhu tubuh rendah (hipotermia).",
+          tempFever: "Demam. Pantau & cari penyebab.",
+          hrLow: "Nadi lambat (bradikardia).",
+          hrHigh: "Nadi cepat (takikardia).",
+          rrLow: "Laju napas lambat.",
+          rrHigh: "Laju napas cepat (takipnea).",
+          spo2Low: "Saturasi oksigen rendah. Pantau.",
+          spo2Crit: "Saturasi oksigen sangat rendah (hipoksemia)! Perhatian.",
+          bmiUnder: "IMT: berat badan kurang.",
+          bmiOver: "IMT: berat badan berlebih.",
+          bmiObese: "IMT: obesitas.",
+        },
       },
     },
   },
@@ -592,6 +628,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         primer: "Primary",
         sekunder: "Secondary",
         add: "Add",
+        vitalAlertsTitle: "Vital sign notes",
+        vitalAlerts: {
+          bpLow: "Low blood pressure (hypotension). Consider evaluation.",
+          bpElevated: "Elevated blood pressure. Monitor & advise healthy lifestyle.",
+          bpHigh: "High blood pressure (hypertension). Please evaluate further.",
+          bpCrisis: "Hypertensive crisis! Immediate attention needed.",
+          tempLow: "Low body temperature (hypothermia).",
+          tempFever: "Fever. Monitor & find the cause.",
+          hrLow: "Slow heart rate (bradycardia).",
+          hrHigh: "Fast heart rate (tachycardia).",
+          rrLow: "Slow respiratory rate.",
+          rrHigh: "Fast respiratory rate (tachypnea).",
+          spo2Low: "Low oxygen saturation. Monitor.",
+          spo2Crit: "Very low oxygen saturation (hypoxemia)! Attention.",
+          bmiUnder: "BMI: underweight.",
+          bmiOver: "BMI: overweight.",
+          bmiObese: "BMI: obese.",
+        },
       },
     },
   },

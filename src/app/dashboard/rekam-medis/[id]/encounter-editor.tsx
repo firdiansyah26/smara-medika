@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import type { IcdCode } from "@/lib/icd10";
+import { interpretVitals } from "@/lib/vitals";
 import { saveEncounter, addDiagnosis, removeDiagnosis } from "../actions";
 
 type Diagnosis = {
@@ -189,6 +190,36 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
   });
   const v = data.vital;
 
+  // Tanda vital terkontrol untuk indikator real-time.
+  const [vitals, setVitals] = useState({
+    systolic: v?.systolic?.toString() ?? "",
+    diastolic: v?.diastolic?.toString() ?? "",
+    temperature: v?.temperature?.toString() ?? "",
+    heartRate: v?.heartRate?.toString() ?? "",
+    respiratoryRate: v?.respiratoryRate?.toString() ?? "",
+    spo2: v?.spo2?.toString() ?? "",
+    weight: v?.weight?.toString() ?? "",
+    height: v?.height?.toString() ?? "",
+  });
+  type VitalKey = keyof typeof vitals;
+  const setVital = (k: VitalKey) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setVitals((s) => ({ ...s, [k]: e.target.value }));
+  const toNum = (s: string) => (s.trim() === "" ? undefined : Number(s));
+  const alerts = useMemo(
+    () =>
+      interpretVitals({
+        systolic: toNum(vitals.systolic),
+        diastolic: toNum(vitals.diastolic),
+        temperature: toNum(vitals.temperature),
+        heartRate: toNum(vitals.heartRate),
+        respiratoryRate: toNum(vitals.respiratoryRate),
+        spo2: toNum(vitals.spo2),
+        weight: toNum(vitals.weight),
+        height: toNum(vitals.height),
+      }),
+    [vitals],
+  );
+
   return (
     <div>
       <Link
@@ -250,31 +281,55 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
               <div className="col-span-2 sm:col-span-1">
                 <label className="text-xs font-medium text-muted">{t.records.editor.bloodPressure}</label>
                 <div className="mt-1 flex items-center gap-1">
-                  <input name="systolic" type="number" defaultValue={v?.systolic ?? ""} className={input} />
+                  <input name="systolic" type="number" value={vitals.systolic} onChange={setVital("systolic")} className={input} />
                   <span className="text-muted">/</span>
-                  <input name="diastolic" type="number" defaultValue={v?.diastolic ?? ""} className={input} />
+                  <input name="diastolic" type="number" value={vitals.diastolic} onChange={setVital("diastolic")} className={input} />
                 </div>
               </div>
-              {[
-                ["temperature", t.records.editor.temperature, v?.temperature],
-                ["heartRate", t.records.editor.heartRate, v?.heartRate],
-                ["respiratoryRate", t.records.editor.respiratoryRate, v?.respiratoryRate],
-                ["spo2", t.records.editor.spo2, v?.spo2],
-                ["weight", t.records.editor.weight, v?.weight],
-                ["height", t.records.editor.height, v?.height],
-              ].map(([name, label, val]) => (
-                <div key={name as string}>
-                  <label className="text-xs font-medium text-muted">{label as string}</label>
+              {(
+                [
+                  ["temperature", t.records.editor.temperature],
+                  ["heartRate", t.records.editor.heartRate],
+                  ["respiratoryRate", t.records.editor.respiratoryRate],
+                  ["spo2", t.records.editor.spo2],
+                  ["weight", t.records.editor.weight],
+                  ["height", t.records.editor.height],
+                ] as [VitalKey, string][]
+              ).map(([name, label]) => (
+                <div key={name}>
+                  <label className="text-xs font-medium text-muted">{label}</label>
                   <input
-                    name={name as string}
+                    name={name}
                     type="number"
                     step="any"
-                    defaultValue={(val as number | null | undefined) ?? ""}
+                    value={vitals[name]}
+                    onChange={setVital(name)}
                     className={input + " mt-1"}
                   />
                 </div>
               ))}
             </div>
+
+            {alerts.length > 0 && (
+              <ul className="mt-3 space-y-1.5 border-t border-slate-100 pt-3">
+                {alerts.map((a) => (
+                  <li
+                    key={a.code}
+                    className={
+                      "flex items-start gap-2 rounded-md px-2.5 py-1.5 text-xs " +
+                      (a.level === "crit"
+                        ? "bg-red-50 text-red-700"
+                        : "bg-amber-50 text-amber-800")
+                    }
+                  >
+                    <svg viewBox="0 0 24 24" className="mt-0.5 h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+                    </svg>
+                    {t.records.editor.vitalAlerts[a.code]}
+                  </li>
+                ))}
+              </ul>
+            )}
           </Section>
 
           <div className="flex items-center gap-3">
