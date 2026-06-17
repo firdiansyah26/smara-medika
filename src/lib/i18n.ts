@@ -85,6 +85,7 @@ export type Dictionary = {
     male: string;
     female: string;
     years: string;
+    ageParts: { years: string; months: string; days: string };
     form: {
       newTitle: string;
       editTitle: string;
@@ -125,6 +126,11 @@ export type Dictionary = {
       sevBerat: string;
       addAllergyBtn: string;
       notFound: string;
+      identity: string;
+      contact: string;
+      administration: string;
+      registered: string;
+      ageLabel: string;
     };
   };
 };
@@ -253,6 +259,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Laki-laki",
       female: "Perempuan",
       years: "th",
+      ageParts: { years: "tahun", months: "bulan", days: "hari" },
       form: {
         newTitle: "Pasien Baru",
         editTitle: "Edit Pasien",
@@ -293,6 +300,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
         sevBerat: "Berat",
         addAllergyBtn: "Tambah",
         notFound: "Pasien tidak ditemukan.",
+        identity: "Identitas",
+        contact: "Kontak",
+        administration: "Administrasi",
+        registered: "Terdaftar",
+        ageLabel: "Umur",
       },
     },
   },
@@ -419,6 +431,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Male",
       female: "Female",
       years: "yo",
+      ageParts: { years: "years", months: "months", days: "days" },
       form: {
         newTitle: "New Patient",
         editTitle: "Edit Patient",
@@ -459,6 +472,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
         sevBerat: "Severe",
         addAllergyBtn: "Add",
         notFound: "Patient not found.",
+        identity: "Identity",
+        contact: "Contact",
+        administration: "Administration",
+        registered: "Registered",
+        ageLabel: "Age",
       },
     },
   },
