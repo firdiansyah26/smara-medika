@@ -68,6 +68,11 @@ export type Dictionary = {
     };
     recentTitle: string;
     recentEmpty: string;
+    period: { label: string; today: string; week: string; month: string; all: string };
+    topDiagnoses: string;
+    visitsInPeriod: string;
+    noDiagnoses: string;
+    cases: string;
   };
   patients: {
     title: string;
@@ -295,6 +300,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
       },
       recentTitle: "Kunjungan terbaru",
       recentEmpty: "Belum ada kunjungan.",
+      period: {
+        label: "Periode",
+        today: "Hari ini",
+        week: "7 hari",
+        month: "30 hari",
+        all: "Semua",
+      },
+      topDiagnoses: "Diagnosa terbanyak",
+      visitsInPeriod: "Kunjungan periode ini",
+      noDiagnoses: "Belum ada diagnosa pada periode ini.",
+      cases: "kasus",
     },
     patients: {
       title: "Pasien",
@@ -525,6 +541,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
       },
       recentTitle: "Recent visits",
       recentEmpty: "No visits yet.",
+      period: {
+        label: "Period",
+        today: "Today",
+        week: "7 days",
+        month: "30 days",
+        all: "All",
+      },
+      topDiagnoses: "Top diagnoses",
+      visitsInPeriod: "Visits this period",
+      noDiagnoses: "No diagnoses in this period.",
+      cases: "cases",
     },
     patients: {
       title: "Patients",
