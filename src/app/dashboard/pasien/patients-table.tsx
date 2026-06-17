@@ -96,22 +96,22 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-muted">
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.mrNumber}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.name}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.gender}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.age}
                 </th>
-                <th className="hidden px-5 py-3 font-semibold sm:table-cell">
+                <th className="hidden px-4 py-2 font-semibold sm:table-cell">
                   {t.patients.columns.phone}
                 </th>
-                <th className="hidden px-5 py-3 font-semibold md:table-cell">
+                <th className="hidden px-4 py-2 font-semibold md:table-cell">
                   {t.patients.columns.lastVisit}
                 </th>
               </tr>
@@ -123,11 +123,11 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                   onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
                   className="cursor-pointer transition-colors hover:bg-mint/40"
                 >
-                  <td className="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-muted">
+                  <td className="whitespace-nowrap px-4 py-2 font-mono text-xs text-muted">
                     {p.mrNumber}
                   </td>
-                  <td className="px-5 py-3.5 font-medium text-ink">{p.name}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-4 py-2 font-medium text-ink">{p.name}</td>
+                  <td className="px-4 py-2">
                     <span
                       className={
                         "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium " +
@@ -141,13 +141,13 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                         : t.patients.female}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-muted">
+                  <td className="px-4 py-2 text-muted">
                     {p.age} {t.patients.years}
                   </td>
-                  <td className="hidden whitespace-nowrap px-5 py-3.5 text-muted sm:table-cell">
+                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted sm:table-cell">
                     {p.phone ?? "—"}
                   </td>
-                  <td className="hidden whitespace-nowrap px-5 py-3.5 text-muted md:table-cell">
+                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted md:table-cell">
                     {p.lastVisit ? dateFmt.format(new Date(p.lastVisit)) : "—"}
                   </td>
                 </tr>

@@ -43,6 +43,7 @@ export default async function PatientDetailPage({
         emergencyContact: patient.emergencyContact,
         birthDate: patient.birthDate.toISOString(),
         age: calcAge(patient.birthDate),
+        createdAt: patient.createdAt.toISOString(),
         visits: patient.encounters.map((e) => ({
           id: e.id,
           visitDate: e.visitDate.toISOString(),
