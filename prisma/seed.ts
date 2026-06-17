@@ -1,12 +1,14 @@
 import { PrismaClient, Gender, Role, TenantType } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const db = new PrismaClient();
 
-// Catatan: password placeholder — diganti hash asli (argon2/bcrypt) saat Auth.js disiapkan.
-const PLACEHOLDER_PASSWORD = "SET_REAL_HASH_ON_AUTH_SETUP";
+// Password akun demo (dev). Ganti & jangan dipakai di produksi.
+const DEMO_PASSWORD = "password123";
 
 async function main() {
   console.log("🌱 Seeding SmaraMedika…");
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
 
   // --- Tenants ---
   const tenantSeed = [
@@ -26,11 +28,11 @@ async function main() {
   // --- User + keanggotaan multi-tenant ---
   const user = await db.user.upsert({
     where: { email: "andi@sehatsentosa.id" },
-    update: { name: "dr. Andi Wijaya" },
+    update: { name: "dr. Andi Wijaya", password: passwordHash },
     create: {
       email: "andi@sehatsentosa.id",
       name: "dr. Andi Wijaya",
-      password: PLACEHOLDER_PASSWORD,
+      password: passwordHash,
     },
   });
 

@@ -10,7 +10,7 @@ export default async function PatientsPage() {
 
   const patients = tenant
     ? await db.patient.findMany({
-        where: { tenantId: tenant.id, deletedAt: null },
+        where: { tenantId: tenant.tenantId, deletedAt: null },
         orderBy: { createdAt: "desc" },
         include: {
           encounters: {
@@ -23,6 +23,7 @@ export default async function PatientsPage() {
     : [];
 
   const rows: PatientRow[] = patients.map((p) => ({
+    id: p.id,
     mrNumber: p.mrNumber,
     name: p.name,
     gender: p.gender,

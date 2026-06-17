@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 
 export type PatientRow = {
+  id: string;
   mrNumber: string;
   name: string;
   gender: "LAKI_LAKI" | "PEREMPUAN";
@@ -14,6 +17,7 @@ export type PatientRow = {
 
 export function PatientsTable({ rows }: { rows: PatientRow[] }) {
   const { t, locale } = useLocale();
+  const router = useRouter();
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -42,8 +46,8 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           </h1>
           <p className="mt-1 text-sm text-muted">{t.patients.subtitle}</p>
         </div>
-        <button
-          type="button"
+        <Link
+          href="/dashboard/pasien/baru"
           className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
         >
           <svg
@@ -58,7 +62,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
             <path d="M12 5v14M5 12h14" />
           </svg>
           {t.patients.add}
-        </button>
+        </Link>
       </div>
 
       {/* Search */}
@@ -92,34 +96,38 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-muted">
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.mrNumber}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.name}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.gender}
                 </th>
-                <th className="px-5 py-3 font-semibold">
+                <th className="px-4 py-2 font-semibold">
                   {t.patients.columns.age}
                 </th>
-                <th className="hidden px-5 py-3 font-semibold sm:table-cell">
+                <th className="hidden px-4 py-2 font-semibold sm:table-cell">
                   {t.patients.columns.phone}
                 </th>
-                <th className="hidden px-5 py-3 font-semibold md:table-cell">
+                <th className="hidden px-4 py-2 font-semibold md:table-cell">
                   {t.patients.columns.lastVisit}
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((p) => (
-                <tr key={p.mrNumber} className="transition-colors hover:bg-mint/40">
-                  <td className="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-muted">
+                <tr
+                  key={p.mrNumber}
+                  onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
+                  className="cursor-pointer transition-colors hover:bg-mint/40"
+                >
+                  <td className="whitespace-nowrap px-4 py-2 font-mono text-xs text-muted">
                     {p.mrNumber}
                   </td>
-                  <td className="px-5 py-3.5 font-medium text-ink">{p.name}</td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-4 py-2 font-medium text-ink">{p.name}</td>
+                  <td className="px-4 py-2">
                     <span
                       className={
                         "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium " +
@@ -133,13 +141,13 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                         : t.patients.female}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5 text-muted">
+                  <td className="px-4 py-2 text-muted">
                     {p.age} {t.patients.years}
                   </td>
-                  <td className="hidden whitespace-nowrap px-5 py-3.5 text-muted sm:table-cell">
+                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted sm:table-cell">
                     {p.phone ?? "—"}
                   </td>
-                  <td className="hidden whitespace-nowrap px-5 py-3.5 text-muted md:table-cell">
+                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted md:table-cell">
                     {p.lastVisit ? dateFmt.format(new Date(p.lastVisit)) : "—"}
                   </td>
                 </tr>

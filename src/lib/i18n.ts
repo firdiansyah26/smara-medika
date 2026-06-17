@@ -38,6 +38,8 @@ export type Dictionary = {
     forgot: string;
     backHome: string;
     note: string;
+    invalid: string;
+    demoHint: string;
   };
   app: {
     nav: {
@@ -83,6 +85,106 @@ export type Dictionary = {
     male: string;
     female: string;
     years: string;
+    ageParts: { years: string; months: string; days: string };
+    form: {
+      newTitle: string;
+      editTitle: string;
+      name: string;
+      nik: string;
+      birthDate: string;
+      gender: string;
+      bloodType: string;
+      phone: string;
+      address: string;
+      city: string;
+      bpjs: string;
+      emergencyContact: string;
+      selectGender: string;
+      selectBlood: string;
+      save: string;
+      saving: string;
+      cancel: string;
+      optional: string;
+    };
+    detail: {
+      back: string;
+      edit: string;
+      deleteBtn: string;
+      deleteConfirm: string;
+      infoTitle: string;
+      visitsTitle: string;
+      allergiesTitle: string;
+      noVisits: string;
+      noAllergies: string;
+      addAllergyTitle: string;
+      allergen: string;
+      reaction: string;
+      severity: string;
+      selectSeverity: string;
+      sevRingan: string;
+      sevSedang: string;
+      sevBerat: string;
+      addAllergyBtn: string;
+      notFound: string;
+      identity: string;
+      contact: string;
+      administration: string;
+      registered: string;
+      ageLabel: string;
+    };
+  };
+  records: {
+    title: string;
+    subtitle: string;
+    empty: string;
+    newVisit: string;
+    columns: { date: string; patient: string; status: string; diagnoses: string };
+    status: { MENUNGGU: string; DIPERIKSA: string; SELESAI: string };
+    editor: {
+      back: string;
+      save: string;
+      saving: string;
+      saved: string;
+      statusLabel: string;
+      soapTitle: string;
+      subjective: string;
+      objective: string;
+      assessment: string;
+      plan: string;
+      vitalsTitle: string;
+      bloodPressure: string;
+      temperature: string;
+      heartRate: string;
+      respiratoryRate: string;
+      spo2: string;
+      weight: string;
+      height: string;
+      diagnosesTitle: string;
+      searchIcd: string;
+      noDiagnoses: string;
+      type: string;
+      primer: string;
+      sekunder: string;
+      add: string;
+      vitalAlertsTitle: string;
+      vitalAlerts: {
+        bpLow: string;
+        bpElevated: string;
+        bpHigh: string;
+        bpCrisis: string;
+        tempLow: string;
+        tempFever: string;
+        hrLow: string;
+        hrHigh: string;
+        rrLow: string;
+        rrHigh: string;
+        spo2Low: string;
+        spo2Crit: string;
+        bmiUnder: string;
+        bmiOver: string;
+        bmiObese: string;
+      };
+    };
   };
 };
 
@@ -162,7 +264,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       submit: "Masuk",
       forgot: "Lupa kata sandi?",
       backHome: "Kembali ke beranda",
-      note: "Pratinjau UI — autentikasi asli aktif saat database disiapkan.",
+      note: "Autentikasi aktif (Auth.js). Masuk dengan akun terdaftar.",
+      invalid: "Email atau kata sandi salah.",
+      demoHint: "Akun demo: andi@sehatsentosa.id / password123",
     },
     app: {
       nav: {
@@ -208,6 +312,111 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Laki-laki",
       female: "Perempuan",
       years: "th",
+      ageParts: { years: "tahun", months: "bulan", days: "hari" },
+      form: {
+        newTitle: "Pasien Baru",
+        editTitle: "Edit Pasien",
+        name: "Nama lengkap",
+        nik: "NIK",
+        birthDate: "Tanggal lahir",
+        gender: "Jenis kelamin",
+        bloodType: "Golongan darah",
+        phone: "Telepon",
+        address: "Alamat",
+        city: "Kota",
+        bpjs: "No. BPJS",
+        emergencyContact: "Kontak darurat",
+        selectGender: "Pilih jenis kelamin",
+        selectBlood: "Pilih golongan darah",
+        save: "Simpan",
+        saving: "Menyimpan…",
+        cancel: "Batal",
+        optional: "opsional",
+      },
+      detail: {
+        back: "Kembali",
+        edit: "Edit",
+        deleteBtn: "Hapus",
+        deleteConfirm: "Hapus pasien ini? (arsip, bisa dipulihkan)",
+        infoTitle: "Informasi Pasien",
+        visitsTitle: "Riwayat Kunjungan",
+        allergiesTitle: "Riwayat Alergi",
+        noVisits: "Belum ada kunjungan.",
+        noAllergies: "Belum ada alergi tercatat.",
+        addAllergyTitle: "Tambah alergi",
+        allergen: "Alergen",
+        reaction: "Reaksi",
+        severity: "Tingkat",
+        selectSeverity: "Pilih tingkat",
+        sevRingan: "Ringan",
+        sevSedang: "Sedang",
+        sevBerat: "Berat",
+        addAllergyBtn: "Tambah",
+        notFound: "Pasien tidak ditemukan.",
+        identity: "Identitas",
+        contact: "Kontak",
+        administration: "Administrasi",
+        registered: "Terdaftar",
+        ageLabel: "Umur",
+      },
+    },
+    records: {
+      title: "Rekam Medis",
+      subtitle: "Kunjungan & catatan medis fasilitas aktif.",
+      empty: "Belum ada kunjungan.",
+      newVisit: "Kunjungan Baru",
+      columns: {
+        date: "Tanggal",
+        patient: "Pasien",
+        status: "Status",
+        diagnoses: "Diagnosa",
+      },
+      status: { MENUNGGU: "Menunggu", DIPERIKSA: "Diperiksa", SELESAI: "Selesai" },
+      editor: {
+        back: "Kembali",
+        save: "Simpan",
+        saving: "Menyimpan…",
+        saved: "Tersimpan",
+        statusLabel: "Status kunjungan",
+        soapTitle: "Catatan SOAP",
+        subjective: "Subjective (keluhan)",
+        objective: "Objective (pemeriksaan)",
+        assessment: "Assessment (penilaian)",
+        plan: "Plan (rencana)",
+        vitalsTitle: "Tanda Vital",
+        bloodPressure: "Tekanan darah (sistol/diastol)",
+        temperature: "Suhu (°C)",
+        heartRate: "Nadi (x/mnt)",
+        respiratoryRate: "Napas (x/mnt)",
+        spo2: "SpO₂ (%)",
+        weight: "Berat (kg)",
+        height: "Tinggi (cm)",
+        diagnosesTitle: "Diagnosa (ICD-10)",
+        searchIcd: "Cari kode/nama ICD-10…",
+        noDiagnoses: "Belum ada diagnosa.",
+        type: "Tipe",
+        primer: "Primer",
+        sekunder: "Sekunder",
+        add: "Tambah",
+        vitalAlertsTitle: "Catatan tanda vital",
+        vitalAlerts: {
+          bpLow: "Tekanan darah rendah (hipotensi). Pertimbangkan evaluasi.",
+          bpElevated: "Tekanan darah meningkat. Pantau & sarankan gaya hidup sehat.",
+          bpHigh: "Tekanan darah tinggi (hipertensi). Harap evaluasi lebih lanjut.",
+          bpCrisis: "Krisis hipertensi! Perlu penanganan segera.",
+          tempLow: "Suhu tubuh rendah (hipotermia).",
+          tempFever: "Demam. Pantau & cari penyebab.",
+          hrLow: "Nadi lambat (bradikardia).",
+          hrHigh: "Nadi cepat (takikardia).",
+          rrLow: "Laju napas lambat.",
+          rrHigh: "Laju napas cepat (takipnea).",
+          spo2Low: "Saturasi oksigen rendah. Pantau.",
+          spo2Crit: "Saturasi oksigen sangat rendah (hipoksemia)! Perhatian.",
+          bmiUnder: "IMT: berat badan kurang.",
+          bmiOver: "IMT: berat badan berlebih.",
+          bmiObese: "IMT: obesitas.",
+        },
+      },
     },
   },
   en: {
@@ -285,7 +494,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       submit: "Sign in",
       forgot: "Forgot password?",
       backHome: "Back to home",
-      note: "UI preview — real authentication activates once the database is set up.",
+      note: "Authentication is active (Auth.js). Sign in with a registered account.",
+      invalid: "Invalid email or password.",
+      demoHint: "Demo account: andi@sehatsentosa.id / password123",
     },
     app: {
       nav: {
@@ -331,6 +542,111 @@ export const dictionaries: Record<Locale, Dictionary> = {
       male: "Male",
       female: "Female",
       years: "yo",
+      ageParts: { years: "years", months: "months", days: "days" },
+      form: {
+        newTitle: "New Patient",
+        editTitle: "Edit Patient",
+        name: "Full name",
+        nik: "National ID (NIK)",
+        birthDate: "Date of birth",
+        gender: "Gender",
+        bloodType: "Blood type",
+        phone: "Phone",
+        address: "Address",
+        city: "City",
+        bpjs: "BPJS no.",
+        emergencyContact: "Emergency contact",
+        selectGender: "Select gender",
+        selectBlood: "Select blood type",
+        save: "Save",
+        saving: "Saving…",
+        cancel: "Cancel",
+        optional: "optional",
+      },
+      detail: {
+        back: "Back",
+        edit: "Edit",
+        deleteBtn: "Delete",
+        deleteConfirm: "Delete this patient? (archived, recoverable)",
+        infoTitle: "Patient Information",
+        visitsTitle: "Visit History",
+        allergiesTitle: "Allergy History",
+        noVisits: "No visits yet.",
+        noAllergies: "No allergies recorded.",
+        addAllergyTitle: "Add allergy",
+        allergen: "Allergen",
+        reaction: "Reaction",
+        severity: "Severity",
+        selectSeverity: "Select severity",
+        sevRingan: "Mild",
+        sevSedang: "Moderate",
+        sevBerat: "Severe",
+        addAllergyBtn: "Add",
+        notFound: "Patient not found.",
+        identity: "Identity",
+        contact: "Contact",
+        administration: "Administration",
+        registered: "Registered",
+        ageLabel: "Age",
+      },
+    },
+    records: {
+      title: "Medical Records",
+      subtitle: "Visits & medical notes for the active facility.",
+      empty: "No visits yet.",
+      newVisit: "New Visit",
+      columns: {
+        date: "Date",
+        patient: "Patient",
+        status: "Status",
+        diagnoses: "Diagnoses",
+      },
+      status: { MENUNGGU: "Waiting", DIPERIKSA: "In progress", SELESAI: "Done" },
+      editor: {
+        back: "Back",
+        save: "Save",
+        saving: "Saving…",
+        saved: "Saved",
+        statusLabel: "Visit status",
+        soapTitle: "SOAP Notes",
+        subjective: "Subjective (complaint)",
+        objective: "Objective (examination)",
+        assessment: "Assessment",
+        plan: "Plan",
+        vitalsTitle: "Vital Signs",
+        bloodPressure: "Blood pressure (sys/dia)",
+        temperature: "Temperature (°C)",
+        heartRate: "Heart rate (bpm)",
+        respiratoryRate: "Resp. rate (/min)",
+        spo2: "SpO₂ (%)",
+        weight: "Weight (kg)",
+        height: "Height (cm)",
+        diagnosesTitle: "Diagnoses (ICD-10)",
+        searchIcd: "Search ICD-10 code/name…",
+        noDiagnoses: "No diagnoses yet.",
+        type: "Type",
+        primer: "Primary",
+        sekunder: "Secondary",
+        add: "Add",
+        vitalAlertsTitle: "Vital sign notes",
+        vitalAlerts: {
+          bpLow: "Low blood pressure (hypotension). Consider evaluation.",
+          bpElevated: "Elevated blood pressure. Monitor & advise healthy lifestyle.",
+          bpHigh: "High blood pressure (hypertension). Please evaluate further.",
+          bpCrisis: "Hypertensive crisis! Immediate attention needed.",
+          tempLow: "Low body temperature (hypothermia).",
+          tempFever: "Fever. Monitor & find the cause.",
+          hrLow: "Slow heart rate (bradycardia).",
+          hrHigh: "Fast heart rate (tachycardia).",
+          rrLow: "Slow respiratory rate.",
+          rrHigh: "Fast respiratory rate (tachypnea).",
+          spo2Low: "Low oxygen saturation. Monitor.",
+          spo2Crit: "Very low oxygen saturation (hypoxemia)! Attention.",
+          bmiUnder: "BMI: underweight.",
+          bmiOver: "BMI: overweight.",
+          bmiObese: "BMI: obese.",
+        },
+      },
     },
   },
 };
