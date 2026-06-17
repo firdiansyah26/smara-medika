@@ -23,6 +23,7 @@ export default async function PatientsPage() {
     : [];
 
   const rows: PatientRow[] = patients.map((p) => ({
+    id: p.id,
     mrNumber: p.mrNumber,
     name: p.name,
     gender: p.gender,

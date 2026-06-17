@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 
 export type PatientRow = {
+  id: string;
   mrNumber: string;
   name: string;
   gender: "LAKI_LAKI" | "PEREMPUAN";
@@ -14,6 +17,7 @@ export type PatientRow = {
 
 export function PatientsTable({ rows }: { rows: PatientRow[] }) {
   const { t, locale } = useLocale();
+  const router = useRouter();
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -42,8 +46,8 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           </h1>
           <p className="mt-1 text-sm text-muted">{t.patients.subtitle}</p>
         </div>
-        <button
-          type="button"
+        <Link
+          href="/dashboard/pasien/baru"
           className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
         >
           <svg
@@ -58,7 +62,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
             <path d="M12 5v14M5 12h14" />
           </svg>
           {t.patients.add}
-        </button>
+        </Link>
       </div>
 
       {/* Search */}
@@ -114,7 +118,11 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map((p) => (
-                <tr key={p.mrNumber} className="transition-colors hover:bg-mint/40">
+                <tr
+                  key={p.mrNumber}
+                  onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
+                  className="cursor-pointer transition-colors hover:bg-mint/40"
+                >
                   <td className="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-muted">
                     {p.mrNumber}
                   </td>
