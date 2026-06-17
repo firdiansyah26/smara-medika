@@ -1,23 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLocale } from "@/lib/use-locale";
+import { authenticate } from "./actions";
 
 export default function LoginPage() {
   const { t } = useLocale();
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // Pratinjau: belum ada autentikasi asli — langsung ke dashboard.
-    router.push("/dashboard");
-  }
+  const [errorCode, formAction, pending] = useActionState(
+    authenticate,
+    undefined,
+  );
 
   return (
     <div className="grid min-h-full lg:grid-cols-2">
@@ -58,7 +53,7 @@ export default function LoginPage() {
             </h1>
             <p className="mt-2 text-sm text-muted">{t.login.subtitle}</p>
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+            <form action={formAction} className="mt-8 space-y-5">
               <div>
                 <label
                   htmlFor="email"
@@ -68,10 +63,10 @@ export default function LoginPage() {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  defaultValue="andi@sehatsentosa.id"
                   placeholder={t.login.emailPlaceholder}
                   className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
@@ -91,25 +86,31 @@ export default function LoginPage() {
                 </div>
                 <input
                   id="password"
+                  name="password"
                   type="password"
                   required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder={t.login.passwordPlaceholder}
                   className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
 
+              {errorCode === "invalid" && (
+                <p className="rounded-lg bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
+                  {t.login.invalid}
+                </p>
+              )}
+
               <button
                 type="submit"
-                className="w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
+                disabled={pending}
+                className="w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep disabled:opacity-60"
               >
-                {t.login.submit}
+                {pending ? "…" : t.login.submit}
               </button>
             </form>
 
             <p className="mt-6 rounded-lg bg-mint px-4 py-3 text-xs text-brand-deep">
-              {t.login.note}
+              {t.login.demoHint}
             </p>
 
             <Link
