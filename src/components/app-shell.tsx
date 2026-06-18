@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLocale } from "@/lib/use-locale";
 import { switchTenant, logout } from "@/app/dashboard/actions";
 import type { MembershipInfo } from "@/lib/auth-types";
@@ -193,12 +195,14 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
             {/* Hamburger (mobile) */}
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() =>
                 setOpenMenu(openMenu === "mobile" ? null : "mobile")
               }
-              className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+              className="lg:hidden"
               aria-label="Menu"
             >
               <svg
@@ -211,7 +215,7 @@ export function AppShell({
               >
                 <path d="M3 12h18M3 6h18M3 18h18" />
               </svg>
-            </button>
+            </Button>
 
             {/* Tenant switcher */}
             {activeTenant && (
@@ -298,10 +302,10 @@ export function AppShell({
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
                 </svg>
-                <input
+                <Input
                   type="search"
                   placeholder={t.app.topbar.searchPlaceholder}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+                  className="h-9 bg-slate-50 pl-9"
                 />
               </div>
             </div>
