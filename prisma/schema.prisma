@@ -141,6 +141,23 @@ enum WebhookDeliveryStatus {
   @@map("webhook_delivery_status")
 }
 
+enum ServiceType {
+  BPJS
+  ASURANSI
+  UMUM
+
+  @@map("service_type")
+}
+
+enum QueueStatus {
+  WAITING
+  CALLED
+  SERVED
+  SKIPPED
+
+  @@map("queue_status")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -173,6 +190,7 @@ model Tenant {
   partnershipsReceived      TenantPartnership[]    @relation("PartnershipAddressee")
   ordersRequested           DrugOrder[]            @relation("OrderRequester")
   ordersSupplied            DrugOrder[]            @relation("OrderSupplier")
+  queueTickets              QueueTicket[]
 
   @@map("tenants")
 }
@@ -548,6 +566,26 @@ model WebhookDelivery {
 
   @@index([endpointId, status])
   @@map("webhook_deliveries")
+}
+
+model QueueTicket {
+  id          String      @id @default(cuid())
+  tenantId    String      @map("tenant_id")
+  serviceType ServiceType @map("service_type")
+  number      Int
+  code        String
+  status      QueueStatus @default(WAITING)
+  counter     String?
+  calledById  String?     @map("called_by_id")
+  calledAt    DateTime?   @map("called_at")
+  servedAt    DateTime?   @map("served_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@map("queue_tickets")
 }
 
 model ApiRequestLog {
