@@ -46,6 +46,7 @@ export type Dictionary = {
       dashboard: string;
       patients: string;
       records: string;
+      queue: string;
       drugTransfer: string;
       partners: string;
       sharedApi: string;
@@ -191,6 +192,42 @@ export type Dictionary = {
       };
     };
   };
+  queue: {
+    services: { BPJS: string; ASURANSI: string; UMUM: string };
+    kiosk: {
+      title: string;
+      subtitle: string;
+      pick: string;
+      yourNumber: string;
+      goWait: string;
+      print: string;
+      takeAnother: string;
+      ticket: string;
+    };
+    display: {
+      title: string;
+      nowServing: string;
+      counter: string;
+      waiting: string;
+      idle: string;
+      announceTemplate: string;
+    };
+    panel: {
+      title: string;
+      subtitle: string;
+      selectCounter: string;
+      callNext: string;
+      recall: string;
+      serve: string;
+      skip: string;
+      waiting: string;
+      called: string;
+      noWaiting: string;
+      openDisplay: string;
+      openKiosk: string;
+      number: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -278,6 +315,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         dashboard: "Dashboard",
         patients: "Pasien",
         records: "Rekam Medis",
+        queue: "Antrian",
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
         sharedApi: "Shared API",
@@ -434,6 +472,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    queue: {
+      services: { BPJS: "BPJS", ASURANSI: "Asuransi", UMUM: "Umum" },
+      kiosk: {
+        title: "Ambil Nomor Antrian",
+        subtitle: "Silakan pilih jenis layanan",
+        pick: "Pilih layanan",
+        yourNumber: "Nomor antrian Anda",
+        goWait: "Silakan menunggu nomor Anda dipanggil",
+        print: "Cetak",
+        takeAnother: "Ambil nomor lain",
+        ticket: "Tiket Antrian",
+      },
+      display: {
+        title: "Antrian",
+        nowServing: "Sedang dipanggil",
+        counter: "Counter",
+        waiting: "Menunggu",
+        idle: "Menunggu panggilan…",
+        announceTemplate: "Nomor antrian {code}, harap menuju counter {counter}",
+      },
+      panel: {
+        title: "Antrian",
+        subtitle: "Panggil & kelola antrian per counter.",
+        selectCounter: "Pilih counter",
+        callNext: "Panggil berikutnya",
+        recall: "Panggil ulang",
+        serve: "Selesai",
+        skip: "Lewati",
+        waiting: "Menunggu",
+        called: "Dipanggil",
+        noWaiting: "Tidak ada antrian menunggu.",
+        openDisplay: "Buka layar display",
+        openKiosk: "Buka kiosk cetak",
+        number: "Nomor",
+      },
+    },
   },
   en: {
     common: {
@@ -519,6 +593,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         dashboard: "Dashboard",
         patients: "Patients",
         records: "Medical Records",
+        queue: "Queue",
         drugTransfer: "Drug Transfer",
         partners: "Partners",
         sharedApi: "Shared API",
@@ -673,6 +748,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
           bmiOver: "BMI: overweight.",
           bmiObese: "BMI: obese.",
         },
+      },
+    },
+    queue: {
+      services: { BPJS: "BPJS", ASURANSI: "Insurance", UMUM: "General" },
+      kiosk: {
+        title: "Take a Queue Number",
+        subtitle: "Please select a service",
+        pick: "Select service",
+        yourNumber: "Your queue number",
+        goWait: "Please wait for your number to be called",
+        print: "Print",
+        takeAnother: "Take another number",
+        ticket: "Queue Ticket",
+      },
+      display: {
+        title: "Queue",
+        nowServing: "Now serving",
+        counter: "Counter",
+        waiting: "Waiting",
+        idle: "Waiting for calls…",
+        announceTemplate: "Queue number {code}, please proceed to counter {counter}",
+      },
+      panel: {
+        title: "Queue",
+        subtitle: "Call & manage the queue per counter.",
+        selectCounter: "Select counter",
+        callNext: "Call next",
+        recall: "Recall",
+        serve: "Done",
+        skip: "Skip",
+        waiting: "Waiting",
+        called: "Called",
+        noWaiting: "No waiting queue.",
+        openDisplay: "Open display screen",
+        openKiosk: "Open print kiosk",
+        number: "Number",
       },
     },
   },
