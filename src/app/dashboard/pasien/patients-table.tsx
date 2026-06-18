@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -115,16 +116,15 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                 </TableCell>
                 <TableCell className="font-medium text-ink">{p.name}</TableCell>
                 <TableCell>
-                  <span
+                  <Badge
                     className={
-                      "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium " +
-                      (p.gender === "LAKI_LAKI"
+                      p.gender === "LAKI_LAKI"
                         ? "bg-sky-50 text-sky-700"
-                        : "bg-pink-50 text-pink-700")
+                        : "bg-pink-50 text-pink-700"
                     }
                   >
                     {p.gender === "LAKI_LAKI" ? t.patients.male : t.patients.female}
-                  </span>
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-muted">
                   {p.age} {t.patients.years}
