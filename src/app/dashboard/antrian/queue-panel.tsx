@@ -4,6 +4,9 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { ServiceType } from "@prisma/client";
 import { useLocale } from "@/lib/use-locale";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { callNext, recallTicket, serveTicket, skipTicket } from "./actions";
 
 type ServiceInfo = {
@@ -13,6 +16,9 @@ type ServiceInfo = {
   nextCode: string | null;
 };
 type Called = { id: string; code: string; counter: string | null };
+
+const selectClass =
+  "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function QueuePanel({
   tenantCode,
@@ -58,7 +64,7 @@ export function QueuePanel({
               href={`/antrian/${tenantCode}/display`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-slate-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               {t.queue.panel.openDisplay}
             </a>
@@ -66,7 +72,7 @@ export function QueuePanel({
               href={`/antrian/${tenantCode}/ambil`}
               target="_blank"
               rel="noreferrer"
-              className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-slate-50"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
               {t.queue.panel.openKiosk}
             </a>
@@ -77,27 +83,29 @@ export function QueuePanel({
       {/* Layanan */}
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         {services.map((s) => (
-          <div key={s.type} className="rounded-2xl border border-slate-200 bg-white p-5">
+          <Card key={s.type} className="gap-3 p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-ink">{t.queue.services[s.type]}</h2>
-              <span className="rounded-full bg-mint px-2.5 py-0.5 text-xs font-semibold text-brand-deep">
+              <Badge className="bg-mint text-brand-deep">
                 {s.waitingCount} {t.queue.panel.waiting.toLowerCase()}
-              </span>
+              </Badge>
             </div>
-            <p className="mt-4 text-xs uppercase tracking-wide text-muted">
-              {t.queue.panel.number}
-            </p>
-            <p className="text-3xl font-black tracking-tight text-ink">
-              {s.nextCode ?? "—"}
-            </p>
+            <div>
+              <p className="text-xs uppercase tracking-wide text-muted">
+                {t.queue.panel.number}
+              </p>
+              <p className="text-3xl font-black tracking-tight text-ink">
+                {s.nextCode ?? "—"}
+              </p>
+            </div>
 
-            <div className="mt-4 space-y-2">
+            <div className="space-y-2">
               <select
                 value={counters[s.type]}
                 onChange={(e) =>
                   setCounters((c) => ({ ...c, [s.type]: e.target.value }))
                 }
-                className="w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                className={selectClass}
               >
                 {s.counters.map((c) => (
                   <option key={c} value={c}>
@@ -105,21 +113,22 @@ export function QueuePanel({
                   </option>
                 ))}
               </select>
-              <button
+              <Button
                 type="button"
+                size="lg"
                 disabled={s.waitingCount === 0}
                 onClick={() => run(() => callNext(s.type, counters[s.type]))}
-                className="w-full rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-deep disabled:opacity-50"
+                className="h-9 w-full"
               >
                 {t.queue.panel.callNext}
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {/* Sedang dipanggil */}
-      <div className="mt-8 rounded-2xl border border-slate-200 bg-white">
+      <Card className="mt-8 gap-0 py-0">
         <div className="border-b border-slate-100 px-5 py-4">
           <h2 className="text-base font-semibold text-ink">
             {t.queue.panel.called}
@@ -136,37 +145,41 @@ export function QueuePanel({
                 <span className="text-2xl font-black tracking-tight text-ink">
                   {tk.code}
                 </span>
-                <span className="rounded-md bg-mint px-2 py-0.5 text-xs font-semibold text-brand-deep">
+                <Badge className="bg-mint text-brand-deep">
                   {t.queue.display.counter} {tk.counter}
-                </span>
+                </Badge>
                 <div className="ml-auto flex items-center gap-2">
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => run(() => recallTicket(tk.id))}
-                    className="rounded-md border border-slate-300 px-2.5 py-1 text-xs font-semibold text-ink hover:bg-slate-50"
                   >
                     {t.queue.panel.recall}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => run(() => serveTicket(tk.id))}
-                    className="rounded-md border border-brand/30 px-2.5 py-1 text-xs font-semibold text-brand-deep hover:bg-mint"
+                    className="border-brand/30 text-brand-deep hover:bg-mint"
                   >
                     {t.queue.panel.serve}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     type="button"
+                    variant="destructive"
+                    size="sm"
                     onClick={() => run(() => skipTicket(tk.id))}
-                    className="rounded-md border border-red-200 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
                   >
                     {t.queue.panel.skip}
-                  </button>
+                  </Button>
                 </div>
               </li>
             ))}
           </ul>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

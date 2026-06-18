@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/use-locale";
 import { SERVICES } from "@/lib/queue";
 import { takeTicket } from "../../actions";
@@ -93,20 +94,23 @@ export function Kiosk({
             </div>
 
             <div className="mt-5 flex gap-3 print:hidden">
-              <button
+              <Button
                 type="button"
+                size="lg"
                 onClick={() => window.print()}
-                className="flex-1 rounded-xl bg-brand px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-deep"
+                className="h-11 flex-1"
               >
                 {t.queue.kiosk.print}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
+                variant="outline"
+                size="lg"
                 onClick={() => setTicket(null)}
-                className="flex-1 rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold text-ink transition-colors hover:bg-slate-50"
+                className="h-11 flex-1"
               >
                 {t.queue.kiosk.takeAnother}
-              </button>
+              </Button>
             </div>
           </div>
         )}
