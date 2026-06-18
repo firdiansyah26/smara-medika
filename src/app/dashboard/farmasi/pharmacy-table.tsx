@@ -4,6 +4,14 @@ import { useActionState, useMemo, useState } from "react";
 import { useLocale } from "@/lib/use-locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { addDrug, updateStock } from "./actions";
 
 export type DrugRow = {
@@ -87,64 +95,62 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
 
       {/* Tabel stok */}
       <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-muted">
-                <th className="px-4 py-2 font-semibold">{t.pharmacy.name}</th>
-                <th className="px-4 py-2 font-semibold">{t.pharmacy.category}</th>
-                <th className="px-4 py-2 font-semibold">{t.pharmacy.colStock}</th>
-                <th className="px-4 py-2 font-semibold">{t.pharmacy.price}</th>
-                <th className="px-4 py-2 font-semibold">{t.pharmacy.colAction}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-4 py-10 text-center text-muted">
-                    {t.pharmacy.empty}
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((r) => (
-                  <tr key={r.drugId} className="align-middle">
-                    <td className="px-4 py-2">
-                      <div className="font-medium text-ink">{r.name}</div>
-                      <div className="text-xs text-muted">
-                        {r.genericName ? `${r.genericName} · ` : ""}
-                        {r.unit}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 text-muted">{r.category ?? "—"}</td>
-                    <td className="px-4 py-2">
-                      <span className={isLow(r) ? "font-semibold text-red-600" : "text-ink"}>
-                        {r.quantity}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t.pharmacy.name}</TableHead>
+              <TableHead>{t.pharmacy.category}</TableHead>
+              <TableHead>{t.pharmacy.colStock}</TableHead>
+              <TableHead>{t.pharmacy.price}</TableHead>
+              <TableHead>{t.pharmacy.colAction}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} className="py-10 text-center text-muted">
+                  {t.pharmacy.empty}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filtered.map((r) => (
+                <TableRow key={r.drugId}>
+                  <TableCell>
+                    <div className="font-medium text-ink">{r.name}</div>
+                    <div className="text-xs text-muted">
+                      {r.genericName ? `${r.genericName} · ` : ""}
+                      {r.unit}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-muted">{r.category ?? "—"}</TableCell>
+                  <TableCell>
+                    <span className={isLow(r) ? "font-semibold text-red-600" : "text-ink"}>
+                      {r.quantity}
+                    </span>
+                    {isLow(r) && (
+                      <span className="ml-1.5 rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
+                        {t.pharmacy.lowStock}
                       </span>
-                      {isLow(r) && (
-                        <span className="ml-1.5 rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
-                          {t.pharmacy.lowStock}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2 text-muted">
-                      {r.price != null ? priceFmt.format(r.price) : "—"}
-                    </td>
-                    <td className="px-4 py-2">
-                      <form action={updateStock} className="flex items-center gap-1.5">
-                        <input type="hidden" name="drugId" value={r.drugId} />
-                        <Input name="quantity" type="number" min="0" defaultValue={r.quantity} className="h-8 w-20" />
-                        <Input name="price" type="number" min="0" step="any" defaultValue={r.price ?? ""} placeholder={t.pharmacy.price} className="h-8 w-24" />
-                        <Button type="submit" variant="outline" size="sm">
-                          {t.pharmacy.save}
-                        </Button>
-                      </form>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-muted">
+                    {r.price != null ? priceFmt.format(r.price) : "—"}
+                  </TableCell>
+                  <TableCell>
+                    <form action={updateStock} className="flex items-center gap-1.5">
+                      <input type="hidden" name="drugId" value={r.drugId} />
+                      <Input name="quantity" type="number" min="0" defaultValue={r.quantity} className="h-8 w-20" />
+                      <Input name="price" type="number" min="0" step="any" defaultValue={r.price ?? ""} placeholder={t.pharmacy.price} className="h-8 w-24" />
+                      <Button type="submit" variant="outline" size="sm">
+                        {t.pharmacy.save}
+                      </Button>
+                    </form>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
