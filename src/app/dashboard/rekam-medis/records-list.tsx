@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -77,14 +78,9 @@ export function RecordsList({ rows }: { rows: RecordRow[] }) {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <span
-                      className={
-                        "rounded px-1.5 py-0.5 text-xs font-medium " +
-                        statusClass[r.status]
-                      }
-                    >
+                    <Badge className={statusClass[r.status]}>
                       {t.records.status[r.status]}
-                    </span>
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right text-muted">
                     {r.diagnosesCount}

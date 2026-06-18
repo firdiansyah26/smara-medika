@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export type Period = "today" | "week" | "month" | "all";
 
@@ -93,88 +94,90 @@ export function DashboardHome({
       {/* Stat cards */}
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statList.map((s) => (
-          <div key={s.key} className="rounded-2xl border border-slate-200 bg-white p-5">
+          <Card key={s.key} className="gap-3 p-5">
             <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-mint text-brand">
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
                 {statIcons[s.key]}
               </svg>
             </span>
-            <p className="mt-4 text-3xl font-bold tracking-tight text-ink">{s.value}</p>
-            <p className="mt-1 text-sm text-muted">{t.dashboardHome.stats[s.key]}</p>
-          </div>
+            <div>
+              <p className="text-3xl font-bold tracking-tight text-ink">{s.value}</p>
+              <p className="mt-1 text-sm text-muted">{t.dashboardHome.stats[s.key]}</p>
+            </div>
+          </Card>
         ))}
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {/* Diagnosa terbanyak */}
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h2 className="text-base font-semibold text-ink">
-              {t.dashboardHome.topDiagnoses}
-            </h2>
+        <Card className="gap-0 py-0">
+          <CardHeader className="flex flex-row items-center justify-between border-b py-4">
+            <CardTitle className="text-base">{t.dashboardHome.topDiagnoses}</CardTitle>
             <span className="text-xs text-muted">
               {t.dashboardHome.visitsInPeriod}: <b className="text-ink">{visitsInPeriod}</b>
             </span>
-          </div>
-          {topDiagnoses.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-muted">
-              {t.dashboardHome.noDiagnoses}
-            </p>
-          ) : (
-            <ul className="space-y-3 px-5 py-4">
-              {topDiagnoses.map((d) => (
-                <li key={d.code}>
-                  <div className="flex items-center justify-between gap-2 text-sm">
-                    <span className="truncate text-ink">
-                      <span className="mr-1.5 font-mono text-xs text-muted">{d.code}</span>
-                      {d.name}
-                    </span>
-                    <span className="shrink-0 text-xs font-semibold text-muted">
-                      {d.count} {t.dashboardHome.cases}
-                    </span>
-                  </div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-brand to-brand-cyan"
-                      style={{ width: `${(d.count / maxCount) * 100}%` }}
-                    />
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          </CardHeader>
+          <CardContent className="px-5 py-4">
+            {topDiagnoses.length === 0 ? (
+              <p className="py-6 text-center text-sm text-muted">
+                {t.dashboardHome.noDiagnoses}
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {topDiagnoses.map((d) => (
+                  <li key={d.code}>
+                    <div className="flex items-center justify-between gap-2 text-sm">
+                      <span className="truncate text-ink">
+                        <span className="mr-1.5 font-mono text-xs text-muted">{d.code}</span>
+                        {d.name}
+                      </span>
+                      <span className="shrink-0 text-xs font-semibold text-muted">
+                        {d.count} {t.dashboardHome.cases}
+                      </span>
+                    </div>
+                    <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-brand to-brand-cyan"
+                        style={{ width: `${(d.count / maxCount) * 100}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Recent visits */}
-        <div className="rounded-2xl border border-slate-200 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h2 className="text-base font-semibold text-ink">
-              {t.dashboardHome.recentTitle}
-            </h2>
-          </div>
-          {recent.length === 0 ? (
-            <p className="px-5 py-10 text-center text-sm text-muted">
-              {t.dashboardHome.recentEmpty}
-            </p>
-          ) : (
-            <ul className="divide-y divide-slate-100">
-              {recent.map((v) => (
-                <li key={v.mrNumber + v.visitDate} className="flex items-center gap-3 px-5 py-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                    {v.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-ink">{v.name}</p>
-                    <p className="text-xs text-muted">{v.mrNumber}</p>
-                  </div>
-                  <span className="text-xs text-muted">
-                    {dateFmt.format(new Date(v.visitDate))}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        <Card className="gap-0 py-0">
+          <CardHeader className="border-b py-4">
+            <CardTitle className="text-base">{t.dashboardHome.recentTitle}</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {recent.length === 0 ? (
+              <p className="py-10 text-center text-sm text-muted">
+                {t.dashboardHome.recentEmpty}
+              </p>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {recent.map((v) => (
+                  <li key={v.mrNumber + v.visitDate} className="flex items-center gap-3 px-5 py-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                      {v.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-ink">{v.name}</p>
+                      <p className="text-xs text-muted">{v.mrNumber}</p>
+                    </div>
+                    <span className="text-xs text-muted">
+                      {dateFmt.format(new Date(v.visitDate))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
