@@ -1,6 +1,10 @@
 # 🗺️ Roadmap Pengembangan — SmaraMedika
 
-Roadmap bertahap agar aplikasi bisa dikembangkan & dirilis secara inkremental.
+Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develop`).
+
+> **Status ringkas (per update terakhir):** Fase 1 & 2 (MVP) **selesai**. Fase 3 sebagian
+> (Antrian + Farmasi master/stok selesai). Tambahan: **migrasi UI penuh ke shadcn ui** & sistem
+> **antrian** (kiosk cetak nomor, papan display + suara, panel panggil per counter).
 
 ---
 
@@ -11,108 +15,65 @@ Roadmap bertahap agar aplikasi bisa dikembangkan & dirilis secara inkremental.
 
 ---
 
-## 🚧 Fase 1 — Fondasi & Setup
-**Target: project siap dikembangkan**
-
-- [ ] `git init` + struktur repo
-- [ ] Scaffold Next.js + TypeScript + Tailwind
-- [ ] Setup shadcn/ui
-- [ ] Setup Prisma + koneksi PostgreSQL
-- [ ] Konfigurasi ESLint + Prettier
-- [ ] Setup Auth.js (struktur dasar)
-- [ ] Layout dasar (sidebar, header, navigasi)
-- [ ] `.env.example` + dokumentasi setup
+## ✅ Fase 1 — Fondasi & Setup (Selesai)
+- [x] `git init` + struktur repo (workflow: fitur → PR → `develop`)
+- [x] Scaffold Next.js 16 + TypeScript + Tailwind v4
+- [x] Setup shadcn/ui (base-ui) + theme brand Teal
+- [x] Setup Prisma v6 + koneksi PostgreSQL (+ snake_case via `@map`)
+- [x] Konfigurasi ESLint
+- [x] Setup Auth.js v5 (Credentials + bcrypt + Zod)
+- [x] Layout dasar (sidebar, topbar, navigasi)
+- [x] `.env.example` + script `db:setup`/`db:seed`
 
 ---
 
-## 🎯 Fase 2 — MVP (Fitur Inti P0)
-**Target: beberapa fasilitas bisa beroperasi mandiri di satu platform**
-
-- [ ] **Multi-Tenant (fondasi)**
-  - [ ] Model Tenant + tipe (RS/Klinik/Apotek)
-  - [ ] Membership (user ↔ tenant, peran per tenant)
-  - [ ] 1 user bisa di banyak tenant
-  - [ ] Tenant switcher (pilih tenant aktif)
-  - [ ] Isolasi data per `tenantId` (tenant context + scoping)
-- [ ] **Auth & RBAC**
-  - [ ] Login/logout
-  - [ ] Middleware proteksi route
-  - [ ] Role-based access per tenant (6 peran: Owner/Admin/Dokter/Perawat/Resepsionis/Apoteker)
-  - [ ] Audit log dasar (per tenant)
-- [ ] **Manajemen Anggota Tenant** (undang + atur peran)
-- [ ] **Manajemen Pasien**
-  - [ ] Registrasi (No. RM otomatis)
-  - [ ] Daftar + pencarian
-  - [ ] Detail & edit
-- [ ] **Rekam Medis**
-  - [ ] Buat kunjungan
-  - [ ] Form SOAP
-  - [ ] Tanda vital
-  - [ ] Diagnosa ICD-10
-  - [ ] Riwayat alergi
-- [ ] **Dashboard** ringkasan
-- [ ] Seed data + ICD-10 dasar
+## ✅ Fase 2 — MVP (Selesai)
+- [x] **Multi-Tenant**: Tenant, Membership, 1 user banyak tenant, tenant switcher, isolasi per `tenantId`
+- [x] **Auth & RBAC**: login/logout, proteksi route (`proxy.ts`), RBAC per tenant, audit log
+- [x] **Manajemen Pasien**: registrasi (No. RM otomatis), daftar+cari, detail, edit, soft-delete, alergi
+- [x] **Rekam Medis**: buat kunjungan, SOAP, tanda vital (+ indikator klinis), diagnosa ICD-10
+- [x] **Dashboard**: ringkasan + diagnosa terbanyak + filter periode
+- [x] Seed data + subset ICD-10
+- [ ] Manajemen anggota tenant (undang + atur peran) — *belum*
 
 ---
 
-## 🔜 Fase 3 — Operasional & Jaringan Antar-Fasilitas (P1) ⭐
-**Target: alur kerja harian + fitur jaringan (rekanan, transfer obat, berbagi pasien)**
+## 🔜 Fase 3 — Operasional & Jaringan (sebagian)
 
-**Operasional klinik:**
-- [ ] Antrian & pendaftaran kunjungan
-- [ ] Status kunjungan (menunggu → diperiksa → selesai)
+**Operasional:**
+- [x] **Antrian** — kiosk cetak nomor, papan display + suara (TTS), panel panggil per counter
+- [x] **Farmasi**: master obat + stok per tenant (+ indikator stok menipis)
+- [x] Status kunjungan (Menunggu → Diperiksa → Selesai)
+- [ ] Pendaftaran kunjungan terhubung antrian (tiket → encounter)
 - [ ] Jadwal praktik dokter
-- [ ] Resep elektronik + master obat + stok per tenant
-- [ ] Riwayat pengobatan
-- [ ] Cetak resep & resume medis
+- [ ] Resep elektronik + riwayat pengobatan + cetak resep
 - [ ] Laporan kunjungan + export PDF/Excel
 - [ ] Lupa password (email)
 
 **Berbagi pasien lintas tenant:**
-- [ ] Pencarian pasien lintas tenant (info terbatas)
-- [ ] Permintaan akses detail pasien
-- [ ] Persetujuan/penolakan akses oleh tenant pemilik
+- [ ] Pencarian lintas tenant (info terbatas) + permintaan/persetujuan akses
 
 **Rekanan & transfer obat (fitur unggulan):**
-- [ ] Manajemen rekanan (ajukan/setujui/putus)
-- [ ] Cari stok obat di rekanan
-- [ ] Buat order transfer obat (multi-item)
-- [ ] Konfirmasi/tolak order oleh penyedia
-- [ ] Tracking status order (timeline lengkap)
-- [ ] Penerimaan obat → stok bertambah otomatis
-- [ ] Riwayat & laporan transfer obat
+- [ ] Manajemen rekanan; cari stok rekanan; order multi-item; tracking; penerimaan → stok
+  *(model & seed sudah ada; UI belum dibangun)*
 
 ---
 
-## 🌟 Fase 4 — Lanjutan (P2)
-**Target: fitur bernilai tambah**
-
-- [ ] Billing & tagihan
-- [ ] Order lab/radiologi + input hasil
-- [ ] Manajemen stok obat
-- [ ] Appointment/booking online
-- [ ] Notifikasi WhatsApp/email
-- [ ] Telemedicine
-- [ ] Multi-cabang
-- [ ] Integrasi SATUSEHAT (Kemenkes)
-- [ ] Integrasi BPJS
+## 🌟 Fase 4 — Lanjutan (belum)
+- [ ] Billing & tagihan · Lab/radiologi · Appointment online
+- [ ] Notifikasi WhatsApp/email · Telemedicine
+- [ ] Integrasi SATUSEHAT & BPJS
+- [ ] **Shared API** publik (lihat `SHARED_API.md`)
 
 ---
 
-## 🧪 Lintas-Fase (Continuous)
-- [ ] Unit test (Vitest) untuk service layer
-- [ ] E2E test (Playwright) untuk alur kritis
-- [ ] CI/CD pipeline
-- [ ] Audit keamanan berkala
-- [ ] Strategi backup database
+## 🎨 Lintas-fase — UI
+- [x] Migrasi UI penuh ke **shadcn ui** (form, tabel, card, badge, shell, antrian)
+
+## 🧪 Lintas-fase — Kualitas (belum)
+- [ ] Unit test (Vitest) · E2E (Playwright) · CI/CD · backup terjadwal
 
 ---
 
-## Estimasi Prioritas Pengerjaan
-
-```
-Fase 1 (Setup)  →  Fase 2 (MVP)  →  Fase 3 (Operasional)  →  Fase 4 (Lanjutan)
-   fondasi          bisa dipakai        klinik harian          nilai tambah
-```
-
-> Rekomendasi: rilis internal/uji coba setelah **Fase 2**, lalu iterasi berdasarkan feedback pengguna nyata.
+> Pengembangan mengikuti **GitHub issues** (#1–#17 per modul + #27 UI). Branch fitur → PR ke
+> `develop` → merge. `main` untuk rilis.

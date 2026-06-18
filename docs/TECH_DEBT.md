@@ -4,6 +4,20 @@ Dokumen ini melacak **utang teknis (tech debt)**, **keputusan yang ditunda**, da
 
 ---
 
+## 🔄 Pembaruan status (implementasi)
+
+- ✅ **Ditangani sebagian:** audit log dasar pada operasi pasien/farmasi/antrian (TD-001 lanjut);
+  No. RM via `$transaction` (TD-006); soft delete pasien (`deletedAt`) (TD-003).
+- 🟡 **Masih relevan:** isolasi tenant bergantung filter `tenantId` manual (TD-008); ICD-10 subset (TD-002);
+  file storage & lampiran (TD-004); test coverage (TD-005); Shared API (TD-012–016, belum dibangun).
+- 🆕 **Baru — UI:** base-ui **`DropdownMenu`** belum dipakai di topbar (tenant/user) karena belum bisa
+  diverifikasi membuka via harness preview otomatis; sementara pakai dropdown custom yang teruji.
+  Migrasi DropdownMenu menyusul setelah dicek manual.
+- 🆕 **Keputusan:** Prisma di-pin **v6** (v7 mewajibkan driver adapter); Next 16 pakai **`proxy.ts`**
+  (gantikan `middleware`); UI memakai **shadcn (base-ui)**.
+
+---
+
 ## Format Entri
 
 Setiap item: **Status** · **Dampak** · **Deskripsi** · **Rencana**

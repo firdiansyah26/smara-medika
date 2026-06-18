@@ -39,21 +39,23 @@ SmaraMedika adalah aplikasi **full-stack monolith multi-tenant** berbasis **Next
 
 ## Tech Stack
 
-| Lapisan | Pilihan | Alasan |
+| Lapisan | Pilihan | Catatan |
 |---------|---------|--------|
-| Framework | **Next.js 14+ (App Router)** | Full-stack, SSR, RSC |
-| Bahasa | **TypeScript** | Type safety, mengurangi bug |
-| API | **Route Handlers** (`/app/api`) | Node.js, satu codebase |
-| Database | **PostgreSQL** | Relasional, andal, ACID |
-| ORM | **Prisma** | Type-safe, migrasi mudah |
-| Styling | **Tailwind CSS** | Utility-first, cepat |
-| Komponen UI | **shadcn/ui** | Aksesibel, kustomisasi penuh |
-| Auth | **Auth.js (NextAuth v5)** | Standar, fleksibel |
-| Validasi | **Zod** | Schema validation, sinkron dgn TS |
-| Form | **React Hook Form** | Performa form yang baik |
-| Data fetching | **TanStack Query** (opsional) | Cache & sinkronisasi |
-| Testing | **Vitest** + **Playwright** | Unit & E2E |
-| Linting | **ESLint** + **Prettier** | Konsistensi kode |
+| Framework | **Next.js 16 (App Router)** | Full-stack, SSR, RSC. Konvensi `middleware` → **`proxy.ts`** |
+| Bahasa | **TypeScript** + **React 19** | Type safety |
+| API | **Route Handlers** + **Server Actions** | mutasi via Server Action |
+| Database | **PostgreSQL 16** | nama tabel/kolom **snake_case** via `@map`/`@@map` |
+| ORM | **Prisma v6** | (v7 ditunda — butuh driver adapter) |
+| Styling | **Tailwind CSS v4** | konfigurasi CSS-first (`@theme`) |
+| Komponen UI | **shadcn/ui (base-ui)** | theme dipetakan ke brand Teal |
+| Auth | **Auth.js v5** (Credentials + **bcryptjs**) | config split edge-safe (`auth.config.ts`) + Node (`auth.ts`) |
+| Validasi | **Zod** | dipakai di Server Actions |
+| i18n | hook `useLocale` + localStorage | ID/EN (tanpa next-intl) |
+| Ikon | **lucide-react** | dari shadcn |
+| Linting | **ESLint** | — |
+| Testing | Vitest + Playwright | *belum dipasang* |
+
+> **Catatan auth/edge:** `auth.config.ts` (tanpa Prisma/bcrypt) dipakai `proxy.ts` (edge) untuk proteksi rute; provider Credentials (Prisma+bcrypt) ada di `auth.ts` (Node). Keanggotaan tenant dibawa di JWT/session; `getActiveTenant()` membaca sesi + cookie `smara-active-tenant`.
 
 ---
 
