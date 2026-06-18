@@ -1,6 +1,8 @@
-/** Gabungkan className secara kondisional (versi ringan tanpa dependency). */
-export function cn(...classes: Array<string | false | null | undefined>): string {
-  return classes.filter(Boolean).join(" ");
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 /** Hitung umur (tahun) dari tanggal lahir. */
@@ -21,7 +23,6 @@ export function calcAgeParts(
   let days = now.getDate() - birthDate.getDate();
   if (days < 0) {
     months -= 1;
-    // jumlah hari di bulan sebelumnya
     days += new Date(now.getFullYear(), now.getMonth(), 0).getDate();
   }
   if (months < 0) {
