@@ -248,6 +248,24 @@ export type Dictionary = {
     colStock: string;
     colAction: string;
   };
+  partners: {
+    title: string;
+    subtitle: string;
+    inviteTitle: string;
+    selectTenant: string;
+    send: string;
+    incoming: string;
+    active: string;
+    outgoing: string;
+    approve: string;
+    reject: string;
+    end: string;
+    pending: string;
+    noIncoming: string;
+    noActive: string;
+    noCandidates: string;
+    endConfirm: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -548,6 +566,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
       colStock: "Stok",
       colAction: "Aksi",
     },
+    partners: {
+      title: "Rekanan",
+      subtitle: "Kelola kemitraan antar fasilitas untuk transfer obat.",
+      inviteTitle: "Ajukan rekanan",
+      selectTenant: "Pilih fasilitas",
+      send: "Ajukan",
+      incoming: "Permintaan masuk",
+      active: "Rekanan aktif",
+      outgoing: "Menunggu persetujuan",
+      approve: "Terima",
+      reject: "Tolak",
+      end: "Putus",
+      pending: "Menunggu",
+      noIncoming: "Tidak ada permintaan masuk.",
+      noActive: "Belum ada rekanan aktif.",
+      noCandidates: "Tidak ada fasilitas lain untuk diajak.",
+      endConfirm: "Putus kemitraan dengan fasilitas ini?",
+    },
   },
   en: {
     common: {
@@ -845,6 +881,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
       optional: "optional",
       colStock: "Stock",
       colAction: "Action",
+    },
+    partners: {
+      title: "Partners",
+      subtitle: "Manage facility partnerships for drug transfers.",
+      inviteTitle: "Invite partner",
+      selectTenant: "Select facility",
+      send: "Invite",
+      incoming: "Incoming requests",
+      active: "Active partners",
+      outgoing: "Awaiting approval",
+      approve: "Accept",
+      reject: "Reject",
+      end: "End",
+      pending: "Pending",
+      noIncoming: "No incoming requests.",
+      noActive: "No active partners yet.",
+      noCandidates: "No other facilities to invite.",
+      endConfirm: "End partnership with this facility?",
     },
   },
 };
