@@ -4,6 +4,16 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
+import { buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export type PatientRow = {
   id: string;
@@ -48,7 +58,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
         </div>
         <Link
           href="/dashboard/pasien/baru"
-          className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep"
+          className={buttonVariants({ size: "lg", className: "h-9 gap-2" })}
         >
           <svg
             viewBox="0 0 24 24"
@@ -66,95 +76,69 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
       </div>
 
       {/* Search */}
-      <div className="mt-6">
-        <div className="relative max-w-md">
-          <svg
-            viewBox="0 0 24 24"
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t.patients.searchPlaceholder}
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20"
-          />
-        </div>
+      <div className="mt-6 max-w-md">
+        <Input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t.patients.searchPlaceholder}
+          className="h-9"
+        />
       </div>
 
       {/* Table */}
       <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50 text-xs uppercase tracking-wide text-muted">
-                <th className="px-4 py-2 font-semibold">
-                  {t.patients.columns.mrNumber}
-                </th>
-                <th className="px-4 py-2 font-semibold">
-                  {t.patients.columns.name}
-                </th>
-                <th className="px-4 py-2 font-semibold">
-                  {t.patients.columns.gender}
-                </th>
-                <th className="px-4 py-2 font-semibold">
-                  {t.patients.columns.age}
-                </th>
-                <th className="hidden px-4 py-2 font-semibold sm:table-cell">
-                  {t.patients.columns.phone}
-                </th>
-                <th className="hidden px-4 py-2 font-semibold md:table-cell">
-                  {t.patients.columns.lastVisit}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filtered.map((p) => (
-                <tr
-                  key={p.mrNumber}
-                  onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
-                  className="cursor-pointer transition-colors hover:bg-mint/40"
-                >
-                  <td className="whitespace-nowrap px-4 py-2 font-mono text-xs text-muted">
-                    {p.mrNumber}
-                  </td>
-                  <td className="px-4 py-2 font-medium text-ink">{p.name}</td>
-                  <td className="px-4 py-2">
-                    <span
-                      className={
-                        "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium " +
-                        (p.gender === "LAKI_LAKI"
-                          ? "bg-sky-50 text-sky-700"
-                          : "bg-pink-50 text-pink-700")
-                      }
-                    >
-                      {p.gender === "LAKI_LAKI"
-                        ? t.patients.male
-                        : t.patients.female}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-muted">
-                    {p.age} {t.patients.years}
-                  </td>
-                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted sm:table-cell">
-                    {p.phone ?? "—"}
-                  </td>
-                  <td className="hidden whitespace-nowrap px-4 py-2 text-muted md:table-cell">
-                    {p.lastVisit ? dateFmt.format(new Date(p.lastVisit)) : "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t.patients.columns.mrNumber}</TableHead>
+              <TableHead>{t.patients.columns.name}</TableHead>
+              <TableHead>{t.patients.columns.gender}</TableHead>
+              <TableHead>{t.patients.columns.age}</TableHead>
+              <TableHead className="hidden sm:table-cell">
+                {t.patients.columns.phone}
+              </TableHead>
+              <TableHead className="hidden md:table-cell">
+                {t.patients.columns.lastVisit}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filtered.map((p) => (
+              <TableRow
+                key={p.mrNumber}
+                onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
+                className="cursor-pointer"
+              >
+                <TableCell className="whitespace-nowrap font-mono text-xs text-muted">
+                  {p.mrNumber}
+                </TableCell>
+                <TableCell className="font-medium text-ink">{p.name}</TableCell>
+                <TableCell>
+                  <span
+                    className={
+                      "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium " +
+                      (p.gender === "LAKI_LAKI"
+                        ? "bg-sky-50 text-sky-700"
+                        : "bg-pink-50 text-pink-700")
+                    }
+                  >
+                    {p.gender === "LAKI_LAKI" ? t.patients.male : t.patients.female}
+                  </span>
+                </TableCell>
+                <TableCell className="text-muted">
+                  {p.age} {t.patients.years}
+                </TableCell>
+                <TableCell className="hidden whitespace-nowrap text-muted sm:table-cell">
+                  {p.phone ?? "—"}
+                </TableCell>
+                <TableCell className="hidden whitespace-nowrap text-muted md:table-cell">
+                  {p.lastVisit ? dateFmt.format(new Date(p.lastVisit)) : "—"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
