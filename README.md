@@ -200,10 +200,12 @@ Pengembangan mengacu pada regulasi terkait:
 
 ## 🗺️ Roadmap
 
-- [x] Penentuan fitur & arsitektur
-- [ ] **Fase 1 (MVP)**: Autentikasi + Role → Manajemen Pasien → Rekam Medis SOAP → Dashboard
-- [ ] **Fase 2**: Antrian/Appointment → Resep → Billing
-- [ ] **Fase 3**: Lab, Laporan lanjutan, Notifikasi, Telemedicine
+- [x] Perencanaan + scaffold + fondasi (Next.js 16, Prisma, Auth.js, shadcn)
+- [x] **MVP**: Auth & RBAC, Multi-tenant, Manajemen Pasien, Rekam Medis SOAP (+ indikator vital), Dashboard
+- [x] **Operasional (sebagian)**: Antrian (kiosk/display/suara), Farmasi (stok)
+- [ ] Berikutnya: rekanan & transfer obat, berbagi pasien lintas tenant, resep, laporan, Shared API
+
+Status detail & terbaru: lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 

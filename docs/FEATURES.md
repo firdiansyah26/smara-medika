@@ -9,6 +9,12 @@ Dokumen ini merinci seluruh fitur SmaraMedika beserta status prioritasnya.
 - 🟡 **P1** — Penting, fase berikutnya
 - 🟢 **P2** — Nice-to-have / lanjutan
 
+> **Status implementasi (ringkas):** ✅ Multi-tenant, Auth & RBAC, Manajemen Pasien, Rekam Medis
+> (SOAP + tanda vital **dengan indikator klinis** + ICD-10 + alergi), Dashboard, **Antrian**
+> (kiosk cetak nomor + papan display bersuara + panel panggil per counter), **Farmasi** (master
+> obat + stok), dan **UI shadcn**. Belum: rekanan/transfer obat (UI), berbagi pasien lintas tenant,
+> resep elektronik, laporan, Shared API. Detail per fase: lihat `ROADMAP.md`.
+
 ---
 
 ## 0. Multi-Tenant & Keanggotaan 🔴 P0
@@ -96,13 +102,16 @@ Rekam medis selalu milik tenant tempat kunjungan terjadi.
 
 ## 4. Antrian & Pendaftaran 🟡 P1
 
-| Fitur | Prioritas | Deskripsi |
+| Fitur | Status | Deskripsi |
 |-------|:---:|-----------|
-| Pendaftaran kunjungan | 🟡 P1 | Daftar pasien ke poli/dokter |
-| Nomor antrian | 🟡 P1 | Antrian otomatis per poli |
-| Jadwal praktik dokter | 🟡 P1 | Jam praktik per dokter |
-| Appointment/janji temu | 🟢 P2 | Booking jadwal di muka |
-| Status kunjungan | 🟡 P1 | Menunggu → Diperiksa → Selesai |
+| Nomor antrian per layanan | ✅ | Otomatis per BPJS/Asuransi/Umum (A/PA/U), reset harian |
+| Kiosk cetak nomor | ✅ | Halaman publik `/antrian/[code]/ambil` → cetak tiket |
+| Papan display + suara | ✅ | `/antrian/[code]/display` — now serving + TTS "harap menuju counter…" |
+| Panel panggil staf | ✅ | Panggil berikutnya per counter, panggil ulang, selesai, lewati |
+| Status kunjungan | ✅ | Menunggu → Diperiksa → Selesai |
+| Pendaftaran kunjungan (tiket → encounter) | 🟡 P1 | *belum* |
+| Jadwal praktik dokter | 🟡 P1 | *belum* |
+| Appointment/janji temu | 🟢 P2 | *belum* |
 
 ---
 

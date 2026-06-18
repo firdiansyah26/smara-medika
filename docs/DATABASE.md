@@ -6,6 +6,10 @@ Database: **PostgreSQL** | ORM: **Prisma**
 
 Dokumen ini menjelaskan rancangan skema. Skema final ada di `prisma/schema.prisma`.
 
+> **Penamaan fisik:** nama tabel & kolom di DB memakai **snake_case** (mis. `mr_number`,
+> `tenant_id`, tabel `queue_tickets`) lewat `@map`/`@@map` Prisma; nama di Prisma Client tetap
+> camelCase/PascalCase. Migrasi awal: `prisma/migrations/*_init`, lalu `*_queue`.
+
 ---
 
 ## Diagram Relasi (Ringkas)
@@ -283,6 +287,28 @@ Mendukung fitur API publik per tenant. Detail teknis: lihat `SHARED_API.md`.
 | createdAt | DateTime | |
 
 > Volume `ApiRequestLog` bisa besar → pertimbangkan retensi/partisi (lihat `TECH_DEBT.md`).
+
+---
+
+## Entitas Antrian (Queue)
+
+Mendukung fitur antrian (kiosk cetak nomor, papan display, panel panggil). Tabel `queue_tickets`.
+
+### QueueTicket
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| serviceType | Enum | BPJS, ASURANSI, UMUM |
+| number | Int | nomor urut per tenant + layanan + hari (reset harian) |
+| code | String | mis. `A0001` (BPJS→A, Asuransi→PA, Umum→U) |
+| status | Enum | WAITING, CALLED, SERVED, SKIPPED |
+| counter | String? | counter pemanggil (mis. `A1`, `PA1`) |
+| calledById | String? | user pemanggil |
+| calledAt / servedAt | DateTime? | waktu dipanggil/selesai |
+| createdAt | DateTime | |
+
+> Counter & layanan dikonfigurasi di `src/lib/queue.ts` (BPJS: A1–A3, Asuransi: PA1–PA2, Umum: U1–U2). Kiosk & display bersifat **publik** per tenant (`/antrian/[code]/...`).
 
 ---
 
