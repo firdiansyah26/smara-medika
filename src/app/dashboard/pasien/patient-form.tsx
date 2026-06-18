@@ -3,6 +3,9 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { useLocale } from "@/lib/use-locale";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createPatient, updatePatient } from "./actions";
 
 export type PatientFormValues = {
@@ -32,8 +35,9 @@ const empty: PatientFormValues = {
   emergencyContact: "",
 };
 
-const inputClass =
-  "mt-1 w-full rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-ink outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20";
+// Native select bergaya shadcn (agar submit lewat formData tetap mudah).
+const selectClass =
+  "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function PatientForm({
   mode,
@@ -53,6 +57,12 @@ export function PatientForm({
       ? `/dashboard/pasien/${patient.id}`
       : "/dashboard/pasien";
 
+  const optional = (
+    <span className="text-xs font-normal text-muted">
+      ({t.patients.form.optional})
+    </span>
+  );
+
   return (
     <div className="max-w-2xl">
       <h1 className="text-2xl font-bold tracking-tight text-ink">
@@ -62,32 +72,20 @@ export function PatientForm({
       <form action={formAction} className="mt-5 space-y-4">
         {mode === "edit" && <input type="hidden" name="id" defaultValue={v.id} />}
 
-        <div className="grid gap-x-4 gap-y-3 sm:grid-cols-2">
-          <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.name}
-            </label>
-            <input name="name" required defaultValue={v.name} className={inputClass} />
+        <div className="grid gap-x-4 gap-y-4 sm:grid-cols-2">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="name">{t.patients.form.name}</Label>
+            <Input id="name" name="name" required defaultValue={v.name} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.birthDate}
-            </label>
-            <input
-              name="birthDate"
-              type="date"
-              required
-              defaultValue={v.birthDate}
-              className={inputClass}
-            />
+          <div className="space-y-1.5">
+            <Label htmlFor="birthDate">{t.patients.form.birthDate}</Label>
+            <Input id="birthDate" name="birthDate" type="date" required defaultValue={v.birthDate} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.gender}
-            </label>
-            <select name="gender" required defaultValue={v.gender} className={inputClass}>
+          <div className="space-y-1.5">
+            <Label htmlFor="gender">{t.patients.form.gender}</Label>
+            <select id="gender" name="gender" required defaultValue={v.gender} className={selectClass}>
               <option value="" disabled>
                 {t.patients.form.selectGender}
               </option>
@@ -96,24 +94,14 @@ export function PatientForm({
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.nik}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input name="nik" defaultValue={v.nik} className={inputClass} />
+          <div className="space-y-1.5">
+            <Label htmlFor="nik">{t.patients.form.nik} {optional}</Label>
+            <Input id="nik" name="nik" defaultValue={v.nik} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.bloodType}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <select name="bloodType" defaultValue={v.bloodType} className={inputClass}>
+          <div className="space-y-1.5">
+            <Label htmlFor="bloodType">{t.patients.form.bloodType} {optional}</Label>
+            <select id="bloodType" name="bloodType" defaultValue={v.bloodType} className={selectClass}>
               <option value="">{t.patients.form.selectBlood}</option>
               <option value="A">A</option>
               <option value="B">B</option>
@@ -122,58 +110,29 @@ export function PatientForm({
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.phone}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input name="phone" defaultValue={v.phone} className={inputClass} />
+          <div className="space-y-1.5">
+            <Label htmlFor="phone">{t.patients.form.phone} {optional}</Label>
+            <Input id="phone" name="phone" defaultValue={v.phone} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.city}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input name="city" defaultValue={v.city} className={inputClass} />
+          <div className="space-y-1.5">
+            <Label htmlFor="city">{t.patients.form.city} {optional}</Label>
+            <Input id="city" name="city" defaultValue={v.city} className="h-9" />
           </div>
 
-          <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.address}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input name="address" defaultValue={v.address} className={inputClass} />
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="address">{t.patients.form.address} {optional}</Label>
+            <Input id="address" name="address" defaultValue={v.address} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.bpjs}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input name="bpjsNumber" defaultValue={v.bpjsNumber} className={inputClass} />
+          <div className="space-y-1.5">
+            <Label htmlFor="bpjsNumber">{t.patients.form.bpjs} {optional}</Label>
+            <Input id="bpjsNumber" name="bpjsNumber" defaultValue={v.bpjsNumber} className="h-9" />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-ink">
-              {t.patients.form.emergencyContact}{" "}
-              <span className="text-xs font-normal text-muted">
-                ({t.patients.form.optional})
-              </span>
-            </label>
-            <input
-              name="emergencyContact"
-              defaultValue={v.emergencyContact}
-              className={inputClass}
-            />
+          <div className="space-y-1.5">
+            <Label htmlFor="emergencyContact">{t.patients.form.emergencyContact} {optional}</Label>
+            <Input id="emergencyContact" name="emergencyContact" defaultValue={v.emergencyContact} className="h-9" />
           </div>
         </div>
 
@@ -184,17 +143,10 @@ export function PatientForm({
         )}
 
         <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-md bg-brand px-5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep disabled:opacity-60"
-          >
+          <Button type="submit" size="lg" disabled={pending} className="h-9">
             {pending ? t.patients.form.saving : t.patients.form.save}
-          </button>
-          <Link
-            href={cancelHref}
-            className="rounded-md border border-slate-300 px-5 py-2 text-sm font-semibold text-ink transition-colors hover:bg-slate-50"
-          >
+          </Button>
+          <Link href={cancelHref} className={buttonVariants({ variant: "outline", size: "lg", className: "h-9" })}>
             {t.patients.form.cancel}
           </Link>
         </div>
