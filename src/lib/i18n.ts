@@ -47,6 +47,7 @@ export type Dictionary = {
       patients: string;
       records: string;
       queue: string;
+      pharmacy: string;
       drugTransfer: string;
       partners: string;
       sharedApi: string;
@@ -228,6 +229,25 @@ export type Dictionary = {
       number: string;
     };
   };
+  pharmacy: {
+    title: string;
+    subtitle: string;
+    addTitle: string;
+    name: string;
+    generic: string;
+    unit: string;
+    category: string;
+    quantity: string;
+    price: string;
+    add: string;
+    save: string;
+    search: string;
+    empty: string;
+    lowStock: string;
+    optional: string;
+    colStock: string;
+    colAction: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -316,6 +336,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         patients: "Pasien",
         records: "Rekam Medis",
         queue: "Antrian",
+        pharmacy: "Farmasi",
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
         sharedApi: "Shared API",
@@ -508,6 +529,25 @@ export const dictionaries: Record<Locale, Dictionary> = {
         number: "Nomor",
       },
     },
+    pharmacy: {
+      title: "Farmasi",
+      subtitle: "Master obat & stok fasilitas aktif.",
+      addTitle: "Tambah obat",
+      name: "Nama obat",
+      generic: "Nama generik",
+      unit: "Satuan",
+      category: "Kategori",
+      quantity: "Stok",
+      price: "Harga",
+      add: "Tambah",
+      save: "Simpan",
+      search: "Cari obat…",
+      empty: "Belum ada obat. Tambahkan di atas.",
+      lowStock: "Stok menipis",
+      optional: "opsional",
+      colStock: "Stok",
+      colAction: "Aksi",
+    },
   },
   en: {
     common: {
@@ -594,6 +634,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         patients: "Patients",
         records: "Medical Records",
         queue: "Queue",
+        pharmacy: "Pharmacy",
         drugTransfer: "Drug Transfer",
         partners: "Partners",
         sharedApi: "Shared API",
@@ -785,6 +826,25 @@ export const dictionaries: Record<Locale, Dictionary> = {
         openKiosk: "Open print kiosk",
         number: "Number",
       },
+    },
+    pharmacy: {
+      title: "Pharmacy",
+      subtitle: "Drug master & stock for the active facility.",
+      addTitle: "Add drug",
+      name: "Drug name",
+      generic: "Generic name",
+      unit: "Unit",
+      category: "Category",
+      quantity: "Stock",
+      price: "Price",
+      add: "Add",
+      save: "Save",
+      search: "Search drug…",
+      empty: "No drugs yet. Add one above.",
+      lowStock: "Low stock",
+      optional: "optional",
+      colStock: "Stock",
+      colAction: "Action",
     },
   },
 };
