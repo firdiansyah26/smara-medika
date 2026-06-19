@@ -50,6 +50,7 @@ export type Dictionary = {
       pharmacy: string;
       drugTransfer: string;
       partners: string;
+      patientAccess: string;
       sharedApi: string;
       settings: string;
     };
@@ -302,6 +303,37 @@ export type Dictionary = {
       CANCELLED: string;
     };
   };
+  access: {
+    title: string;
+    subtitle: string;
+    searchPlaceholder: string;
+    search: string;
+    owner: string;
+    requestAccess: string;
+    requested: string;
+    incoming: string;
+    outgoing: string;
+    approve: string;
+    reject: string;
+    revoke: string;
+    reasonPlaceholder: string;
+    view: string;
+    noResults: string;
+    noIncoming: string;
+    noOutgoing: string;
+    expiresOn: string;
+    statusPending: string;
+    statusApproved: string;
+    statusRejected: string;
+    statusRevoked: string;
+    viewTitle: string;
+    allergies: string;
+    visits: string;
+    noAllergies: string;
+    noVisits: string;
+    back: string;
+    noAccess: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -393,6 +425,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         pharmacy: "Farmasi",
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
+        patientAccess: "Akses Pasien",
         sharedApi: "Shared API",
         settings: "Pengaturan",
       },
@@ -656,6 +689,37 @@ export const dictionaries: Record<Locale, Dictionary> = {
         CANCELLED: "Dibatalkan",
       },
     },
+    access: {
+      title: "Akses Pasien",
+      subtitle: "Cari pasien lintas fasilitas & minta akses ke fasilitas pemilik.",
+      searchPlaceholder: "Cari NIK / nama pasien…",
+      search: "Cari",
+      owner: "Pemilik",
+      requestAccess: "Minta akses",
+      requested: "Sudah diminta",
+      incoming: "Permintaan masuk",
+      outgoing: "Permintaan saya",
+      approve: "Setujui",
+      reject: "Tolak",
+      revoke: "Cabut",
+      reasonPlaceholder: "Alasan (opsional)",
+      view: "Lihat",
+      noResults: "Tidak ada hasil. Coba NIK atau nama lengkap.",
+      noIncoming: "Tidak ada permintaan masuk.",
+      noOutgoing: "Belum ada permintaan.",
+      expiresOn: "Berlaku s/d",
+      statusPending: "Menunggu",
+      statusApproved: "Disetujui",
+      statusRejected: "Ditolak",
+      statusRevoked: "Dicabut",
+      viewTitle: "Info Pasien (akses terbatas)",
+      allergies: "Riwayat Alergi",
+      visits: "Riwayat Kunjungan",
+      noAllergies: "Tidak ada alergi tercatat.",
+      noVisits: "Belum ada kunjungan.",
+      back: "Kembali",
+      noAccess: "Akses tidak tersedia atau sudah kedaluwarsa.",
+    },
   },
   en: {
     common: {
@@ -745,6 +809,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         pharmacy: "Pharmacy",
         drugTransfer: "Drug Transfer",
         partners: "Partners",
+        patientAccess: "Patient Access",
         sharedApi: "Shared API",
         settings: "Settings",
       },
@@ -1007,6 +1072,37 @@ export const dictionaries: Record<Locale, Dictionary> = {
         REJECTED: "Rejected",
         CANCELLED: "Cancelled",
       },
+    },
+    access: {
+      title: "Patient Access",
+      subtitle: "Search patients across facilities & request access from the owner.",
+      searchPlaceholder: "Search NIK / patient name…",
+      search: "Search",
+      owner: "Owner",
+      requestAccess: "Request access",
+      requested: "Requested",
+      incoming: "Incoming requests",
+      outgoing: "My requests",
+      approve: "Approve",
+      reject: "Reject",
+      revoke: "Revoke",
+      reasonPlaceholder: "Reason (optional)",
+      view: "View",
+      noResults: "No results. Try the full NIK or name.",
+      noIncoming: "No incoming requests.",
+      noOutgoing: "No requests yet.",
+      expiresOn: "Valid until",
+      statusPending: "Pending",
+      statusApproved: "Approved",
+      statusRejected: "Rejected",
+      statusRevoked: "Revoked",
+      viewTitle: "Patient Info (limited access)",
+      allergies: "Allergy History",
+      visits: "Visit History",
+      noAllergies: "No allergies recorded.",
+      noVisits: "No visits yet.",
+      back: "Back",
+      noAccess: "Access unavailable or expired.",
     },
   },
 };
