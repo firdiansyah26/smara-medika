@@ -166,3 +166,68 @@ export async function removeDiagnosis(formData: FormData) {
   await db.diagnosis.delete({ where: { id } });
   revalidatePath(`/dashboard/rekam-medis/${diagnosis.encounter.id}`);
 }
+
+// --- Resep elektronik ---
+
+export async function addPrescriptionItem(formData: FormData) {
+  const ctx = await requireContext(DIAGNOSIS_ROLES);
+  if ("error" in ctx) return;
+
+  const encounterId = String(formData.get("encounterId") ?? "");
+  const drugId = String(formData.get("drugId") ?? "");
+  const quantity = parseInt(String(formData.get("quantity") ?? "1"), 10);
+  const dosage = String(formData.get("dosage") ?? "").trim() || undefined;
+  const frequency = String(formData.get("frequency") ?? "").trim() || undefined;
+  const instruction = String(formData.get("instruction") ?? "").trim() || undefined;
+  if (!encounterId || !drugId) return;
+
+  const encounter = await db.encounter.findFirst({
+    where: { id: encounterId, tenantId: ctx.tenantId, deletedAt: null },
+  });
+  if (!encounter) return;
+
+  await db.$transaction(async (tx) => {
+    let prescription = await tx.prescription.findFirst({
+      where: { encounterId },
+    });
+    if (!prescription) {
+      prescription = await tx.prescription.create({
+        data: { tenantId: ctx.tenantId, encounterId },
+      });
+    }
+    await tx.prescriptionItem.create({
+      data: {
+        prescriptionId: prescription.id,
+        drugId,
+        quantity: Number.isFinite(quantity) && quantity > 0 ? quantity : 1,
+        dosage,
+        frequency,
+        instruction,
+      },
+    });
+  });
+
+  await writeAudit({
+    tenantId: ctx.tenantId,
+    userId: ctx.userId,
+    action: "CREATE",
+    entity: "PrescriptionItem",
+    entityId: encounterId,
+  });
+  revalidatePath(`/dashboard/rekam-medis/${encounterId}`);
+}
+
+export async function removePrescriptionItem(formData: FormData) {
+  const ctx = await requireContext(DIAGNOSIS_ROLES);
+  if ("error" in ctx) return;
+
+  const id = String(formData.get("id") ?? "");
+  const item = await db.prescriptionItem.findUnique({
+    where: { id },
+    include: { prescription: { select: { tenantId: true, encounterId: true } } },
+  });
+  if (!item || item.prescription.tenantId !== ctx.tenantId) return;
+
+  await db.prescriptionItem.delete({ where: { id } });
+  revalidatePath(`/dashboard/rekam-medis/${item.prescription.encounterId}`);
+}

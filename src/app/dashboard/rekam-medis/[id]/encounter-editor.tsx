@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import type { IcdCode } from "@/lib/icd10";
 import { interpretVitals } from "@/lib/vitals";
-import { saveEncounter, addDiagnosis, removeDiagnosis } from "../actions";
+import {
+  saveEncounter,
+  addDiagnosis,
+  removeDiagnosis,
+  addPrescriptionItem,
+  removePrescriptionItem,
+} from "../actions";
 
 type Diagnosis = {
   id: string;
@@ -14,6 +20,16 @@ type Diagnosis = {
   icdName: string;
   type: "PRIMER" | "SEKUNDER";
 };
+type RxItem = {
+  id: string;
+  drugName: string;
+  unit: string;
+  dosage: string | null;
+  frequency: string | null;
+  quantity: number;
+  instruction: string | null;
+};
+type DrugOption = { drugId: string; name: string; unit: string };
 type Vital = {
   systolic: number | null;
   diastolic: number | null;
@@ -37,6 +53,8 @@ export type EncounterData = {
   plan: string | null;
   vital: Vital | null;
   diagnoses: Diagnosis[];
+  prescriptionItems: RxItem[];
+  drugOptions: DrugOption[];
 };
 
 const input =
@@ -175,6 +193,98 @@ function DiagnosisSection({
           </button>
         </div>
       </div>
+    </Section>
+  );
+}
+
+function PrescriptionSection({
+  encounterId,
+  items,
+  drugOptions,
+}: {
+  encounterId: string;
+  items: RxItem[];
+  drugOptions: DrugOption[];
+}) {
+  const { t } = useLocale();
+  return (
+    <Section
+      title={t.records.editor.rxTitle}
+      right={
+        items.length > 0 ? (
+          <a
+            href={`/dashboard/rekam-medis/${encounterId}/resep`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs font-semibold text-brand-deep hover:underline"
+          >
+            {t.records.editor.rxPrint}
+          </a>
+        ) : undefined
+      }
+    >
+      {items.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t.records.editor.rxEmpty}</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {items.map((it) => (
+            <li
+              key={it.id}
+              className="flex items-start justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 text-sm"
+            >
+              <span className="min-w-0">
+                <span className="font-medium text-ink">{it.drugName}</span>{" "}
+                <span className="text-xs text-muted-foreground">× {it.quantity} {it.unit}</span>
+                {(it.dosage || it.frequency || it.instruction) && (
+                  <span className="block text-xs text-muted-foreground">
+                    {[it.dosage, it.frequency, it.instruction].filter(Boolean).join(" · ")}
+                  </span>
+                )}
+              </span>
+              <form action={removePrescriptionItem}>
+                <input type="hidden" name="id" value={it.id} />
+                <button type="submit" className="shrink-0 text-muted-foreground hover:text-red-600" aria-label="remove">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {drugOptions.length === 0 ? (
+        <p className="mt-3 border-t border-slate-100 pt-3 text-xs text-muted-foreground">
+          {t.records.editor.rxNoStock}
+        </p>
+      ) : (
+        <form action={addPrescriptionItem} className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+          <input type="hidden" name="encounterId" value={encounterId} />
+          <select name="drugId" required defaultValue="" className={input}>
+            <option value="" disabled>
+              {t.records.editor.rxSelectDrug}
+            </option>
+            {drugOptions.map((d) => (
+              <option key={d.drugId} value={d.drugId}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <input name="dosage" placeholder={t.records.editor.rxDosage} className={input} />
+            <input name="frequency" placeholder={t.records.editor.rxFrequency} className={input} />
+            <input name="quantity" type="number" min="1" defaultValue={1} placeholder={t.records.editor.rxQty} className={input} />
+            <input name="instruction" placeholder={t.records.editor.rxInstruction} className={input} />
+          </div>
+          <button
+            type="submit"
+            className="w-full rounded-md bg-brand px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-deep"
+          >
+            {t.records.editor.add}
+          </button>
+        </form>
+      )}
     </Section>
   );
 }
@@ -349,9 +459,14 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
           </div>
         </form>
 
-        {/* Diagnoses — aksi sendiri, di luar form save */}
-        <div>
+        {/* Diagnosa & resep — aksi sendiri, di luar form save */}
+        <div className="space-y-4">
           <DiagnosisSection encounterId={data.id} diagnoses={data.diagnoses} />
+          <PrescriptionSection
+            encounterId={data.id}
+            items={data.prescriptionItems}
+            drugOptions={data.drugOptions}
+          />
         </div>
       </div>
     </div>
