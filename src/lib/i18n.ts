@@ -51,6 +51,7 @@ export type Dictionary = {
       drugTransfer: string;
       partners: string;
       patientAccess: string;
+      reports: string;
       sharedApi: string;
       settings: string;
     };
@@ -343,6 +344,27 @@ export type Dictionary = {
     back: string;
     noAccess: string;
   };
+  reports: {
+    title: string;
+    subtitle: string;
+    typeVisits: string;
+    typeTransfer: string;
+    exportCsv: string;
+    print: string;
+    total: string;
+    empty: string;
+    colDate: string;
+    colPatient: string;
+    colDoctor: string;
+    colStatus: string;
+    colDiagnoses: string;
+    colOrderNo: string;
+    colDirection: string;
+    colPartner: string;
+    colQty: string;
+    dirOut: string;
+    dirIn: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -435,6 +457,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
         patientAccess: "Akses Pasien",
+        reports: "Laporan",
         sharedApi: "Shared API",
         settings: "Pengaturan",
       },
@@ -738,6 +761,27 @@ export const dictionaries: Record<Locale, Dictionary> = {
       back: "Kembali",
       noAccess: "Akses tidak tersedia atau sudah kedaluwarsa.",
     },
+    reports: {
+      title: "Laporan",
+      subtitle: "Laporan kunjungan & transfer obat per periode.",
+      typeVisits: "Kunjungan",
+      typeTransfer: "Transfer obat",
+      exportCsv: "Export CSV",
+      print: "Cetak / PDF",
+      total: "Total",
+      empty: "Tidak ada data pada periode ini.",
+      colDate: "Tanggal",
+      colPatient: "Pasien",
+      colDoctor: "Dokter",
+      colStatus: "Status",
+      colDiagnoses: "Diagnosa",
+      colOrderNo: "No. Order",
+      colDirection: "Arah",
+      colPartner: "Rekanan",
+      colQty: "Jumlah",
+      dirOut: "Keluar",
+      dirIn: "Masuk",
+    },
   },
   en: {
     common: {
@@ -828,6 +872,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         drugTransfer: "Drug Transfer",
         partners: "Partners",
         patientAccess: "Patient Access",
+        reports: "Reports",
         sharedApi: "Shared API",
         settings: "Settings",
       },
@@ -1130,6 +1175,27 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noVisits: "No visits yet.",
       back: "Back",
       noAccess: "Access unavailable or expired.",
+    },
+    reports: {
+      title: "Reports",
+      subtitle: "Visit & drug transfer reports by period.",
+      typeVisits: "Visits",
+      typeTransfer: "Drug transfer",
+      exportCsv: "Export CSV",
+      print: "Print / PDF",
+      total: "Total",
+      empty: "No data in this period.",
+      colDate: "Date",
+      colPatient: "Patient",
+      colDoctor: "Doctor",
+      colStatus: "Status",
+      colDiagnoses: "Diagnoses",
+      colOrderNo: "Order No.",
+      colDirection: "Direction",
+      colPartner: "Partner",
+      colQty: "Qty",
+      dirOut: "Outgoing",
+      dirIn: "Incoming",
     },
   },
 };
