@@ -51,6 +51,7 @@ export type Dictionary = {
       drugTransfer: string;
       partners: string;
       patientAccess: string;
+      billing: string;
       reports: string;
       sharedApi: string;
       settings: string;
@@ -406,6 +407,54 @@ export type Dictionary = {
       notAllowed: string;
     };
   };
+  billing: {
+    title: string;
+    subtitle: string;
+    newInvoice: string;
+    create: string;
+    selectPatient: string;
+    colNo: string;
+    colPatient: string;
+    colDate: string;
+    colTotal: string;
+    colStatus: string;
+    empty: string;
+    back: string;
+    itemsTitle: string;
+    addItem: string;
+    category: string;
+    description: string;
+    qty: string;
+    unitPrice: string;
+    amount: string;
+    remove: string;
+    subtotal: string;
+    discount: string;
+    grandTotal: string;
+    saveDiscount: string;
+    issue: string;
+    markPaid: string;
+    cancel: string;
+    cancelConfirm: string;
+    print: string;
+    noItems: string;
+    paidAt: string;
+    invoiceLabel: string;
+    billTo: string;
+    statuses: {
+      DRAFT: string;
+      UNPAID: string;
+      PAID: string;
+      CANCELLED: string;
+    };
+    categories: {
+      CONSULTATION: string;
+      DRUG: string;
+      PROCEDURE: string;
+      LAB: string;
+      OTHER: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -498,6 +547,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
         patientAccess: "Akses Pasien",
+        billing: "Tagihan",
         reports: "Laporan",
         sharedApi: "Shared API",
         settings: "Pengaturan",
@@ -865,6 +915,54 @@ export const dictionaries: Record<Locale, Dictionary> = {
         notAllowed: "Anda tidak memiliki izin untuk tindakan ini.",
       },
     },
+    billing: {
+      title: "Tagihan",
+      subtitle: "Kelola invoice & pembayaran kunjungan.",
+      newInvoice: "Buat Tagihan",
+      create: "Buat",
+      selectPatient: "Pilih pasien…",
+      colNo: "No. Invoice",
+      colPatient: "Pasien",
+      colDate: "Tanggal",
+      colTotal: "Total",
+      colStatus: "Status",
+      empty: "Belum ada tagihan.",
+      back: "Kembali ke Tagihan",
+      itemsTitle: "Rincian Biaya",
+      addItem: "Tambah item",
+      category: "Kategori",
+      description: "Deskripsi",
+      qty: "Qty",
+      unitPrice: "Harga satuan",
+      amount: "Jumlah",
+      remove: "Hapus",
+      subtotal: "Subtotal",
+      discount: "Diskon",
+      grandTotal: "Total Tagihan",
+      saveDiscount: "Simpan",
+      issue: "Terbitkan",
+      markPaid: "Tandai Lunas",
+      cancel: "Batalkan",
+      cancelConfirm: "Batalkan tagihan ini?",
+      print: "Cetak",
+      noItems: "Belum ada item biaya.",
+      paidAt: "Dibayar pada",
+      invoiceLabel: "INVOICE",
+      billTo: "Ditagihkan kepada",
+      statuses: {
+        DRAFT: "Draf",
+        UNPAID: "Belum Bayar",
+        PAID: "Lunas",
+        CANCELLED: "Dibatalkan",
+      },
+      categories: {
+        CONSULTATION: "Konsultasi",
+        DRUG: "Obat",
+        PROCEDURE: "Tindakan",
+        LAB: "Laboratorium",
+        OTHER: "Lainnya",
+      },
+    },
   },
   en: {
     common: {
@@ -955,6 +1053,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         drugTransfer: "Drug Transfer",
         partners: "Partners",
         patientAccess: "Patient Access",
+        billing: "Billing",
         reports: "Reports",
         sharedApi: "Shared API",
         settings: "Settings",
@@ -1320,6 +1419,54 @@ export const dictionaries: Record<Locale, Dictionary> = {
         lastOwner: "Cannot proceed — at least one Owner is required.",
         self: "You cannot change your own membership.",
         notAllowed: "You don't have permission for this action.",
+      },
+    },
+    billing: {
+      title: "Billing",
+      subtitle: "Manage invoices & visit payments.",
+      newInvoice: "New Invoice",
+      create: "Create",
+      selectPatient: "Select patient…",
+      colNo: "Invoice No.",
+      colPatient: "Patient",
+      colDate: "Date",
+      colTotal: "Total",
+      colStatus: "Status",
+      empty: "No invoices yet.",
+      back: "Back to Billing",
+      itemsTitle: "Charge Details",
+      addItem: "Add item",
+      category: "Category",
+      description: "Description",
+      qty: "Qty",
+      unitPrice: "Unit price",
+      amount: "Amount",
+      remove: "Remove",
+      subtotal: "Subtotal",
+      discount: "Discount",
+      grandTotal: "Grand Total",
+      saveDiscount: "Save",
+      issue: "Issue",
+      markPaid: "Mark Paid",
+      cancel: "Cancel",
+      cancelConfirm: "Cancel this invoice?",
+      print: "Print",
+      noItems: "No charge items yet.",
+      paidAt: "Paid at",
+      invoiceLabel: "INVOICE",
+      billTo: "Bill to",
+      statuses: {
+        DRAFT: "Draft",
+        UNPAID: "Unpaid",
+        PAID: "Paid",
+        CANCELLED: "Cancelled",
+      },
+      categories: {
+        CONSULTATION: "Consultation",
+        DRUG: "Drug",
+        PROCEDURE: "Procedure",
+        LAB: "Laboratory",
+        OTHER: "Other",
       },
     },
   },
