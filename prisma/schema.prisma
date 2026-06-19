@@ -158,6 +158,25 @@ enum QueueStatus {
   @@map("queue_status")
 }
 
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  CANCELLED
+
+  @@map("invoice_status")
+}
+
+enum BillingCategory {
+  CONSULTATION
+  DRUG
+  PROCEDURE
+  LAB
+  OTHER
+
+  @@map("billing_category")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -191,6 +210,7 @@ model Tenant {
   ordersRequested           DrugOrder[]            @relation("OrderRequester")
   ordersSupplied            DrugOrder[]            @relation("OrderSupplier")
   queueTickets              QueueTicket[]
+  invoices                  Invoice[]
 
   @@map("tenants")
 }
@@ -255,6 +275,7 @@ model Patient {
   encounters     Encounter[]
   allergies      Allergy[]
   accessRequests PatientAccessRequest[]
+  invoices       Invoice[]
 
   @@unique([tenantId, mrNumber])
   @@index([nik])
@@ -305,6 +326,7 @@ model Encounter {
   vitalSign     VitalSign?
   diagnoses     Diagnosis[]
   prescriptions Prescription[]
+  invoices      Invoice[]
 
   @@index([tenantId, visitDate])
   @@index([patientId])
@@ -603,4 +625,49 @@ model ApiRequestLog {
 
   @@index([tenantId, createdAt])
   @@map("api_request_logs")
+}
+
+// ============================================================
+// Billing (tagihan & invoice)
+// ============================================================
+
+model Invoice {
+  id            String        @id @default(cuid())
+  tenantId      String        @map("tenant_id")
+  patientId     String        @map("patient_id")
+  encounterId   String?       @map("encounter_id")
+  invoiceNumber String        @map("invoice_number")
+  status        InvoiceStatus @default(DRAFT)
+  discount      Int           @default(0)
+  total         Int           @default(0)
+  note          String?
+  createdById   String        @map("created_by_id")
+  paidAt        DateTime?     @map("paid_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient   Patient       @relation(fields: [patientId], references: [id])
+  encounter Encounter?    @relation(fields: [encounterId], references: [id])
+  items     InvoiceItem[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId, status])
+  @@index([patientId])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String          @id @default(cuid())
+  invoiceId   String          @map("invoice_id")
+  category    BillingCategory @default(OTHER)
+  description String
+  quantity    Int             @default(1)
+  unitPrice   Int             @default(0) @map("unit_price")
+  amount      Int             @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("invoice_items")
 }

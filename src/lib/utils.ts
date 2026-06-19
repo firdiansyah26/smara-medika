@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Format angka rupiah, mis. 150000 → "Rp 150.000". */
+export function formatIDR(value: number): string {
+  return "Rp " + new Intl.NumberFormat("id-ID").format(value);
+}
+
 /** Hitung umur (tahun) dari tanggal lahir. */
 export function calcAge(birthDate: Date, now: Date = new Date()): number {
   let age = now.getFullYear() - birthDate.getFullYear();
