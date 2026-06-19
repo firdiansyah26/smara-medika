@@ -17,6 +17,15 @@ type Allergy = {
   reaction: string | null;
   severity: "RINGAN" | "SEDANG" | "BERAT" | null;
 };
+type Medication = {
+  id: string;
+  drugName: string;
+  unit: string;
+  dosage: string | null;
+  frequency: string | null;
+  quantity: number;
+  date: string;
+};
 export type PatientDetailData = {
   id: string;
   mrNumber: string;
@@ -34,6 +43,7 @@ export type PatientDetailData = {
   createdAt: string;
   visits: Visit[];
   allergies: Allergy[];
+  medications: Medication[];
 };
 
 const inputClass =
@@ -283,6 +293,42 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
                   {t.patients.detail.addAllergyBtn}
                 </Button>
               </form>
+            </div>
+          </Section>
+
+          {/* Riwayat pengobatan */}
+          <Section title={t.patients.detail.medsTitle}>
+            <div className="p-3">
+              {data.medications.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t.patients.detail.noMeds}
+                </p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {data.medications.map((m) => (
+                    <li
+                      key={m.id}
+                      className="rounded-md border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-sm"
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="font-semibold text-ink">{m.drugName}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {dateFmt.format(new Date(m.date))}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {[
+                          m.dosage,
+                          m.frequency,
+                          `${m.quantity} ${m.unit}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </Section>
         </div>
