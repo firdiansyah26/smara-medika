@@ -56,7 +56,7 @@ export function QueuePanel({
           <h1 className="text-2xl font-bold tracking-tight text-ink">
             {t.queue.panel.title}
           </h1>
-          <p className="mt-1 text-sm text-muted">{t.queue.panel.subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.queue.panel.subtitle}</p>
         </div>
         {tenantCode && (
           <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export function QueuePanel({
               </Badge>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-wide text-muted">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">
                 {t.queue.panel.number}
               </p>
               <p className="text-3xl font-black tracking-tight text-ink">
@@ -135,7 +135,7 @@ export function QueuePanel({
           </h2>
         </div>
         {called.length === 0 ? (
-          <p className="px-5 py-10 text-center text-sm text-muted">
+          <p className="px-5 py-10 text-center text-sm text-muted-foreground">
             {t.queue.panel.noWaiting}
           </p>
         ) : (

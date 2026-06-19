@@ -63,7 +63,7 @@ export function OrderDetail({ data }: { data: OrderData }) {
     <div>
       <Link
         href="/dashboard/transfer-obat"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -78,7 +78,7 @@ export function OrderDetail({ data }: { data: OrderData }) {
             <h1 className="font-mono text-lg font-bold text-ink">{data.orderNumber}</h1>
             <Badge className={STATUS_BADGE[s]}>{t.transfer.statuses[s]}</Badge>
           </div>
-          <p className="mt-0.5 text-sm text-muted">
+          <p className="mt-0.5 text-sm text-muted-foreground">
             {data.requesterName} → {data.supplierName}
           </p>
         </div>
@@ -117,14 +117,14 @@ export function OrderDetail({ data }: { data: OrderData }) {
               {data.items.map((it, i) => (
                 <li key={i} className="flex items-center justify-between px-5 py-3">
                   <span className="text-sm font-medium text-ink">{it.name}</span>
-                  <span className="text-sm text-muted">
+                  <span className="text-sm text-muted-foreground">
                     {it.quantity} {it.unit}
                   </span>
                 </li>
               ))}
             </ul>
             {data.note && (
-              <p className="border-t border-slate-100 px-5 py-3 text-sm text-muted">
+              <p className="border-t border-slate-100 px-5 py-3 text-sm text-muted-foreground">
                 {t.transfer.note}: {data.note}
               </p>
             )}
@@ -145,7 +145,7 @@ export function OrderDetail({ data }: { data: OrderData }) {
                     <p className="text-sm font-medium text-ink">
                       {t.transfer.statuses[tr.status]}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-muted-foreground">
                       {dateFmt.format(new Date(tr.createdAt))}
                       {tr.note ? ` · ${tr.note}` : ""}
                     </p>

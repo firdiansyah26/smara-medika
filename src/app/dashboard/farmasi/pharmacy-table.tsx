@@ -53,7 +53,7 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
         <h1 className="text-2xl font-bold tracking-tight text-ink">
           {t.pharmacy.title}
         </h1>
-        <p className="mt-1 text-sm text-muted">{t.pharmacy.subtitle}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{t.pharmacy.subtitle}</p>
       </div>
 
       {/* Tambah obat */}
@@ -108,7 +108,7 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-muted">
+                <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
                   {t.pharmacy.empty}
                 </TableCell>
               </TableRow>
@@ -117,12 +117,12 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
                 <TableRow key={r.drugId}>
                   <TableCell>
                     <div className="font-medium text-ink">{r.name}</div>
-                    <div className="text-xs text-muted">
+                    <div className="text-xs text-muted-foreground">
                       {r.genericName ? `${r.genericName} · ` : ""}
                       {r.unit}
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted">{r.category ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground">{r.category ?? "—"}</TableCell>
                   <TableCell>
                     <span className={isLow(r) ? "font-semibold text-red-600" : "text-ink"}>
                       {r.quantity}
@@ -133,7 +133,7 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
                       </span>
                     )}
                   </TableCell>
-                  <TableCell className="text-muted">
+                  <TableCell className="text-muted-foreground">
                     {r.price != null ? priceFmt.format(r.price) : "—"}
                   </TableCell>
                   <TableCell>

@@ -55,7 +55,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           <h1 className="text-2xl font-bold tracking-tight text-ink">
             {t.patients.title}
           </h1>
-          <p className="mt-1 text-sm text-muted">{t.patients.subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.patients.subtitle}</p>
         </div>
         <Link
           href="/dashboard/pasien/baru"
@@ -111,7 +111,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                 onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
                 className="cursor-pointer"
               >
-                <TableCell className="whitespace-nowrap font-mono text-xs text-muted">
+                <TableCell className="whitespace-nowrap font-mono text-xs text-muted-foreground">
                   {p.mrNumber}
                 </TableCell>
                 <TableCell className="font-medium text-ink">{p.name}</TableCell>
@@ -126,13 +126,13 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
                     {p.gender === "LAKI_LAKI" ? t.patients.male : t.patients.female}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted">
+                <TableCell className="text-muted-foreground">
                   {p.age} {t.patients.years}
                 </TableCell>
-                <TableCell className="hidden whitespace-nowrap text-muted sm:table-cell">
+                <TableCell className="hidden whitespace-nowrap text-muted-foreground sm:table-cell">
                   {p.phone ?? "—"}
                 </TableCell>
-                <TableCell className="hidden whitespace-nowrap text-muted md:table-cell">
+                <TableCell className="hidden whitespace-nowrap text-muted-foreground md:table-cell">
                   {p.lastVisit ? dateFmt.format(new Date(p.lastVisit)) : "—"}
                 </TableCell>
               </TableRow>

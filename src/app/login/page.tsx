@@ -54,7 +54,7 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold tracking-tight text-ink">
               {t.login.title}
             </h1>
-            <p className="mt-2 text-sm text-muted">{t.login.subtitle}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t.login.subtitle}</p>
 
             <form action={formAction} className="mt-8 space-y-5">
               <div className="space-y-2">
@@ -73,7 +73,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">{t.login.password}</Label>
-                  <span className="text-xs font-medium text-muted">
+                  <span className="text-xs font-medium text-muted-foreground">
                     {t.login.forgot}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export default function LoginPage() {
 
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
             >
               <svg
                 viewBox="0 0 24 24"
