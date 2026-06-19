@@ -367,6 +367,45 @@ export type Dictionary = {
     dirOut: string;
     dirIn: string;
   };
+  settings: {
+    title: string;
+    subtitle: string;
+    membersTitle: string;
+    colName: string;
+    colEmail: string;
+    colRole: string;
+    colStatus: string;
+    colAction: string;
+    active: string;
+    inactive: string;
+    you: string;
+    removeBtn: string;
+    removeConfirm: string;
+    inviteTitle: string;
+    inviteHint: string;
+    fName: string;
+    fEmail: string;
+    fRole: string;
+    fPassword: string;
+    inviteBtn: string;
+    invited: string;
+    readOnly: string;
+    roles: {
+      OWNER: string;
+      ADMIN: string;
+      DOKTER: string;
+      PERAWAT: string;
+      RESEPSIONIS: string;
+      APOTEKER: string;
+    };
+    errors: {
+      required: string;
+      exists: string;
+      lastOwner: string;
+      self: string;
+      notAllowed: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -786,6 +825,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
       dirOut: "Keluar",
       dirIn: "Masuk",
     },
+    settings: {
+      title: "Pengaturan",
+      subtitle: "Kelola anggota fasilitas & peran akses.",
+      membersTitle: "Anggota Fasilitas",
+      colName: "Nama",
+      colEmail: "Email",
+      colRole: "Peran",
+      colStatus: "Status",
+      colAction: "Aksi",
+      active: "Aktif",
+      inactive: "Nonaktif",
+      you: "Anda",
+      removeBtn: "Keluarkan",
+      removeConfirm: "Keluarkan anggota ini dari fasilitas?",
+      inviteTitle: "Undang Anggota",
+      inviteHint:
+        "Jika email sudah terdaftar, anggota langsung ditautkan. Jika belum, akun baru dibuat dengan kata sandi awal di bawah.",
+      fName: "Nama lengkap",
+      fEmail: "Email",
+      fRole: "Peran",
+      fPassword: "Kata sandi awal",
+      inviteBtn: "Undang",
+      invited: "Anggota berhasil ditambahkan.",
+      readOnly: "Hanya Pemilik/Admin yang dapat mengelola anggota.",
+      roles: {
+        OWNER: "Pemilik",
+        ADMIN: "Admin",
+        DOKTER: "Dokter",
+        PERAWAT: "Perawat",
+        RESEPSIONIS: "Resepsionis",
+        APOTEKER: "Apoteker",
+      },
+      errors: {
+        required: "Email, peran, dan kata sandi wajib diisi.",
+        exists: "Pengguna ini sudah menjadi anggota fasilitas.",
+        lastOwner: "Tidak bisa — minimal harus ada satu Pemilik.",
+        self: "Anda tidak dapat mengubah keanggotaan sendiri.",
+        notAllowed: "Anda tidak memiliki izin untuk tindakan ini.",
+      },
+    },
   },
   en: {
     common: {
@@ -1202,6 +1281,46 @@ export const dictionaries: Record<Locale, Dictionary> = {
       colQty: "Qty",
       dirOut: "Outgoing",
       dirIn: "Incoming",
+    },
+    settings: {
+      title: "Settings",
+      subtitle: "Manage facility members & access roles.",
+      membersTitle: "Facility Members",
+      colName: "Name",
+      colEmail: "Email",
+      colRole: "Role",
+      colStatus: "Status",
+      colAction: "Action",
+      active: "Active",
+      inactive: "Inactive",
+      you: "You",
+      removeBtn: "Remove",
+      removeConfirm: "Remove this member from the facility?",
+      inviteTitle: "Invite Member",
+      inviteHint:
+        "If the email already exists, the member is linked immediately. Otherwise a new account is created with the initial password below.",
+      fName: "Full name",
+      fEmail: "Email",
+      fRole: "Role",
+      fPassword: "Initial password",
+      inviteBtn: "Invite",
+      invited: "Member added successfully.",
+      readOnly: "Only Owner/Admin can manage members.",
+      roles: {
+        OWNER: "Owner",
+        ADMIN: "Admin",
+        DOKTER: "Doctor",
+        PERAWAT: "Nurse",
+        RESEPSIONIS: "Receptionist",
+        APOTEKER: "Pharmacist",
+      },
+      errors: {
+        required: "Email, role, and password are required.",
+        exists: "This user is already a member of the facility.",
+        lastOwner: "Cannot proceed — at least one Owner is required.",
+        self: "You cannot change your own membership.",
+        notAllowed: "You don't have permission for this action.",
+      },
     },
   },
 };
