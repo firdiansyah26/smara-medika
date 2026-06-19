@@ -123,8 +123,10 @@ export type Dictionary = {
       infoTitle: string;
       visitsTitle: string;
       allergiesTitle: string;
+      medsTitle: string;
       noVisits: string;
       noAllergies: string;
+      noMeds: string;
       addAllergyTitle: string;
       allergen: string;
       reaction: string;
@@ -535,8 +537,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
         infoTitle: "Informasi Pasien",
         visitsTitle: "Riwayat Kunjungan",
         allergiesTitle: "Riwayat Alergi",
+        medsTitle: "Riwayat Pengobatan",
         noVisits: "Belum ada kunjungan.",
         noAllergies: "Belum ada alergi tercatat.",
+        noMeds: "Belum ada riwayat pengobatan.",
         addAllergyTitle: "Tambah alergi",
         allergen: "Alergen",
         reaction: "Reaksi",
@@ -950,8 +954,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
         infoTitle: "Patient Information",
         visitsTitle: "Visit History",
         allergiesTitle: "Allergy History",
+        medsTitle: "Medication History",
         noVisits: "No visits yet.",
         noAllergies: "No allergies recorded.",
+        noMeds: "No medication history yet.",
         addAllergyTitle: "Add allergy",
         allergen: "Allergen",
         reaction: "Reaction",
