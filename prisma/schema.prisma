@@ -177,6 +177,16 @@ enum BillingCategory {
   @@map("billing_category")
 }
 
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+
+  @@map("appointment_status")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -211,6 +221,7 @@ model Tenant {
   ordersSupplied            DrugOrder[]            @relation("OrderSupplier")
   queueTickets              QueueTicket[]
   invoices                  Invoice[]
+  appointments              Appointment[]
 
   @@map("tenants")
 }
@@ -225,9 +236,10 @@ model User {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  memberships Membership[]
-  encounters  Encounter[]  @relation("EncounterDoctor")
-  auditLogs   AuditLog[]
+  memberships  Membership[]
+  encounters   Encounter[]   @relation("EncounterDoctor")
+  auditLogs    AuditLog[]
+  appointments Appointment[] @relation("AppointmentDoctor")
 
   @@map("users")
 }
@@ -276,6 +288,7 @@ model Patient {
   allergies      Allergy[]
   accessRequests PatientAccessRequest[]
   invoices       Invoice[]
+  appointments   Appointment[]
 
   @@unique([tenantId, mrNumber])
   @@index([nik])
@@ -670,4 +683,32 @@ model InvoiceItem {
 
   @@index([invoiceId])
   @@map("invoice_items")
+}
+
+// ============================================================
+// Appointment (jadwal & janji temu)
+// ============================================================
+
+model Appointment {
+  id          String            @id @default(cuid())
+  tenantId    String            @map("tenant_id")
+  patientId   String            @map("patient_id")
+  doctorId    String            @map("doctor_id")
+  scheduledAt DateTime          @map("scheduled_at")
+  durationMin Int               @default(30) @map("duration_min")
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String?
+  note        String?
+  encounterId String?           @map("encounter_id")
+  createdById String            @map("created_by_id")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id])
+  doctor  User    @relation("AppointmentDoctor", fields: [doctorId], references: [id])
+
+  @@index([tenantId, scheduledAt])
+  @@index([doctorId, scheduledAt])
+  @@map("appointments")
 }
