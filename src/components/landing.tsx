@@ -44,7 +44,7 @@ export function Landing() {
           <nav className="flex items-center gap-2 sm:gap-3">
             <a
               href="#fitur"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted transition-colors hover:text-ink sm:block"
+              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink sm:block"
             >
               {t.nav.features}
             </a>
@@ -74,7 +74,7 @@ export function Landing() {
                 {t.hero.headingHighlight}
               </span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">
               {t.hero.paragraph}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -119,7 +119,7 @@ export function Landing() {
                 <span className="text-ink">Smara</span>
                 <span className="text-brand">Medika</span>
               </p>
-              <p className="mt-1 text-center text-sm text-muted">
+              <p className="mt-1 text-center text-sm text-muted-foreground">
                 {t.brandCard.meaning}
               </p>
               <div className="mt-6 space-y-2.5">
@@ -154,7 +154,7 @@ export function Landing() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             {t.features.heading}
           </h2>
-          <p className="mt-4 text-lg text-muted">{t.features.subtitle}</p>
+          <p className="mt-4 text-lg text-muted-foreground">{t.features.subtitle}</p>
         </div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -177,7 +177,7 @@ export function Landing() {
                 </svg>
               </div>
               <h3 className="mt-5 text-lg font-semibold">{f.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{f.desc}</p>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -207,7 +207,7 @@ export function Landing() {
       <footer className="mt-auto border-t border-slate-100">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 sm:flex-row">
           <Logo />
-          <p className="text-sm text-muted">
+          <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} SmaraMedika — {t.footer}
           </p>
         </div>

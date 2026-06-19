@@ -16,7 +16,7 @@ export function LanguageSwitcher() {
           aria-pressed={locale === l}
           className={
             "rounded-md px-2.5 py-1 uppercase transition-colors " +
-            (locale === l ? "bg-brand text-white" : "text-muted hover:text-ink")
+            (locale === l ? "bg-brand text-white" : "text-muted-foreground hover:text-ink")
           }
         >
           {l}

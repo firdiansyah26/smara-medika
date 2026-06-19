@@ -240,13 +240,13 @@ export function AppShell({
                     <span className="block text-sm font-semibold leading-tight text-ink">
                       {activeTenant.tenantName}
                     </span>
-                    <span className="block text-xs leading-tight text-muted">
+                    <span className="block text-xs leading-tight text-muted-foreground">
                       {tenantTypeLabel(activeTenant.tenantType, t)}
                     </span>
                   </span>
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-4 w-4 text-muted"
+                    className="h-4 w-4 text-muted-foreground"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
@@ -259,7 +259,7 @@ export function AppShell({
 
                 {openMenu === "tenant" && (
                   <div className="absolute left-0 top-full z-30 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
-                    <p className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+                    <p className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       {t.app.topbar.switchTenant}
                     </p>
                     {tenants.map((tenant) => (
@@ -281,7 +281,7 @@ export function AppShell({
                           <span className="block leading-tight">
                             {tenant.tenantName}
                           </span>
-                          <span className="block text-xs leading-tight text-muted">
+                          <span className="block text-xs leading-tight text-muted-foreground">
                             {tenantTypeLabel(tenant.tenantType, t)}
                           </span>
                         </span>
@@ -341,7 +341,7 @@ export function AppShell({
                       <p className="text-sm font-semibold text-ink">
                         {user.name}
                       </p>
-                      <p className="truncate text-xs text-muted">
+                      <p className="truncate text-xs text-muted-foreground">
                         {user.email}
                       </p>
                     </div>

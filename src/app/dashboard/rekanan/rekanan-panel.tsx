@@ -46,7 +46,7 @@ function Row({
       </span>
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium text-ink">{p.name}</p>
-        <p className="text-xs text-muted">{typeLabelOf(p.type, types)}</p>
+        <p className="text-xs text-muted-foreground">{typeLabelOf(p.type, types)}</p>
       </div>
       {children}
     </li>
@@ -83,7 +83,7 @@ export function RekananPanel({
       <h1 className="text-2xl font-bold tracking-tight text-ink">
         {t.partners.title}
       </h1>
-      <p className="mt-1 text-sm text-muted">{t.partners.subtitle}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t.partners.subtitle}</p>
 
       {/* Ajukan rekanan */}
       <Card className="mt-6 gap-3 p-5">
@@ -91,7 +91,7 @@ export function RekananPanel({
           {t.partners.inviteTitle}
         </p>
         {candidates.length === 0 ? (
-          <p className="text-sm text-muted">{t.partners.noCandidates}</p>
+          <p className="text-sm text-muted-foreground">{t.partners.noCandidates}</p>
         ) : (
           <div className="flex flex-wrap items-center gap-3">
             <select
@@ -125,7 +125,7 @@ export function RekananPanel({
             </h2>
           </div>
           {incoming.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">
+            <p className="px-5 py-8 text-center text-sm text-muted-foreground">
               {t.partners.noIncoming}
             </p>
           ) : (
@@ -161,7 +161,7 @@ export function RekananPanel({
             </h2>
           </div>
           {active.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">
+            <p className="px-5 py-8 text-center text-sm text-muted-foreground">
               {t.partners.noActive}
             </p>
           ) : (

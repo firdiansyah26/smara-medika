@@ -58,7 +58,7 @@ export function PatientForm({
       : "/dashboard/pasien";
 
   const optional = (
-    <span className="text-xs font-normal text-muted">
+    <span className="text-xs font-normal text-muted-foreground">
       ({t.patients.form.optional})
     </span>
   );

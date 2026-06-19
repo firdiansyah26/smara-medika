@@ -68,7 +68,7 @@ export function TransferList({
       <h1 className="text-2xl font-bold tracking-tight text-ink">
         {t.transfer.title}
       </h1>
-      <p className="mt-1 text-sm text-muted">{t.transfer.subtitle}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t.transfer.subtitle}</p>
 
       {/* Buat order */}
       <Card className="mt-6 gap-3 p-5">
@@ -76,7 +76,7 @@ export function TransferList({
           {t.transfer.newOrder}
         </p>
         {partners.length === 0 ? (
-          <p className="text-sm text-muted">{t.transfer.noPartners}</p>
+          <p className="text-sm text-muted-foreground">{t.transfer.noPartners}</p>
         ) : (
           <form action={createOrder} className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <select
@@ -127,7 +127,7 @@ export function TransferList({
             onClick={() => setTab(k)}
             className={
               "rounded-md px-3 py-1.5 transition-colors " +
-              (tab === k ? "bg-brand text-white" : "text-muted hover:text-ink")
+              (tab === k ? "bg-brand text-white" : "text-muted-foreground hover:text-ink")
             }
           >
             {k === "outgoing" ? t.transfer.outgoing : t.transfer.incoming}
@@ -137,7 +137,7 @@ export function TransferList({
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
         {rows.length === 0 ? (
-          <p className="px-4 py-10 text-center text-sm text-muted">
+          <p className="px-4 py-10 text-center text-sm text-muted-foreground">
             {t.transfer.empty}
           </p>
         ) : (
@@ -157,13 +157,13 @@ export function TransferList({
                   onClick={() => router.push(`/dashboard/transfer-obat/${o.id}`)}
                   className="cursor-pointer"
                 >
-                  <TableCell className="font-mono text-xs text-muted">
+                  <TableCell className="font-mono text-xs text-muted-foreground">
                     {o.orderNumber}
                   </TableCell>
                   <TableCell className="font-medium text-ink">
                     {o.partnerName}
                   </TableCell>
-                  <TableCell className="text-muted">{o.totalQty}</TableCell>
+                  <TableCell className="text-muted-foreground">{o.totalQty}</TableCell>
                   <TableCell>
                     <Badge className={STATUS_BADGE[o.status]}>
                       {t.transfer.statuses[o.status]}

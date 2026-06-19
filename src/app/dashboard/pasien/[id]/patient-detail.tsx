@@ -42,7 +42,7 @@ const inputClass =
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex border-b border-slate-100 last:border-b-0">
-      <div className="w-32 shrink-0 bg-slate-50/70 px-3 py-1.5 text-xs font-medium text-muted">
+      <div className="w-32 shrink-0 bg-slate-50/70 px-3 py-1.5 text-xs font-medium text-muted-foreground">
         {label}
       </div>
       <div className="flex-1 px-3 py-1.5 text-sm text-ink">{value || "—"}</div>
@@ -104,7 +104,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
       {/* Header bar (ERP) */}
       <Link
         href="/dashboard/pasien"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -119,7 +119,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
           </span>
           <div>
             <h1 className="text-lg font-bold leading-tight text-ink">{data.name}</h1>
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
               <span className="font-mono">{data.mrNumber}</span>
               <span className="text-slate-300">•</span>
               <span>{genderLabel}</span>
@@ -210,7 +210,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
             }
           >
             {data.visits.length === 0 ? (
-              <p className="px-3 py-3 text-sm text-muted">
+              <p className="px-3 py-3 text-sm text-muted-foreground">
                 {t.patients.detail.noVisits}
               </p>
             ) : (
@@ -243,7 +243,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
           <Section title={t.patients.detail.allergiesTitle}>
             <div className="p-3">
               {data.allergies.length === 0 ? (
-                <p className="text-sm text-muted">{t.patients.detail.noAllergies}</p>
+                <p className="text-sm text-muted-foreground">{t.patients.detail.noAllergies}</p>
               ) : (
                 <ul className="space-y-1.5">
                   {data.allergies.map((a) => (

@@ -55,8 +55,8 @@ export function Kiosk({
             <h1 className="text-3xl font-bold tracking-tight text-ink">
               {t.queue.kiosk.title}
             </h1>
-            <p className="mt-1 text-muted">{tenantName}</p>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-wide text-muted">
+            <p className="mt-1 text-muted-foreground">{tenantName}</p>
+            <p className="mt-6 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
               {t.queue.kiosk.subtitle}
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
@@ -79,18 +79,18 @@ export function Kiosk({
         ) : (
           <div className="w-full max-w-sm">
             <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-8 text-center">
-              <p className="text-sm font-semibold uppercase tracking-wide text-muted">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
                 {tenantName}
               </p>
-              <p className="mt-1 text-xs text-muted">{t.queue.kiosk.ticket}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{t.queue.kiosk.ticket}</p>
               <p className="mt-6 text-sm font-medium text-brand-deep">
                 {ticket.serviceLabel}
               </p>
               <p className="mt-2 text-7xl font-black tracking-tight text-ink">
                 {ticket.code}
               </p>
-              <p className="mt-4 text-xs text-muted">{ticket.at}</p>
-              <p className="mt-4 text-sm text-muted">{t.queue.kiosk.goWait}</p>
+              <p className="mt-4 text-xs text-muted-foreground">{ticket.at}</p>
+              <p className="mt-4 text-sm text-muted-foreground">{t.queue.kiosk.goWait}</p>
             </div>
 
             <div className="mt-5 flex gap-3 print:hidden">

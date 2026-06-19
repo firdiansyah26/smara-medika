@@ -75,7 +75,7 @@ export function AccessPanel({
       <h1 className="text-2xl font-bold tracking-tight text-ink">
         {t.access.title}
       </h1>
-      <p className="mt-1 text-sm text-muted">{t.access.subtitle}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t.access.subtitle}</p>
 
       {/* Pencarian lintas tenant */}
       <Card className="mt-6 gap-3 p-5">
@@ -93,7 +93,7 @@ export function AccessPanel({
         {results !== null && (
           <div className="mt-2">
             {results.length === 0 ? (
-              <p className="text-sm text-muted">{t.access.noResults}</p>
+              <p className="text-sm text-muted-foreground">{t.access.noResults}</p>
             ) : (
               <ul className="divide-y divide-slate-100">
                 {results.map((r) => (
@@ -101,12 +101,12 @@ export function AccessPanel({
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-ink">
                         {r.name}
-                        <span className="ml-2 text-xs text-muted">
+                        <span className="ml-2 text-xs text-muted-foreground">
                           {r.gender === "LAKI_LAKI" ? t.patients.male : t.patients.female}
                           {r.city ? ` · ${r.city}` : ""}
                         </span>
                       </p>
-                      <p className="text-xs text-muted">
+                      <p className="text-xs text-muted-foreground">
                         {t.access.owner}: {r.ownerName}
                         {r.nikMasked ? ` · NIK ${r.nikMasked}` : ""}
                       </p>
@@ -139,7 +139,7 @@ export function AccessPanel({
             <h2 className="text-base font-semibold text-ink">{t.access.incoming}</h2>
           </div>
           {incoming.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">
+            <p className="px-5 py-8 text-center text-sm text-muted-foreground">
               {t.access.noIncoming}
             </p>
           ) : (
@@ -150,7 +150,7 @@ export function AccessPanel({
                     <p className="truncate text-sm font-medium text-ink">
                       {r.patientName}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-muted-foreground">
                       {r.requesterName}
                       {r.reason ? ` · ${r.reason}` : ""}
                     </p>
@@ -179,7 +179,7 @@ export function AccessPanel({
             <h2 className="text-base font-semibold text-ink">{t.access.outgoing}</h2>
           </div>
           {outgoing.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-muted">
+            <p className="px-5 py-8 text-center text-sm text-muted-foreground">
               {t.access.noOutgoing}
             </p>
           ) : (
@@ -190,7 +190,7 @@ export function AccessPanel({
                     <p className="truncate text-sm font-medium text-ink">
                       {r.patientName}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="text-xs text-muted-foreground">
                       {r.ownerName}
                       {r.status === "APPROVED" && r.expiresAt
                         ? ` · ${t.access.expiresOn} ${dateFmt.format(new Date(r.expiresAt))}`

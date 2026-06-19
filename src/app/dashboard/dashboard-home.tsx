@@ -69,7 +69,7 @@ export function DashboardHome({
           <h1 className="text-2xl font-bold tracking-tight text-ink">
             {t.dashboardHome.greeting}, {greetingName} 👋
           </h1>
-          <p className="mt-1 text-sm text-muted">{t.dashboardHome.subtitle}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{t.dashboardHome.subtitle}</p>
         </div>
 
         {/* Filter periode */}
@@ -82,7 +82,7 @@ export function DashboardHome({
               aria-pressed={period === p}
               className={
                 "rounded-md px-2.5 py-1 transition-colors " +
-                (period === p ? "bg-brand text-white" : "text-muted hover:text-ink")
+                (period === p ? "bg-brand text-white" : "text-muted-foreground hover:text-ink")
               }
             >
               {t.dashboardHome.period[p]}
@@ -102,7 +102,7 @@ export function DashboardHome({
             </span>
             <div>
               <p className="text-3xl font-bold tracking-tight text-ink">{s.value}</p>
-              <p className="mt-1 text-sm text-muted">{t.dashboardHome.stats[s.key]}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{t.dashboardHome.stats[s.key]}</p>
             </div>
           </Card>
         ))}
@@ -113,13 +113,13 @@ export function DashboardHome({
         <Card className="gap-0 py-0">
           <CardHeader className="flex flex-row items-center justify-between border-b py-4">
             <CardTitle className="text-base">{t.dashboardHome.topDiagnoses}</CardTitle>
-            <span className="text-xs text-muted">
+            <span className="text-xs text-muted-foreground">
               {t.dashboardHome.visitsInPeriod}: <b className="text-ink">{visitsInPeriod}</b>
             </span>
           </CardHeader>
           <CardContent className="px-5 py-4">
             {topDiagnoses.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted">
+              <p className="py-6 text-center text-sm text-muted-foreground">
                 {t.dashboardHome.noDiagnoses}
               </p>
             ) : (
@@ -128,10 +128,10 @@ export function DashboardHome({
                   <li key={d.code}>
                     <div className="flex items-center justify-between gap-2 text-sm">
                       <span className="truncate text-ink">
-                        <span className="mr-1.5 font-mono text-xs text-muted">{d.code}</span>
+                        <span className="mr-1.5 font-mono text-xs text-muted-foreground">{d.code}</span>
                         {d.name}
                       </span>
-                      <span className="shrink-0 text-xs font-semibold text-muted">
+                      <span className="shrink-0 text-xs font-semibold text-muted-foreground">
                         {d.count} {t.dashboardHome.cases}
                       </span>
                     </div>
@@ -155,7 +155,7 @@ export function DashboardHome({
           </CardHeader>
           <CardContent className="p-0">
             {recent.length === 0 ? (
-              <p className="py-10 text-center text-sm text-muted">
+              <p className="py-10 text-center text-sm text-muted-foreground">
                 {t.dashboardHome.recentEmpty}
               </p>
             ) : (
@@ -167,9 +167,9 @@ export function DashboardHome({
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">{v.name}</p>
-                      <p className="text-xs text-muted">{v.mrNumber}</p>
+                      <p className="text-xs text-muted-foreground">{v.mrNumber}</p>
                     </div>
-                    <span className="text-xs text-muted">
+                    <span className="text-xs text-muted-foreground">
                       {dateFmt.format(new Date(v.visitDate))}
                     </span>
                   </li>
