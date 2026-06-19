@@ -40,6 +40,21 @@ export type Dictionary = {
     note: string;
     invalid: string;
     demoHint: string;
+    resetSuccess: string;
+    forgotTitle: string;
+    forgotSubtitle: string;
+    sendLink: string;
+    sentNotice: string;
+    devLinkNotice: string;
+    openResetLink: string;
+    resetTitle: string;
+    resetSubtitle: string;
+    newPassword: string;
+    confirmPassword: string;
+    resetSubmit: string;
+    errWeak: string;
+    errMismatch: string;
+    errExpired: string;
   };
   app: {
     nav: {
@@ -571,6 +586,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
       note: "Autentikasi aktif (Auth.js). Masuk dengan akun terdaftar.",
       invalid: "Email atau kata sandi salah.",
       demoHint: "Akun demo: andi@sehatsentosa.id / password123",
+      resetSuccess: "Kata sandi berhasil diubah. Silakan masuk.",
+      forgotTitle: "Lupa kata sandi",
+      forgotSubtitle: "Masukkan email Anda untuk membuat tautan reset.",
+      sendLink: "Buat tautan reset",
+      sentNotice:
+        "Jika email terdaftar, tautan reset telah dibuat.",
+      devLinkNotice:
+        "Mode dev (tanpa email): gunakan tautan di bawah untuk mengatur ulang kata sandi.",
+      openResetLink: "Buka tautan reset",
+      resetTitle: "Atur ulang kata sandi",
+      resetSubtitle: "Masukkan kata sandi baru Anda.",
+      newPassword: "Kata sandi baru",
+      confirmPassword: "Ulangi kata sandi",
+      resetSubmit: "Simpan kata sandi",
+      errWeak: "Kata sandi minimal 8 karakter.",
+      errMismatch: "Konfirmasi kata sandi tidak cocok.",
+      errExpired: "Tautan reset tidak valid atau kedaluwarsa.",
     },
     app: {
       nav: {
@@ -1112,6 +1144,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
       note: "Authentication is active (Auth.js). Sign in with a registered account.",
       invalid: "Invalid email or password.",
       demoHint: "Demo account: andi@sehatsentosa.id / password123",
+      resetSuccess: "Password changed successfully. Please sign in.",
+      forgotTitle: "Forgot password",
+      forgotSubtitle: "Enter your email to generate a reset link.",
+      sendLink: "Generate reset link",
+      sentNotice: "If the email is registered, a reset link has been generated.",
+      devLinkNotice:
+        "Dev mode (no email): use the link below to reset your password.",
+      openResetLink: "Open reset link",
+      resetTitle: "Reset password",
+      resetSubtitle: "Enter your new password.",
+      newPassword: "New password",
+      confirmPassword: "Repeat password",
+      resetSubmit: "Save password",
+      errWeak: "Password must be at least 8 characters.",
+      errMismatch: "Password confirmation does not match.",
+      errExpired: "Reset link is invalid or expired.",
     },
     app: {
       nav: {

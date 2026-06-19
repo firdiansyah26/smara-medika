@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLocale } from "@/lib/use-locale";
@@ -11,11 +12,20 @@ import { Label } from "@/components/ui/label";
 import { authenticate } from "./actions";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { t } = useLocale();
   const [errorCode, formAction, pending] = useActionState(
     authenticate,
     undefined,
   );
+  const resetOk = useSearchParams().get("reset") === "1";
 
   return (
     <div className="grid min-h-full lg:grid-cols-2">
@@ -56,6 +66,12 @@ export default function LoginPage() {
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">{t.login.subtitle}</p>
 
+            {resetOk && (
+              <p className="mt-6 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
+                {t.login.resetSuccess}
+              </p>
+            )}
+
             <form action={formAction} className="mt-8 space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="email">{t.login.email}</Label>
@@ -73,9 +89,12 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">{t.login.password}</Label>
-                  <span className="text-xs font-medium text-muted-foreground">
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-brand transition-colors hover:text-brand-deep"
+                  >
                     {t.login.forgot}
-                  </span>
+                  </Link>
                 </div>
                 <Input
                   id="password"
