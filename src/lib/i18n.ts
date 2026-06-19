@@ -266,6 +266,42 @@ export type Dictionary = {
     noCandidates: string;
     endConfirm: string;
   };
+  transfer: {
+    title: string;
+    subtitle: string;
+    outgoing: string;
+    incoming: string;
+    newOrder: string;
+    partner: string;
+    drug: string;
+    quantity: string;
+    stock: string;
+    note: string;
+    create: string;
+    selectPartner: string;
+    selectDrug: string;
+    orderNo: string;
+    items: string;
+    empty: string;
+    noPartners: string;
+    back: string;
+    timeline: string;
+    advance: string;
+    receive: string;
+    reject: string;
+    cancel: string;
+    statuses: {
+      REQUESTED: string;
+      CONFIRMED: string;
+      PREPARING: string;
+      SHIPPED: string;
+      IN_TRANSIT: string;
+      DELIVERED: string;
+      RECEIVED: string;
+      REJECTED: string;
+      CANCELLED: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -584,6 +620,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noCandidates: "Tidak ada fasilitas lain untuk diajak.",
       endConfirm: "Putus kemitraan dengan fasilitas ini?",
     },
+    transfer: {
+      title: "Transfer Obat",
+      subtitle: "Order obat ke fasilitas rekanan & lacak statusnya.",
+      outgoing: "Order keluar",
+      incoming: "Order masuk",
+      newOrder: "Buat order",
+      partner: "Rekanan",
+      drug: "Obat",
+      quantity: "Jumlah",
+      stock: "Stok",
+      note: "Catatan",
+      create: "Buat order",
+      selectPartner: "Pilih rekanan",
+      selectDrug: "Pilih obat",
+      orderNo: "No. Order",
+      items: "Item",
+      empty: "Belum ada order.",
+      noPartners: "Belum ada rekanan aktif. Tambahkan di menu Rekanan.",
+      back: "Kembali",
+      timeline: "Riwayat status",
+      advance: "Proses berikutnya",
+      receive: "Terima obat",
+      reject: "Tolak",
+      cancel: "Batalkan",
+      statuses: {
+        REQUESTED: "Diajukan",
+        CONFIRMED: "Dikonfirmasi",
+        PREPARING: "Disiapkan",
+        SHIPPED: "Dikirim",
+        IN_TRANSIT: "Dalam perjalanan",
+        DELIVERED: "Tiba",
+        RECEIVED: "Diterima",
+        REJECTED: "Ditolak",
+        CANCELLED: "Dibatalkan",
+      },
+    },
   },
   en: {
     common: {
@@ -899,6 +971,42 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noActive: "No active partners yet.",
       noCandidates: "No other facilities to invite.",
       endConfirm: "End partnership with this facility?",
+    },
+    transfer: {
+      title: "Drug Transfer",
+      subtitle: "Order drugs from partner facilities & track status.",
+      outgoing: "Outgoing orders",
+      incoming: "Incoming orders",
+      newOrder: "New order",
+      partner: "Partner",
+      drug: "Drug",
+      quantity: "Quantity",
+      stock: "Stock",
+      note: "Note",
+      create: "Create order",
+      selectPartner: "Select partner",
+      selectDrug: "Select drug",
+      orderNo: "Order No.",
+      items: "Items",
+      empty: "No orders yet.",
+      noPartners: "No active partners. Add one in the Partners menu.",
+      back: "Back",
+      timeline: "Status history",
+      advance: "Next step",
+      receive: "Receive",
+      reject: "Reject",
+      cancel: "Cancel",
+      statuses: {
+        REQUESTED: "Requested",
+        CONFIRMED: "Confirmed",
+        PREPARING: "Preparing",
+        SHIPPED: "Shipped",
+        IN_TRANSIT: "In transit",
+        DELIVERED: "Delivered",
+        RECEIVED: "Received",
+        REJECTED: "Rejected",
+        CANCELLED: "Cancelled",
+      },
     },
   },
 };
