@@ -48,6 +48,11 @@ const navItems: NavItem[] = [
     href: "/dashboard/rekanan",
     icon: <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />,
   },
+  {
+    key: "patientAccess",
+    href: "/dashboard/akses-pasien",
+    icon: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 11l2 2 4-4" />,
+  },
   { key: "sharedApi", href: "/dashboard/shared-api", icon: <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /> },
   {
     key: "settings",
