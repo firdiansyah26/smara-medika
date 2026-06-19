@@ -47,6 +47,7 @@ export type Dictionary = {
       patients: string;
       records: string;
       queue: string;
+      appointments: string;
       pharmacy: string;
       drugTransfer: string;
       partners: string;
@@ -455,6 +456,40 @@ export type Dictionary = {
       OTHER: string;
     };
   };
+  appointments: {
+    title: string;
+    subtitle: string;
+    newAppt: string;
+    book: string;
+    selectPatient: string;
+    selectDoctor: string;
+    dateTime: string;
+    duration: string;
+    minutes: string;
+    reason: string;
+    colTime: string;
+    colPatient: string;
+    colDoctor: string;
+    colReason: string;
+    colStatus: string;
+    colAction: string;
+    empty: string;
+    confirm: string;
+    cancel: string;
+    noShow: string;
+    startVisit: string;
+    cancelConfirm: string;
+    filterToday: string;
+    filterUpcoming: string;
+    filterAll: string;
+    statuses: {
+      SCHEDULED: string;
+      CONFIRMED: string;
+      COMPLETED: string;
+      CANCELLED: string;
+      NO_SHOW: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -543,6 +578,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         patients: "Pasien",
         records: "Rekam Medis",
         queue: "Antrian",
+        appointments: "Jadwal",
         pharmacy: "Farmasi",
         drugTransfer: "Transfer Obat",
         partners: "Rekanan",
@@ -963,6 +999,40 @@ export const dictionaries: Record<Locale, Dictionary> = {
         OTHER: "Lainnya",
       },
     },
+    appointments: {
+      title: "Jadwal & Janji Temu",
+      subtitle: "Atur jadwal dokter & janji temu pasien.",
+      newAppt: "Buat Janji",
+      book: "Jadwalkan",
+      selectPatient: "Pilih pasien…",
+      selectDoctor: "Pilih dokter…",
+      dateTime: "Tanggal & jam",
+      duration: "Durasi",
+      minutes: "menit",
+      reason: "Keperluan",
+      colTime: "Waktu",
+      colPatient: "Pasien",
+      colDoctor: "Dokter",
+      colReason: "Keperluan",
+      colStatus: "Status",
+      colAction: "Aksi",
+      empty: "Belum ada janji temu.",
+      confirm: "Konfirmasi",
+      cancel: "Batalkan",
+      noShow: "Tidak Hadir",
+      startVisit: "Mulai Kunjungan",
+      cancelConfirm: "Batalkan janji temu ini?",
+      filterToday: "Hari ini",
+      filterUpcoming: "Mendatang",
+      filterAll: "Semua",
+      statuses: {
+        SCHEDULED: "Terjadwal",
+        CONFIRMED: "Dikonfirmasi",
+        COMPLETED: "Selesai",
+        CANCELLED: "Dibatalkan",
+        NO_SHOW: "Tidak Hadir",
+      },
+    },
   },
   en: {
     common: {
@@ -1049,6 +1119,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         patients: "Patients",
         records: "Medical Records",
         queue: "Queue",
+        appointments: "Appointments",
         pharmacy: "Pharmacy",
         drugTransfer: "Drug Transfer",
         partners: "Partners",
@@ -1467,6 +1538,40 @@ export const dictionaries: Record<Locale, Dictionary> = {
         PROCEDURE: "Procedure",
         LAB: "Laboratory",
         OTHER: "Other",
+      },
+    },
+    appointments: {
+      title: "Schedule & Appointments",
+      subtitle: "Manage doctor schedules & patient appointments.",
+      newAppt: "New Appointment",
+      book: "Book",
+      selectPatient: "Select patient…",
+      selectDoctor: "Select doctor…",
+      dateTime: "Date & time",
+      duration: "Duration",
+      minutes: "min",
+      reason: "Reason",
+      colTime: "Time",
+      colPatient: "Patient",
+      colDoctor: "Doctor",
+      colReason: "Reason",
+      colStatus: "Status",
+      colAction: "Action",
+      empty: "No appointments yet.",
+      confirm: "Confirm",
+      cancel: "Cancel",
+      noShow: "No-show",
+      startVisit: "Start Visit",
+      cancelConfirm: "Cancel this appointment?",
+      filterToday: "Today",
+      filterUpcoming: "Upcoming",
+      filterAll: "All",
+      statuses: {
+        SCHEDULED: "Scheduled",
+        CONFIRMED: "Confirmed",
+        COMPLETED: "Completed",
+        CANCELLED: "Cancelled",
+        NO_SHOW: "No-show",
       },
     },
   },
