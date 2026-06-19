@@ -174,6 +174,15 @@ export type Dictionary = {
       primer: string;
       sekunder: string;
       add: string;
+      rxTitle: string;
+      rxSelectDrug: string;
+      rxDosage: string;
+      rxFrequency: string;
+      rxQty: string;
+      rxInstruction: string;
+      rxEmpty: string;
+      rxPrint: string;
+      rxNoStock: string;
       vitalAlertsTitle: string;
       vitalAlerts: {
         bpLow: string;
@@ -560,6 +569,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
         primer: "Primer",
         sekunder: "Sekunder",
         add: "Tambah",
+        rxTitle: "Resep",
+        rxSelectDrug: "Pilih obat",
+        rxDosage: "Dosis",
+        rxFrequency: "Frekuensi",
+        rxQty: "Jumlah",
+        rxInstruction: "Aturan pakai",
+        rxEmpty: "Belum ada resep.",
+        rxPrint: "Cetak resep",
+        rxNoStock: "Belum ada obat di stok fasilitas. Tambahkan di menu Farmasi.",
         vitalAlertsTitle: "Catatan tanda vital",
         vitalAlerts: {
           bpLow: "Tekanan darah rendah (hipotensi). Pertimbangkan evaluasi.",
@@ -944,6 +962,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
         primer: "Primary",
         sekunder: "Secondary",
         add: "Add",
+        rxTitle: "Prescription",
+        rxSelectDrug: "Select drug",
+        rxDosage: "Dosage",
+        rxFrequency: "Frequency",
+        rxQty: "Qty",
+        rxInstruction: "Instruction",
+        rxEmpty: "No prescription yet.",
+        rxPrint: "Print prescription",
+        rxNoStock: "No drugs in facility stock. Add via Pharmacy menu.",
         vitalAlertsTitle: "Vital sign notes",
         vitalAlerts: {
           bpLow: "Low blood pressure (hypotension). Consider evaluation.",

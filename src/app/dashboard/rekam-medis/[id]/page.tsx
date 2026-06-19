@@ -20,9 +20,34 @@ export default async function EncounterPage({
       patient: { select: { id: true, name: true, mrNumber: true } },
       vitalSign: true,
       diagnoses: { orderBy: { type: "asc" } },
+      prescriptions: {
+        include: { items: { include: { drug: { select: { name: true, unit: true } } } } },
+      },
     },
   });
   if (!encounter) notFound();
+
+  const drugStocks = await db.drugStock.findMany({
+    where: { tenantId: tenant.tenantId },
+    include: { drug: { select: { name: true, unit: true } } },
+    orderBy: { drug: { name: "asc" } },
+  });
+  const drugOptions = drugStocks.map((s) => ({
+    drugId: s.drugId,
+    name: s.drug.name,
+    unit: s.drug.unit,
+  }));
+  const prescriptionItems = encounter.prescriptions.flatMap((p) =>
+    p.items.map((it) => ({
+      id: it.id,
+      drugName: it.drug.name,
+      unit: it.drug.unit,
+      dosage: it.dosage,
+      frequency: it.frequency,
+      quantity: it.quantity,
+      instruction: it.instruction,
+    })),
+  );
 
   return (
     <EncounterEditor
@@ -55,6 +80,8 @@ export default async function EncounterPage({
           icdName: d.icdName,
           type: d.type,
         })),
+        prescriptionItems,
+        drugOptions,
       }}
     />
   );
