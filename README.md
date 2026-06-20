@@ -11,7 +11,7 @@
 - 🔢 **Antrian lengkap** — kiosk cetak nomor, papan display bersuara (TTS), panel panggil per counter
 - 🩻 **Rekam medis SOAP** + diagnosa ICD-10 + tanda vital dengan **indikator klinis** otomatis
 
-> **Status:** MVP selesai (Auth, Multi-tenant, Pasien, Rekam Medis, Dashboard) + Antrian & Farmasi. Lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
+> **Status:** MVP selesai (Auth, Multi-tenant, Pasien, Rekam Medis, Dashboard) + Antrian, Farmasi, Rekanan & transfer obat, berbagi pasien lintas tenant, resep elektronik, laporan, Billing/Tagihan, dan Jadwal/Janji Temu. Lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 
@@ -35,17 +35,20 @@ Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 
 ## ✨ Fitur (✅ selesai · 🔜 rencana)
 
-- ✅ **Multi-Tenant & keanggotaan** — 1 user banyak tenant, tenant switcher, isolasi data per fasilitas
-- ✅ **Autentikasi & RBAC** — login (Auth.js), proteksi route, peran per tenant, audit log
-- ✅ **Manajemen Pasien** — registrasi (No. RM otomatis), cari, detail, edit, soft-delete, alergi
-- ✅ **Rekam Medis** — kunjungan, SOAP, diagnosa ICD-10, tanda vital + **indikator klinis**
+- ✅ **Multi-Tenant & keanggotaan** — 1 user banyak tenant, tenant switcher, isolasi data per fasilitas; **undang & kelola anggota** (peran inline, keluarkan)
+- ✅ **Autentikasi & RBAC** — login (Auth.js), proteksi route, peran per tenant, audit log, **lupa & reset kata sandi** (mode dev)
+- ✅ **Manajemen Pasien** — registrasi (No. RM otomatis), cari, detail, edit, soft-delete, alergi, **riwayat pengobatan**
+- ✅ **Rekam Medis** — kunjungan, SOAP, diagnosa ICD-10, tanda vital + **indikator klinis**, **resep elektronik + cetak**
 - ✅ **Dashboard** — ringkasan, diagnosa terbanyak, filter periode
 - ✅ **Antrian** — kiosk cetak nomor, papan display + suara, panel panggil per counter (BPJS/Asuransi/Umum)
 - ✅ **Farmasi** — master obat + stok per tenant (indikator stok menipis)
+- ✅ **Rekanan & transfer obat** antar fasilitas — order multi-item, tracking status, penerimaan → stok auto update
+- ✅ **Berbagi pasien lintas tenant** — pencarian info terbatas + permintaan/persetujuan akses
+- ✅ **Laporan & export** — laporan kunjungan & transfer obat, export CSV + cetak/PDF
+- ✅ **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID, cetak
+- ✅ **Jadwal & Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter
 - ✅ **UI** — komponen **shadcn ui**, dwibahasa **ID/EN**
-- 🔜 **Rekanan & transfer obat** antar fasilitas (dengan tracking)
-- 🔜 **Berbagi pasien lintas tenant** (pencarian + persetujuan akses)
-- 🔜 **Resep elektronik**, laporan & export, billing, lab/radiologi
+- 🔜 **Lab/radiologi**, Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS
 - 🔜 **Shared API** publik (API key, scope, webhook) — lihat `docs/SHARED_API.md`
 
 ---
@@ -158,8 +161,9 @@ prisma/                        # schema.prisma, migrations, seed.ts
 
 - [x] Perencanaan + scaffold + fondasi (Next.js 16, Prisma, Auth.js, shadcn)
 - [x] **MVP**: Auth & RBAC, Multi-tenant, Manajemen Pasien, Rekam Medis SOAP (+ indikator vital), Dashboard
-- [x] **Operasional (sebagian)**: Antrian (kiosk/display/suara), Farmasi (stok)
-- [ ] Berikutnya: rekanan & transfer obat, berbagi pasien lintas tenant, resep, laporan, Shared API
+- [x] **Operasional & jaringan**: Antrian (kiosk/display/suara), Farmasi (stok), rekanan & transfer obat (tracking), berbagi pasien lintas tenant, resep elektronik, laporan & export, undang/kelola anggota, lupa/reset kata sandi
+- [x] **Lanjutan (sebagian)**: Billing/Tagihan, Jadwal/Janji Temu
+- [ ] Berikutnya: Lab/radiologi, Notifikasi, Telemedicine, SATUSEHAT/BPJS, Shared API publik
 
 Status detail: [docs/ROADMAP.md](./docs/ROADMAP.md).
 

@@ -93,6 +93,18 @@ Log pemakaian API bisa tumbuh sangat besar.
 Perubahan kontrak `/v1` berisiko merusak integrasi mitra.
 **Rencana:** Kontrak OpenAPI sebagai sumber kebenaran; kebijakan deprecation + header `Sunset`; uji kontrak.
 
+### TD-017 · 🔴 · Dampak: Sedang — Pengiriman email belum ada (reset kata sandi mode dev)
+Alur lupa/reset kata sandi sudah jalan, tetapi **belum ada layanan email**. Untuk sementara tautan reset ditampilkan langsung di layar (**MODE DEV**), yang tidak aman untuk produksi.
+**Rencana:** Integrasi penyedia email (Resend/SMTP) yang juga akan dipakai untuk **Notifikasi (#15)**; kirim tautan reset via email & hentikan tampilan tautan di layar.
+
+### TD-018 · 🔴 · Dampak: Rendah — Uang Billing disimpan sebagai integer rupiah
+Nilai uang di Billing (`Invoice`, `InvoiceItem`) disimpan sebagai **Int rupiah** (tanpa desimal). Cukup untuk rupiah, tetapi kaku bila ada pembulatan/sen, mata uang lain, atau perhitungan pajak yang butuh presisi.
+**Rencana:** Pertimbangkan tipe `Decimal` / penanganan mata uang khusus bila kebutuhan bertambah.
+
+### TD-019 · 🔴 · Dampak: Rendah — Jadwal dokter belum ada template ketersediaan berulang
+"Jadwal dokter" saat ini berupa **daftar appointment terfilter** (Hari ini/Mendatang/Semua). Belum ada template ketersediaan dokter berulang (recurring availability / jam praktik), sehingga konflik & slot kosong tidak terkelola otomatis.
+**Rencana:** Tambah model jadwal praktik/ketersediaan berulang + validasi slot saat booking.
+
 ---
 
 ## 🧭 Keputusan Teknis (ADR Ringkas)

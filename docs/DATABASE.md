@@ -34,9 +34,16 @@ Tenant ──< DrugOrder (pemohon) / (penyedia)
 DrugOrder ──< DrugOrderItem ──> Drug
 DrugOrder ──< DrugOrderTracking          (riwayat status / tracking)
 
+Tenant ──< Invoice >── Patient           (tagihan per pasien, opsional ke Encounter)
+Invoice ──< InvoiceItem                   (item biaya berkategori)
+Tenant ──< Appointment >── Patient        (janji temu; dokter = User "AppointmentDoctor")
+Appointment ──> Encounter?                (terisi saat "Mulai Kunjungan")
+
 Tenant ──< ApiKey                        (Shared API: kunci publik per tenant)
 Tenant ──< WebhookEndpoint ──< WebhookDelivery
 Tenant ──< ApiRequestLog                 (audit pemakaian API)
+
+User ──< PasswordResetToken              (token reset kata sandi)
 ```
 
 ---
@@ -226,6 +233,85 @@ Sama seperti desain sebelumnya, **plus `tenantId`** pada Encounter (& diturunkan
 
 ---
 
+## Entitas Billing (Tagihan)
+
+### Invoice (Tagihan per Pasien) ⭐
+Tagihan untuk satu pasien, opsional terkait satu kunjungan/encounter. Nilai uang disimpan sebagai **Int rupiah** (tanpa desimal).
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String (cuid) | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| encounterId | String? | FK → Encounter (opsional) |
+| invoiceNumber | String | `INV-YYYYMM-XXXXX` (unik **per tenant**) |
+| status | Enum | InvoiceStatus: DRAFT, UNPAID, PAID, CANCELLED (default DRAFT) |
+| discount | Int | diskon rupiah (default 0) |
+| total | Int | total rupiah = Σ item − diskon (default 0) |
+| note | String? | catatan |
+| createdById | String | FK → User |
+| paidAt | DateTime? | waktu pembayaran |
+| createdAt / updatedAt | DateTime | |
+
+> **Relasi:** tenant, patient, encounter?, items `InvoiceItem[]`. **Index:** `@@unique([tenantId, invoiceNumber])`, `[tenantId, status]`, `[patientId]`.
+
+### InvoiceItem (Item Biaya)
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| invoiceId | String | FK → Invoice (onDelete Cascade) |
+| category | Enum | BillingCategory: CONSULTATION, DRUG, PROCEDURE, LAB, OTHER (default OTHER) |
+| description | String | uraian item |
+| quantity | Int | jumlah (default 1) |
+| unitPrice | Int | harga satuan rupiah (default 0) |
+| amount | Int | subtotal rupiah = quantity × unitPrice (default 0) |
+
+> **Index:** `[invoiceId]`.
+
+---
+
+## Entitas Jadwal & Janji Temu
+
+### Appointment (Janji Temu) ⭐
+Booking janji temu pasien dengan dokter. Saat "Mulai Kunjungan", sistem membuat Encounter dan mengisi `encounterId`.
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String (cuid) | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| doctorId | String | FK → User (relation `"AppointmentDoctor"`) |
+| scheduledAt | DateTime | waktu janji temu |
+| durationMin | Int | durasi menit (default 30) |
+| status | Enum | AppointmentStatus: SCHEDULED, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW (default SCHEDULED) |
+| reason | String? | keperluan |
+| note | String? | catatan |
+| encounterId | String? | FK → Encounter (terisi saat mulai kunjungan) |
+| createdById | String | FK → User |
+| createdAt / updatedAt | DateTime | |
+
+> **Relasi:** tenant, patient, doctor (User, relation `"AppointmentDoctor"`). **Index:** `[tenantId, scheduledAt]`, `[doctorId, scheduledAt]`.
+
+---
+
+## Entitas Reset Kata Sandi
+
+### PasswordResetToken (Token Reset Kata Sandi) ⭐
+Token untuk alur lupa/reset kata sandi. Token acak 32-byte; yang disimpan adalah **hash SHA-256**, kedaluwarsa 1 jam, token lama dibatalkan saat permintaan baru.
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| userId | String | FK → User (onDelete Cascade) |
+| tokenHash | String | hash SHA-256 token (unik) |
+| expiresAt | DateTime | kedaluwarsa (1 jam) |
+| usedAt | DateTime? | waktu token dipakai |
+| createdAt | DateTime | |
+
+> **Relasi:** user. **Index:** `[userId]`.
+
+---
+
 ## Entitas Shared API (Integrasi Pihak Ketiga)
 
 Mendukung fitur API publik per tenant. Detail teknis: lihat `SHARED_API.md`.
@@ -325,6 +411,9 @@ enum OrderStatus {
   REQUESTED  CONFIRMED  PREPARING  SHIPPED
   IN_TRANSIT DELIVERED  RECEIVED   REJECTED  CANCELLED
 }
+enum InvoiceStatus { DRAFT  UNPAID  PAID  CANCELLED }
+enum BillingCategory { CONSULTATION  DRUG  PROCEDURE  LAB  OTHER }
+enum AppointmentStatus { SCHEDULED  CONFIRMED  COMPLETED  CANCELLED  NO_SHOW }
 
 model Tenant {
   id          String       @id @default(cuid())
@@ -376,7 +465,7 @@ model DrugOrder {
 }
 ```
 
-> Cuplikan disederhanakan. Skema lengkap (Patient, Encounter, PatientAccessRequest, TenantPartnership, DrugStock, DrugOrderItem, DrugOrderTracking, AuditLog, dll) dibuat saat implementasi.
+> Cuplikan disederhanakan. Skema lengkap (Patient, Encounter, PatientAccessRequest, TenantPartnership, DrugStock, DrugOrderItem, DrugOrderTracking, Invoice, InvoiceItem, Appointment, PasswordResetToken, AuditLog, dll) dibuat saat implementasi.
 
 ---
 
@@ -385,6 +474,7 @@ model DrugOrder {
 - **Isolasi data:** semua query operasional WAJIB difilter `tenantId` aktif (kecuali pencarian pasien lintas tenant yang sengaja terbatas). Lihat `ARCHITECTURE.md` & `SECURITY.md`.
 - **Penomoran No. RM:** `RM-YYYYMM-XXXXX`, unik **per tenant**, generate via `$transaction`.
 - **Penomoran Order:** `TRF-YYYYMM-XXXXX`, unik global, generate via `$transaction`.
+- **Penomoran Invoice:** `INV-YYYYMM-XXXXX`, unik **per tenant**, generate via `$transaction`. Nilai uang Billing disimpan sebagai **Int rupiah** (lihat `TECH_DEBT.md`).
 - **Soft delete:** data medis pakai `deletedAt` (nullable), bukan hard delete.
 - **Indexing:** `(tenantId, mrNumber)`, `nik`, `(tenantId, drugId)`, `DrugOrder.status`, `DrugOrderTracking.orderId`.
 - **Transfer obat:** validasi rekanan `ACTIVE` + stok cukup sebelum order; kurangi stok penyedia saat dikirim, tambah stok pemohon saat diterima (transaction).
