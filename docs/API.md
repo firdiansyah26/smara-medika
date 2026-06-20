@@ -48,6 +48,15 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | POST | `/api/auth/logout` | Logout | semua |
 | GET | `/api/auth/me` | Info user aktif | semua |
 
+**Reset kata sandi (server actions + halaman publik):**
+| Action / Halaman | Deskripsi | Role |
+|------------------|-----------|------|
+| `requestPasswordReset` | Buat token reset (acak 32-byte, hash SHA-256, kedaluwarsa 1 jam, token lama dibatalkan). **Mode dev:** tautan reset ditampilkan di layar (`/forgot-password`) | publik |
+| `resetPassword` | Validasi token → ganti kata sandi (bcrypt, min 8 char, konfirmasi) → tandai token terpakai → redirect `/login?reset=1` | publik |
+| Halaman | `/forgot-password`, `/reset-password?token=…` | publik |
+
+> Pengiriman email sungguhan menyusul saat provider (Resend/SMTP) dipilih — lihat `TECH_DEBT.md`.
+
 ### 🏢 Tenant & Keanggotaan
 | Method | Endpoint | Deskripsi | Role |
 |--------|----------|-----------|------|
@@ -132,6 +141,33 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 |--------|----------|-----------|------|
 | GET | `/api/dashboard/summary` | Statistik ringkas | semua |
 | GET | `/api/reports/visits?from=&to=` | Laporan kunjungan | ADMIN, DOKTER |
+| GET | `/api/reports/drug-transfers?from=&to=` | Laporan transfer obat (masuk/keluar + status) | ADMIN, APOTEKER |
+
+> Halaman `/dashboard/laporan` menyajikan laporan kunjungan & transfer obat dengan **export CSV** dan **cetak/PDF**.
+
+### 🧾 Billing / Tagihan (Server Actions)
+Modul Billing memakai **Server Actions** (mutasi dari form), bukan REST. Nilai uang berupa integer rupiah.
+
+| Action | Deskripsi | Role |
+|--------|-----------|------|
+| `createInvoice` | Buat invoice per pasien (opsional terkait encounter); nomor `INV-YYYYMM-XXXXX` per tenant; status awal DRAFT | OWNER, ADMIN, RESEPSIONIS |
+| `addInvoiceItem` | Tambah item biaya berkategori (CONSULTATION/DRUG/PROCEDURE/LAB/OTHER) + qty & harga satuan | OWNER, ADMIN, RESEPSIONIS |
+| `removeInvoiceItem` | Hapus item dari invoice | OWNER, ADMIN, RESEPSIONIS |
+| `setDiscount` | Set diskon → total dihitung ulang (Σ item − diskon) | OWNER, ADMIN, RESEPSIONIS |
+| `updateInvoiceStatus` | Ubah status DRAFT → UNPAID → PAID / CANCELLED | OWNER, ADMIN, RESEPSIONIS |
+
+**Halaman:** `/dashboard/billing` (daftar), `/dashboard/billing/[id]` (detail), `/dashboard/billing/[id]/cetak` (cetak invoice).
+
+### 📅 Jadwal & Janji Temu / Appointment (Server Actions)
+Modul Appointment memakai **Server Actions**.
+
+| Action | Deskripsi | Role |
+|--------|-----------|------|
+| `createAppointment` | Booking janji temu (pasien + dokter + tanggal/jam + durasi + keperluan); status awal SCHEDULED | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+| `updateAppointmentStatus` | Ubah status SCHEDULED → CONFIRMED → COMPLETED / CANCELLED / NO_SHOW | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+| `startVisit` | Buat Encounter dari appointment (dokter & pasien otomatis), tandai COMPLETED + tautkan `encounterId` | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+
+**Halaman:** `/dashboard/jadwal` (filter Hari ini / Mendatang / Semua).
 
 ### 🔗 Manajemen Shared API (Internal — Admin Tenant)
 Endpoint untuk **mengelola** akses Shared API tenant (bukan API publiknya sendiri).
