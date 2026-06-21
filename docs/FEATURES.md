@@ -15,7 +15,8 @@ Dokumen ini merinci seluruh fitur SmaraMedika beserta status prioritasnya.
 > nomor + papan display bersuara + panel panggil per counter), **Farmasi** (master obat + stok),
 > **Rekanan**, **Transfer obat antar rekanan + tracking**, **Berbagi pasien lintas tenant**,
 > **Laporan & export (CSV + cetak/PDF)**, **Undang & kelola anggota tenant**, **Billing/Tagihan**,
-> **Jadwal & Janji Temu (Appointment)**, dan **UI shadcn**. Belum: Shared API (publik), Lab/Radiologi,
+> **Jadwal & Janji Temu (Appointment)**, **Shared API (API key + endpoint `/api/v1` + scope + rate limit)**,
+> dan **UI shadcn**. Belum: webhook Shared API, Lab/Radiologi,
 > Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS. Detail per fase: lihat `ROADMAP.md`.
 
 ---
@@ -215,13 +216,13 @@ API publik **per tenant** agar sistem eksternal (SIM-RS lain, aplikasi mitra) bi
 
 | Fitur | Prioritas | Deskripsi |
 |-------|:---:|-----------|
-| Kelola API Key | 🟢 P2 | Buat/cabut/rotasi API key per tenant (OWNER/ADMIN) |
-| Scope & izin granular | 🟢 P2 | Batasi key per resource (`patients:read`, dst) |
-| Endpoint publik `/api/v1` | 🟢 P2 | Akses pasien, encounter, stok, order obat (tenant-scoped) |
-| Rate limiting & kuota | 🟢 P2 | Batas request per key + header sisa kuota |
-| Webhook | 🟢 P2 | Notifikasi event ke sistem luar (HMAC + retry) |
-| Log pemakaian API | 🟢 P2 | Audit setiap request (key, endpoint, status, latency) |
-| Portal/dokumentasi developer | 🟢 P2 | Halaman dev + OpenAPI + kelola key/webhook |
+| Kelola API Key | ✅ | Buat/cabut API key per tenant + mode LIVE/TEST, token tampil sekali (OWNER/ADMIN) |
+| Scope & izin granular | ✅ | Batasi key per resource (`patients:read`, `encounters:read`, dst) → 403 jika kurang |
+| Endpoint publik `/api/v1` | ✅ | `GET /me`, `/patients`, `/patients/{id}`, `/encounters` (tenant-scoped, paginasi) |
+| Rate limiting | ✅ | 60 req/menit per key + header `X-RateLimit-*` → 429 |
+| Log pemakaian API | ✅ | Audit setiap request (key, endpoint, status, latency) + tampilan pemakaian |
+| Webhook | 🔜 P2 | Notifikasi event ke sistem luar (HMAC + retry) — model siap, butuh worker |
+| Portal/dokumentasi developer | 🟢 P2 | OpenAPI/Swagger + kelola webhook + idempotency-key |
 
 > Penting: API key **tidak menembus** isolasi tenant maupun consent (akses pasien lintas tenant & rekanan tetap berlaku).
 

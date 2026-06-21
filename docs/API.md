@@ -260,3 +260,24 @@ Endpoint untuk **mengelola** akses Shared API tenant (bukan API publiknya sendir
 - Pertimbangkan **Server Actions** untuk mutasi dari form (alternatif REST) — lebih ringkas di Next.js App Router.
 - Setiap mutasi pada data medis **wajib** memanggil helper audit log.
 - Pagination default: `page=1`, `limit=20`.
+
+---
+
+## Shared API Publik (`/api/v1`) — Terimplementasi
+
+API publik per tenant untuk integrasi pihak ketiga. Detail desain: **[SHARED_API.md](./SHARED_API.md)**.
+
+**Autentikasi:** header `Authorization: Bearer <token>` atau `X-API-Key: <token>` (token = `prefix.secret`).
+**Rate limit:** 60 req/menit per key → respons `429` + header `X-RateLimit-Limit/Remaining/Reset`.
+**Error umum:** `401 missing_or_malformed_api_key` / `invalid_api_key` / `revoked_api_key` / `expired_api_key`, `403 insufficient_scope`, `429 rate_limit_exceeded`.
+
+| Method | Endpoint | Scope | Deskripsi |
+|--------|----------|-------|-----------|
+| GET | `/api/v1/me` | — | Info tenant + key (nama, mode, scopes) |
+| GET | `/api/v1/patients?limit=&offset=` | `patients:read` | Daftar pasien tenant (paginasi) |
+| GET | `/api/v1/patients/{id}` | `patients:read` | Detail pasien + alergi |
+| GET | `/api/v1/encounters?limit=&offset=&patient_id=` | `encounters:read` | Daftar kunjungan |
+
+**Scope tersedia:** `patients:read`, `patients:write`, `encounters:read`, `drug-orders:read`, `stock:read` (endpoint untuk sebagian scope menyusul).
+
+**Manajemen (internal, di dashboard):** `/dashboard/shared-api` — server actions `createApiKey` (token tampil sekali), `revokeApiKey`. RBAC OWNER/ADMIN.
