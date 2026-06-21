@@ -505,6 +505,43 @@ export type Dictionary = {
       NO_SHOW: string;
     };
   };
+  sharedApi: {
+    title: string;
+    subtitle: string;
+    keysTitle: string;
+    newKeyTitle: string;
+    fName: string;
+    fMode: string;
+    fScopes: string;
+    createBtn: string;
+    modeLive: string;
+    modeTest: string;
+    tokenOnceTitle: string;
+    tokenOnceHint: string;
+    colName: string;
+    colPrefix: string;
+    colScopes: string;
+    colStatus: string;
+    colLastUsed: string;
+    colAction: string;
+    active: string;
+    revoked: string;
+    never: string;
+    revoke: string;
+    revokeConfirm: string;
+    noKeys: string;
+    readOnly: string;
+    usageTitle: string;
+    totalRequests: string;
+    colMethod: string;
+    colPath: string;
+    colCode: string;
+    colTime: string;
+    noRequests: string;
+    endpointsTitle: string;
+    endpointsHint: string;
+    errRequired: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -1065,6 +1102,45 @@ export const dictionaries: Record<Locale, Dictionary> = {
         NO_SHOW: "Tidak Hadir",
       },
     },
+    sharedApi: {
+      title: "Shared API",
+      subtitle: "API publik per fasilitas untuk integrasi pihak ketiga.",
+      keysTitle: "API Key",
+      newKeyTitle: "Buat API Key",
+      fName: "Nama",
+      fMode: "Mode",
+      fScopes: "Scope (izin)",
+      createBtn: "Buat Key",
+      modeLive: "Live",
+      modeTest: "Test",
+      tokenOnceTitle: "Salin token sekarang — hanya ditampilkan sekali!",
+      tokenOnceHint:
+        "Simpan token ini di tempat aman. Demi keamanan, token tidak dapat dilihat lagi setelah halaman ini ditutup.",
+      colName: "Nama",
+      colPrefix: "Prefix",
+      colScopes: "Scope",
+      colStatus: "Status",
+      colLastUsed: "Terakhir dipakai",
+      colAction: "Aksi",
+      active: "Aktif",
+      revoked: "Dicabut",
+      never: "Belum pernah",
+      revoke: "Cabut",
+      revokeConfirm: "Cabut API key ini? Aplikasi yang memakainya akan berhenti bekerja.",
+      noKeys: "Belum ada API key.",
+      readOnly: "Hanya Pemilik/Admin yang dapat mengelola API key.",
+      usageTitle: "Pemakaian Terakhir",
+      totalRequests: "Total request",
+      colMethod: "Metode",
+      colPath: "Path",
+      colCode: "Kode",
+      colTime: "Waktu",
+      noRequests: "Belum ada request.",
+      endpointsTitle: "Endpoint Publik",
+      endpointsHint:
+        "Autentikasi: header `Authorization: Bearer <token>` atau `X-API-Key`. Rate limit 60 req/menit per key.",
+      errRequired: "Nama dan minimal satu scope wajib diisi.",
+    },
   },
   en: {
     common: {
@@ -1621,6 +1697,45 @@ export const dictionaries: Record<Locale, Dictionary> = {
         CANCELLED: "Cancelled",
         NO_SHOW: "No-show",
       },
+    },
+    sharedApi: {
+      title: "Shared API",
+      subtitle: "Per-facility public API for third-party integration.",
+      keysTitle: "API Keys",
+      newKeyTitle: "Create API Key",
+      fName: "Name",
+      fMode: "Mode",
+      fScopes: "Scopes (permissions)",
+      createBtn: "Create key",
+      modeLive: "Live",
+      modeTest: "Test",
+      tokenOnceTitle: "Copy your token now — shown only once!",
+      tokenOnceHint:
+        "Store this token securely. For security it cannot be viewed again after you leave this page.",
+      colName: "Name",
+      colPrefix: "Prefix",
+      colScopes: "Scopes",
+      colStatus: "Status",
+      colLastUsed: "Last used",
+      colAction: "Action",
+      active: "Active",
+      revoked: "Revoked",
+      never: "Never",
+      revoke: "Revoke",
+      revokeConfirm: "Revoke this API key? Apps using it will stop working.",
+      noKeys: "No API keys yet.",
+      readOnly: "Only Owner/Admin can manage API keys.",
+      usageTitle: "Recent Usage",
+      totalRequests: "Total requests",
+      colMethod: "Method",
+      colPath: "Path",
+      colCode: "Code",
+      colTime: "Time",
+      noRequests: "No requests yet.",
+      endpointsTitle: "Public Endpoints",
+      endpointsHint:
+        "Auth: `Authorization: Bearer <token>` or `X-API-Key` header. Rate limit 60 req/min per key.",
+      errRequired: "Name and at least one scope are required.",
     },
   },
 };
