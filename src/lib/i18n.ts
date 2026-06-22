@@ -68,6 +68,7 @@ export type Dictionary = {
       partners: string;
       patientAccess: string;
       billing: string;
+      diagnostics: string;
       reports: string;
       sharedApi: string;
       settings: string;
@@ -542,6 +543,52 @@ export type Dictionary = {
     endpointsHint: string;
     errRequired: string;
   };
+  diagnostics: {
+    title: string;
+    subtitle: string;
+    newOrder: string;
+    selectPatient: string;
+    category: string;
+    clinicalNote: string;
+    catLab: string;
+    catRad: string;
+    colNo: string;
+    colPatient: string;
+    colCategory: string;
+    colDate: string;
+    colStatus: string;
+    empty: string;
+    back: string;
+    itemsTitle: string;
+    addTest: string;
+    testName: string;
+    unit: string;
+    refRange: string;
+    result: string;
+    flag: string;
+    selectFlag: string;
+    save: string;
+    remove: string;
+    noItems: string;
+    start: string;
+    complete: string;
+    cancel: string;
+    cancelConfirm: string;
+    print: string;
+    completedAt: string;
+    statuses: {
+      REQUESTED: string;
+      IN_PROGRESS: string;
+      COMPLETED: string;
+      CANCELLED: string;
+    };
+    flags: {
+      NORMAL: string;
+      LOW: string;
+      HIGH: string;
+      ABNORMAL: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -653,6 +700,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         partners: "Rekanan",
         patientAccess: "Akses Pasien",
         billing: "Tagihan",
+        diagnostics: "Lab & Radiologi",
         reports: "Laporan",
         sharedApi: "Shared API",
         settings: "Pengaturan",
@@ -1141,6 +1189,52 @@ export const dictionaries: Record<Locale, Dictionary> = {
         "Autentikasi: header `Authorization: Bearer <token>` atau `X-API-Key`. Rate limit 60 req/menit per key.",
       errRequired: "Nama dan minimal satu scope wajib diisi.",
     },
+    diagnostics: {
+      title: "Lab & Radiologi",
+      subtitle: "Order pemeriksaan penunjang & input hasil.",
+      newOrder: "Buat Order",
+      selectPatient: "Pilih pasien…",
+      category: "Kategori",
+      clinicalNote: "Catatan klinis",
+      catLab: "Laboratorium",
+      catRad: "Radiologi",
+      colNo: "No. Order",
+      colPatient: "Pasien",
+      colCategory: "Kategori",
+      colDate: "Tanggal",
+      colStatus: "Status",
+      empty: "Belum ada order penunjang.",
+      back: "Kembali ke Lab & Radiologi",
+      itemsTitle: "Pemeriksaan & Hasil",
+      addTest: "Tambah pemeriksaan",
+      testName: "Nama pemeriksaan",
+      unit: "Satuan",
+      refRange: "Nilai rujukan",
+      result: "Hasil",
+      flag: "Tanda",
+      selectFlag: "—",
+      save: "Simpan",
+      remove: "Hapus",
+      noItems: "Belum ada pemeriksaan.",
+      start: "Proses",
+      complete: "Selesaikan",
+      cancel: "Batalkan",
+      cancelConfirm: "Batalkan order ini?",
+      print: "Cetak",
+      completedAt: "Selesai pada",
+      statuses: {
+        REQUESTED: "Diminta",
+        IN_PROGRESS: "Diproses",
+        COMPLETED: "Selesai",
+        CANCELLED: "Dibatalkan",
+      },
+      flags: {
+        NORMAL: "Normal",
+        LOW: "Rendah",
+        HIGH: "Tinggi",
+        ABNORMAL: "Abnormal",
+      },
+    },
   },
   en: {
     common: {
@@ -1249,6 +1343,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         partners: "Partners",
         patientAccess: "Patient Access",
         billing: "Billing",
+        diagnostics: "Lab & Radiology",
         reports: "Reports",
         sharedApi: "Shared API",
         settings: "Settings",
@@ -1736,6 +1831,52 @@ export const dictionaries: Record<Locale, Dictionary> = {
       endpointsHint:
         "Auth: `Authorization: Bearer <token>` or `X-API-Key` header. Rate limit 60 req/min per key.",
       errRequired: "Name and at least one scope are required.",
+    },
+    diagnostics: {
+      title: "Lab & Radiology",
+      subtitle: "Order diagnostic tests & enter results.",
+      newOrder: "New Order",
+      selectPatient: "Select patient…",
+      category: "Category",
+      clinicalNote: "Clinical note",
+      catLab: "Laboratory",
+      catRad: "Radiology",
+      colNo: "Order No.",
+      colPatient: "Patient",
+      colCategory: "Category",
+      colDate: "Date",
+      colStatus: "Status",
+      empty: "No diagnostic orders yet.",
+      back: "Back to Lab & Radiology",
+      itemsTitle: "Tests & Results",
+      addTest: "Add test",
+      testName: "Test name",
+      unit: "Unit",
+      refRange: "Reference range",
+      result: "Result",
+      flag: "Flag",
+      selectFlag: "—",
+      save: "Save",
+      remove: "Remove",
+      noItems: "No tests yet.",
+      start: "Process",
+      complete: "Complete",
+      cancel: "Cancel",
+      cancelConfirm: "Cancel this order?",
+      print: "Print",
+      completedAt: "Completed at",
+      statuses: {
+        REQUESTED: "Requested",
+        IN_PROGRESS: "In progress",
+        COMPLETED: "Completed",
+        CANCELLED: "Cancelled",
+      },
+      flags: {
+        NORMAL: "Normal",
+        LOW: "Low",
+        HIGH: "High",
+        ABNORMAL: "Abnormal",
+      },
     },
   },
 };

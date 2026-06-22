@@ -187,6 +187,31 @@ enum AppointmentStatus {
   @@map("appointment_status")
 }
 
+enum LabCategory {
+  LABORATORIUM
+  RADIOLOGI
+
+  @@map("lab_category")
+}
+
+enum LabOrderStatus {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+
+  @@map("lab_order_status")
+}
+
+enum LabFlag {
+  NORMAL
+  LOW
+  HIGH
+  ABNORMAL
+
+  @@map("lab_flag")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -222,6 +247,7 @@ model Tenant {
   queueTickets              QueueTicket[]
   invoices                  Invoice[]
   appointments              Appointment[]
+  labOrders                 LabOrder[]
 
   @@map("tenants")
 }
@@ -290,6 +316,7 @@ model Patient {
   accessRequests PatientAccessRequest[]
   invoices       Invoice[]
   appointments   Appointment[]
+  labOrders      LabOrder[]
 
   @@unique([tenantId, mrNumber])
   @@index([nik])
@@ -341,6 +368,7 @@ model Encounter {
   diagnoses     Diagnosis[]
   prescriptions Prescription[]
   invoices      Invoice[]
+  labOrders     LabOrder[]
 
   @@index([tenantId, visitDate])
   @@index([patientId])
@@ -730,4 +758,49 @@ model PasswordResetToken {
 
   @@index([userId])
   @@map("password_reset_tokens")
+}
+
+// ============================================================
+// Penunjang Diagnostik (Lab & Radiologi)
+// ============================================================
+
+model LabOrder {
+  id           String         @id @default(cuid())
+  tenantId     String         @map("tenant_id")
+  patientId    String         @map("patient_id")
+  encounterId  String?        @map("encounter_id")
+  orderNumber  String         @map("order_number")
+  category     LabCategory    @default(LABORATORIUM)
+  status       LabOrderStatus @default(REQUESTED)
+  clinicalNote String?        @map("clinical_note")
+  orderedById  String         @map("ordered_by_id")
+  completedAt  DateTime?      @map("completed_at")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient   Patient        @relation(fields: [patientId], references: [id])
+  encounter Encounter?     @relation(fields: [encounterId], references: [id])
+  items     LabOrderItem[]
+
+  @@unique([tenantId, orderNumber])
+  @@index([tenantId, status])
+  @@index([patientId])
+  @@map("lab_orders")
+}
+
+model LabOrderItem {
+  id             String   @id @default(cuid())
+  labOrderId     String   @map("lab_order_id")
+  testName       String   @map("test_name")
+  result         String?
+  unit           String?
+  referenceRange String?  @map("reference_range")
+  flag           LabFlag?
+  note           String?
+
+  labOrder LabOrder @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+
+  @@index([labOrderId])
+  @@map("lab_order_items")
 }

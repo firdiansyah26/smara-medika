@@ -281,3 +281,16 @@ API publik per tenant untuk integrasi pihak ketiga. Detail desain: **[SHARED_API
 **Scope tersedia:** `patients:read`, `patients:write`, `encounters:read`, `drug-orders:read`, `stock:read` (endpoint untuk sebagian scope menyusul).
 
 **Manajemen (internal, di dashboard):** `/dashboard/shared-api` — server actions `createApiKey` (token tampil sekali), `revokeApiKey`. RBAC OWNER/ADMIN.
+
+---
+
+## Lab & Radiologi / Penunjang (Server Actions) — Terimplementasi
+
+Halaman: `/dashboard/penunjang` (daftar + buat order), `/dashboard/penunjang/{id}` (detail + input hasil), `/dashboard/penunjang/{id}/cetak` (cetak hasil). RBAC: OWNER/ADMIN/DOKTER/PERAWAT.
+
+| Action | Deskripsi |
+|--------|-----------|
+| `createLabOrder` | Buat order penunjang (pasien + kategori Lab/Radiologi) → `LAB/RAD-YYYYMM-XXXXX` |
+| `addLabItem` / `removeLabItem` | Tambah/hapus pemeriksaan (nama, satuan, nilai rujukan) |
+| `saveLabResult` | Input hasil + tanda (Normal/Low/High/Abnormal); order otomatis → `IN_PROGRESS` |
+| `updateLabStatus` | Ubah status (`IN_PROGRESS`/`COMPLETED`/`CANCELLED`); `COMPLETED` mengisi `completedAt` |
