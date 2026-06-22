@@ -8,8 +8,8 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 > **lupa/reset kata sandi** mode dev). Fase 4 sebagian (**Billing/Tagihan** & **Appointment/Janji Temu**
 > selesai). Tambahan: **migrasi UI penuh ke shadcn ui** & sistem **antrian** (kiosk cetak nomor, papan
 > display + suara, panel panggil per counter) & **Shared API** (API key + endpoint `/api/v1` + scope +
-> rate limit + log pemakaian; webhook menyusul). Sisa: webhook Shared API, Lab/Radiologi, Notifikasi,
-> Telemedicine, Integrasi SATUSEHAT/BPJS.
+> rate limit + log pemakaian; webhook menyusul) & **Lab & Radiologi** (order penunjang + input hasil +
+> cetak). Sisa: webhook Shared API, Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS.
 
 ---
 
@@ -67,7 +67,7 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 ## 🌟 Fase 4 — Lanjutan (sebagian)
 - [x] **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID/CANCELLED, cetak (`/dashboard/billing`)
 - [x] **Appointment / Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter (`/dashboard/jadwal`)
-- [ ] Lab/radiologi
+- [x] **Lab & Radiologi** — order penunjang + input hasil + tanda + cetak (`/dashboard/penunjang`)
 - [ ] Notifikasi WhatsApp/email · Telemedicine
 - [ ] Integrasi SATUSEHAT & BPJS
 - [x] **Shared API** publik — API key, endpoint `/api/v1`, scope, rate limit, log (lihat `SHARED_API.md`); webhook menyusul

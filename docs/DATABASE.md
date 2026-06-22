@@ -480,3 +480,35 @@ model DrugOrder {
 - **Transfer obat:** validasi rekanan `ACTIVE` + stok cukup sebelum order; kurangi stok penyedia saat dikirim, tambah stok pemohon saat diterima (transaction).
 - **Akses pasien lintas tenant:** default hanya info terbatas; detail butuh `PatientAccessRequest` berstatus `APPROVED` & belum kedaluwarsa.
 - **Timezone:** simpan UTC, tampilkan WIB/WITA/WIT.
+
+### LabOrder (Order Penunjang) ⭐ — Lab & Radiologi
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| encounterId | String? | FK → Encounter (opsional) |
+| orderNumber | String | `LAB-YYYYMM-XXXXX` / `RAD-YYYYMM-XXXXX`, unik per tenant |
+| category | LabCategory | `LABORATORIUM` \| `RADIOLOGI` |
+| status | LabOrderStatus | `REQUESTED` → `IN_PROGRESS` → `COMPLETED` / `CANCELLED` |
+| clinicalNote | String? | Catatan klinis |
+| orderedById | String | User pembuat order |
+| completedAt | DateTime? | Diisi saat status `COMPLETED` |
+
+> **Relasi:** tenant, patient, encounter?, items `LabOrderItem[]`. **Index:** `@@unique([tenantId, orderNumber])`, `[tenantId, status]`, `[patientId]`.
+
+### LabOrderItem (Pemeriksaan & Hasil)
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| labOrderId | String | FK → LabOrder (onDelete Cascade) |
+| testName | String | Nama pemeriksaan |
+| result | String? | Hasil |
+| unit | String? | Satuan |
+| referenceRange | String? | Nilai rujukan |
+| flag | LabFlag? | `NORMAL` \| `LOW` \| `HIGH` \| `ABNORMAL` |
+| note | String? | Catatan |
+
+> **Enum baru:** `LabCategory`, `LabOrderStatus`, `LabFlag`.

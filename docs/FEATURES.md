@@ -16,7 +16,7 @@ Dokumen ini merinci seluruh fitur SmaraMedika beserta status prioritasnya.
 > **Rekanan**, **Transfer obat antar rekanan + tracking**, **Berbagi pasien lintas tenant**,
 > **Laporan & export (CSV + cetak/PDF)**, **Undang & kelola anggota tenant**, **Billing/Tagihan**,
 > **Jadwal & Janji Temu (Appointment)**, **Shared API (API key + endpoint `/api/v1` + scope + rate limit)**,
-> dan **UI shadcn**. Belum: webhook Shared API, Lab/Radiologi,
+> **Lab & Radiologi (order penunjang + input hasil)**, dan **UI shadcn**. Belum: webhook Shared API,
 > Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS. Detail per fase: lihat `ROADMAP.md`.
 
 ---
@@ -181,8 +181,8 @@ Setiap perubahan status tercatat lengkap (waktu, oleh siapa, catatan) sebagai **
 |-------|:---:|-----------|
 | Tarif tindakan | 🟢 P2 | Master tarif layanan (per tenant) |
 | Tagihan & pembayaran | ✅ | Invoice per pasien/kunjungan — lihat §11 (Billing/Tagihan) |
-| Order lab/radiologi | 🟢 P2 | Permintaan pemeriksaan penunjang |
-| Input hasil lab | 🟢 P2 | Hasil pemeriksaan penunjang |
+| Order lab/radiologi | ✅ | Permintaan pemeriksaan penunjang (Lab/Radiologi) — `/dashboard/penunjang` |
+| Input hasil lab | ✅ | Input hasil per pemeriksaan + tanda (Normal/Rendah/Tinggi/Abnormal), status REQUESTED→IN_PROGRESS→COMPLETED, cetak hasil |
 
 ---
 

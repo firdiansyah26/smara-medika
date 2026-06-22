@@ -64,6 +64,11 @@ const navItems: NavItem[] = [
     icon: <path d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6" />,
   },
   {
+    key: "diagnostics",
+    href: "/dashboard/penunjang",
+    icon: <path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2M9 2h6M7 14h10" />,
+  },
+  {
     key: "reports",
     href: "/dashboard/laporan",
     icon: <path d="M3 3v18h18M8 17V9M13 17V5M18 17v-6" />,
