@@ -71,6 +71,9 @@ export type Dictionary = {
       diagnostics: string;
       reports: string;
       sharedApi: string;
+      notifications: string;
+      telemedicine: string;
+      integrations: string;
       settings: string;
     };
     topbar: {
@@ -703,6 +706,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
         diagnostics: "Lab & Radiologi",
         reports: "Laporan",
         sharedApi: "Shared API",
+        notifications: "Notifikasi",
+        telemedicine: "Telemedicine",
+        integrations: "Integrasi",
         settings: "Pengaturan",
       },
       topbar: {
@@ -1346,6 +1352,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
         diagnostics: "Lab & Radiology",
         reports: "Reports",
         sharedApi: "Shared API",
+        notifications: "Notifications",
+        telemedicine: "Telemedicine",
+        integrations: "Integrations",
         settings: "Settings",
       },
       topbar: {
