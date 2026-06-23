@@ -48,6 +48,15 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 | POST | `/api/auth/logout` | Logout | semua |
 | GET | `/api/auth/me` | Info user aktif | semua |
 
+**Reset kata sandi (server actions + halaman publik):**
+| Action / Halaman | Deskripsi | Role |
+|------------------|-----------|------|
+| `requestPasswordReset` | Buat token reset (acak 32-byte, hash SHA-256, kedaluwarsa 1 jam, token lama dibatalkan). **Mode dev:** tautan reset ditampilkan di layar (`/forgot-password`) | publik |
+| `resetPassword` | Validasi token → ganti kata sandi (bcrypt, min 8 char, konfirmasi) → tandai token terpakai → redirect `/login?reset=1` | publik |
+| Halaman | `/forgot-password`, `/reset-password?token=…` | publik |
+
+> Pengiriman email sungguhan menyusul saat provider (Resend/SMTP) dipilih — lihat `TECH_DEBT.md`.
+
 ### 🏢 Tenant & Keanggotaan
 | Method | Endpoint | Deskripsi | Role |
 |--------|----------|-----------|------|
@@ -132,6 +141,33 @@ API menggunakan **Next.js Route Handlers** (`src/app/api/*`) dengan gaya **REST*
 |--------|----------|-----------|------|
 | GET | `/api/dashboard/summary` | Statistik ringkas | semua |
 | GET | `/api/reports/visits?from=&to=` | Laporan kunjungan | ADMIN, DOKTER |
+| GET | `/api/reports/drug-transfers?from=&to=` | Laporan transfer obat (masuk/keluar + status) | ADMIN, APOTEKER |
+
+> Halaman `/dashboard/laporan` menyajikan laporan kunjungan & transfer obat dengan **export CSV** dan **cetak/PDF**.
+
+### 🧾 Billing / Tagihan (Server Actions)
+Modul Billing memakai **Server Actions** (mutasi dari form), bukan REST. Nilai uang berupa integer rupiah.
+
+| Action | Deskripsi | Role |
+|--------|-----------|------|
+| `createInvoice` | Buat invoice per pasien (opsional terkait encounter); nomor `INV-YYYYMM-XXXXX` per tenant; status awal DRAFT | OWNER, ADMIN, RESEPSIONIS |
+| `addInvoiceItem` | Tambah item biaya berkategori (CONSULTATION/DRUG/PROCEDURE/LAB/OTHER) + qty & harga satuan | OWNER, ADMIN, RESEPSIONIS |
+| `removeInvoiceItem` | Hapus item dari invoice | OWNER, ADMIN, RESEPSIONIS |
+| `setDiscount` | Set diskon → total dihitung ulang (Σ item − diskon) | OWNER, ADMIN, RESEPSIONIS |
+| `updateInvoiceStatus` | Ubah status DRAFT → UNPAID → PAID / CANCELLED | OWNER, ADMIN, RESEPSIONIS |
+
+**Halaman:** `/dashboard/billing` (daftar), `/dashboard/billing/[id]` (detail), `/dashboard/billing/[id]/cetak` (cetak invoice).
+
+### 📅 Jadwal & Janji Temu / Appointment (Server Actions)
+Modul Appointment memakai **Server Actions**.
+
+| Action | Deskripsi | Role |
+|--------|-----------|------|
+| `createAppointment` | Booking janji temu (pasien + dokter + tanggal/jam + durasi + keperluan); status awal SCHEDULED | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+| `updateAppointmentStatus` | Ubah status SCHEDULED → CONFIRMED → COMPLETED / CANCELLED / NO_SHOW | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+| `startVisit` | Buat Encounter dari appointment (dokter & pasien otomatis), tandai COMPLETED + tautkan `encounterId` | OWNER, ADMIN, RESEPSIONIS, DOKTER, PERAWAT |
+
+**Halaman:** `/dashboard/jadwal` (filter Hari ini / Mendatang / Semua).
 
 ### 🔗 Manajemen Shared API (Internal — Admin Tenant)
 Endpoint untuk **mengelola** akses Shared API tenant (bukan API publiknya sendiri).
@@ -224,3 +260,37 @@ Endpoint untuk **mengelola** akses Shared API tenant (bukan API publiknya sendir
 - Pertimbangkan **Server Actions** untuk mutasi dari form (alternatif REST) — lebih ringkas di Next.js App Router.
 - Setiap mutasi pada data medis **wajib** memanggil helper audit log.
 - Pagination default: `page=1`, `limit=20`.
+
+---
+
+## Shared API Publik (`/api/v1`) — Terimplementasi
+
+API publik per tenant untuk integrasi pihak ketiga. Detail desain: **[SHARED_API.md](./SHARED_API.md)**.
+
+**Autentikasi:** header `Authorization: Bearer <token>` atau `X-API-Key: <token>` (token = `prefix.secret`).
+**Rate limit:** 60 req/menit per key → respons `429` + header `X-RateLimit-Limit/Remaining/Reset`.
+**Error umum:** `401 missing_or_malformed_api_key` / `invalid_api_key` / `revoked_api_key` / `expired_api_key`, `403 insufficient_scope`, `429 rate_limit_exceeded`.
+
+| Method | Endpoint | Scope | Deskripsi |
+|--------|----------|-------|-----------|
+| GET | `/api/v1/me` | — | Info tenant + key (nama, mode, scopes) |
+| GET | `/api/v1/patients?limit=&offset=` | `patients:read` | Daftar pasien tenant (paginasi) |
+| GET | `/api/v1/patients/{id}` | `patients:read` | Detail pasien + alergi |
+| GET | `/api/v1/encounters?limit=&offset=&patient_id=` | `encounters:read` | Daftar kunjungan |
+
+**Scope tersedia:** `patients:read`, `patients:write`, `encounters:read`, `drug-orders:read`, `stock:read` (endpoint untuk sebagian scope menyusul).
+
+**Manajemen (internal, di dashboard):** `/dashboard/shared-api` — server actions `createApiKey` (token tampil sekali), `revokeApiKey`. RBAC OWNER/ADMIN.
+
+---
+
+## Lab & Radiologi / Penunjang (Server Actions) — Terimplementasi
+
+Halaman: `/dashboard/penunjang` (daftar + buat order), `/dashboard/penunjang/{id}` (detail + input hasil), `/dashboard/penunjang/{id}/cetak` (cetak hasil). RBAC: OWNER/ADMIN/DOKTER/PERAWAT.
+
+| Action | Deskripsi |
+|--------|-----------|
+| `createLabOrder` | Buat order penunjang (pasien + kategori Lab/Radiologi) → `LAB/RAD-YYYYMM-XXXXX` |
+| `addLabItem` / `removeLabItem` | Tambah/hapus pemeriksaan (nama, satuan, nilai rujukan) |
+| `saveLabResult` | Input hasil + tanda (Normal/Low/High/Abnormal); order otomatis → `IN_PROGRESS` |
+| `updateLabStatus` | Ubah status (`IN_PROGRESS`/`COMPLETED`/`CANCELLED`); `COMPLETED` mengisi `completedAt` |

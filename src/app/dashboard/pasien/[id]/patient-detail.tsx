@@ -7,6 +7,8 @@ import { useLocale } from "@/lib/use-locale";
 import { calcAgeParts } from "@/lib/utils";
 import { addAllergy, softDeletePatient } from "../actions";
 import { createEncounter } from "@/app/dashboard/rekam-medis/actions";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type Visit = { id: string; visitDate: string; status: string };
 type Allergy = {
@@ -14,6 +16,15 @@ type Allergy = {
   allergen: string;
   reaction: string | null;
   severity: "RINGAN" | "SEDANG" | "BERAT" | null;
+};
+type Medication = {
+  id: string;
+  drugName: string;
+  unit: string;
+  dosage: string | null;
+  frequency: string | null;
+  quantity: number;
+  date: string;
 };
 export type PatientDetailData = {
   id: string;
@@ -32,6 +43,7 @@ export type PatientDetailData = {
   createdAt: string;
   visits: Visit[];
   allergies: Allergy[];
+  medications: Medication[];
 };
 
 const inputClass =
@@ -40,7 +52,7 @@ const inputClass =
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex border-b border-slate-100 last:border-b-0">
-      <div className="w-32 shrink-0 bg-slate-50/70 px-3 py-1.5 text-xs font-medium text-muted">
+      <div className="w-32 shrink-0 bg-slate-50/70 px-3 py-1.5 text-xs font-medium text-muted-foreground">
         {label}
       </div>
       <div className="flex-1 px-3 py-1.5 text-sm text-ink">{value || "—"}</div>
@@ -102,7 +114,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
       {/* Header bar (ERP) */}
       <Link
         href="/dashboard/pasien"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -117,7 +129,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
           </span>
           <div>
             <h1 className="text-lg font-bold leading-tight text-ink">{data.name}</h1>
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+            <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
               <span className="font-mono">{data.mrNumber}</span>
               <span className="text-slate-300">•</span>
               <span>{genderLabel}</span>
@@ -137,7 +149,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
         <div className="flex items-center gap-2">
           <Link
             href={`/dashboard/pasien/${data.id}/edit`}
-            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-slate-50"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             {t.patients.detail.edit}
           </Link>
@@ -148,12 +160,9 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
             }}
           >
             <input type="hidden" name="id" value={data.id} />
-            <button
-              type="submit"
-              className="rounded-md border border-red-200 px-3 py-1.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
-            >
+            <Button type="submit" variant="destructive" size="sm">
               {t.patients.detail.deleteBtn}
-            </button>
+            </Button>
           </form>
         </div>
       </div>
@@ -201,20 +210,17 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
             right={
               <form action={createEncounter}>
                 <input type="hidden" name="patientId" value={data.id} />
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-1 rounded-md bg-brand px-2.5 py-1 text-xs font-semibold text-white transition-colors hover:bg-brand-deep"
-                >
+                <Button type="submit" size="xs">
                   <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 5v14M5 12h14" />
                   </svg>
                   {t.records.newVisit}
-                </button>
+                </Button>
               </form>
             }
           >
             {data.visits.length === 0 ? (
-              <p className="px-3 py-3 text-sm text-muted">
+              <p className="px-3 py-3 text-sm text-muted-foreground">
                 {t.patients.detail.noVisits}
               </p>
             ) : (
@@ -247,7 +253,7 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
           <Section title={t.patients.detail.allergiesTitle}>
             <div className="p-3">
               {data.allergies.length === 0 ? (
-                <p className="text-sm text-muted">{t.patients.detail.noAllergies}</p>
+                <p className="text-sm text-muted-foreground">{t.patients.detail.noAllergies}</p>
               ) : (
                 <ul className="space-y-1.5">
                   {data.allergies.map((a) => (
@@ -272,8 +278,8 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
                   {t.patients.detail.addAllergyTitle}
                 </p>
                 <input type="hidden" name="patientId" value={data.id} />
-                <input name="allergen" required placeholder={t.patients.detail.allergen} className={inputClass} />
-                <input name="reaction" placeholder={t.patients.detail.reaction} className={inputClass} />
+                <Input name="allergen" required placeholder={t.patients.detail.allergen} className="h-8" />
+                <Input name="reaction" placeholder={t.patients.detail.reaction} className="h-8" />
                 <select name="severity" defaultValue="" className={inputClass}>
                   <option value="">{t.patients.detail.selectSeverity}</option>
                   <option value="RINGAN">{t.patients.detail.sevRingan}</option>
@@ -283,14 +289,46 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
                 {allergyState?.error && (
                   <p className="text-xs font-medium text-red-600">{allergyState.error}</p>
                 )}
-                <button
-                  type="submit"
-                  disabled={allergyPending}
-                  className="w-full rounded-md bg-brand px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-deep disabled:opacity-60"
-                >
+                <Button type="submit" disabled={allergyPending} className="w-full">
                   {t.patients.detail.addAllergyBtn}
-                </button>
+                </Button>
               </form>
+            </div>
+          </Section>
+
+          {/* Riwayat pengobatan */}
+          <Section title={t.patients.detail.medsTitle}>
+            <div className="p-3">
+              {data.medications.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {t.patients.detail.noMeds}
+                </p>
+              ) : (
+                <ul className="space-y-1.5">
+                  {data.medications.map((m) => (
+                    <li
+                      key={m.id}
+                      className="rounded-md border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-sm"
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="font-semibold text-ink">{m.drugName}</span>
+                        <span className="shrink-0 text-xs text-muted-foreground">
+                          {dateFmt.format(new Date(m.date))}
+                        </span>
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {[
+                          m.dosage,
+                          m.frequency,
+                          `${m.quantity} ${m.unit}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </Section>
         </div>

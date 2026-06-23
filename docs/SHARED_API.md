@@ -6,9 +6,18 @@ Shared API adalah **API publik per tenant** yang memungkinkan sistem eksternal (
 aplikasi mitra, integrator) mengakses data SmaraMedika **milik tenant tersebut** secara aman &
 terkontrol — lengkap dengan **API key**, **scope izin**, **rate limit**, dan **webhook**.
 
-- **Status:** 🟢 P2 (lanjutan) — dibangun setelah fondasi multi-tenant & fitur inti stabil.
+- **Status:** 🟢 P2 — **MVP terimplementasi** (lihat ringkasan di bawah).
 - **Audiens:** developer integrator / mitra tenant.
 - **Prinsip:** *tenant-scoped, least-privilege, auditable, tidak menembus consent yang sudah ada.*
+
+> **Status implementasi (ringkas):**
+> - ✅ **Manajemen API key** di `/dashboard/shared-api` (buat dengan scope + mode LIVE/TEST, token penuh tampil **sekali**, cabut/revoke) — RBAC OWNER/ADMIN.
+> - ✅ **Autentikasi** via `Authorization: Bearer <token>` atau `X-API-Key` (token = `prefix.secret`, secret di-hash SHA-256).
+> - ✅ **Endpoint publik `/api/v1`**: `GET /me`, `GET /patients`, `GET /patients/{id}`, `GET /encounters` (tenant-scoped, paginasi `limit`/`offset`).
+> - ✅ **Scope enforcement** (`patients:read`, `encounters:read`, dll) → `403 insufficient_scope`.
+> - ✅ **Rate limit** 60 req/menit per key (in-memory) + header `X-RateLimit-Limit/Remaining/Reset` → `429`.
+> - ✅ **Audit pemakaian** (`ApiRequestLog`) + tampilan "Pemakaian Terakhir".
+> - 🔜 **Webhook** (model sudah ada; pengiriman/retry butuh worker), IP allowlist, kuota harian, OpenAPI/Swagger, idempotency-key.
 
 ---
 

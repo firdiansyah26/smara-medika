@@ -6,6 +6,10 @@ Database: **PostgreSQL** | ORM: **Prisma**
 
 Dokumen ini menjelaskan rancangan skema. Skema final ada di `prisma/schema.prisma`.
 
+> **Penamaan fisik:** nama tabel & kolom di DB memakai **snake_case** (mis. `mr_number`,
+> `tenant_id`, tabel `queue_tickets`) lewat `@map`/`@@map` Prisma; nama di Prisma Client tetap
+> camelCase/PascalCase. Migrasi awal: `prisma/migrations/*_init`, lalu `*_queue`.
+
 ---
 
 ## Diagram Relasi (Ringkas)
@@ -30,9 +34,16 @@ Tenant ──< DrugOrder (pemohon) / (penyedia)
 DrugOrder ──< DrugOrderItem ──> Drug
 DrugOrder ──< DrugOrderTracking          (riwayat status / tracking)
 
+Tenant ──< Invoice >── Patient           (tagihan per pasien, opsional ke Encounter)
+Invoice ──< InvoiceItem                   (item biaya berkategori)
+Tenant ──< Appointment >── Patient        (janji temu; dokter = User "AppointmentDoctor")
+Appointment ──> Encounter?                (terisi saat "Mulai Kunjungan")
+
 Tenant ──< ApiKey                        (Shared API: kunci publik per tenant)
 Tenant ──< WebhookEndpoint ──< WebhookDelivery
 Tenant ──< ApiRequestLog                 (audit pemakaian API)
+
+User ──< PasswordResetToken              (token reset kata sandi)
 ```
 
 ---
@@ -222,6 +233,85 @@ Sama seperti desain sebelumnya, **plus `tenantId`** pada Encounter (& diturunkan
 
 ---
 
+## Entitas Billing (Tagihan)
+
+### Invoice (Tagihan per Pasien) ⭐
+Tagihan untuk satu pasien, opsional terkait satu kunjungan/encounter. Nilai uang disimpan sebagai **Int rupiah** (tanpa desimal).
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String (cuid) | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| encounterId | String? | FK → Encounter (opsional) |
+| invoiceNumber | String | `INV-YYYYMM-XXXXX` (unik **per tenant**) |
+| status | Enum | InvoiceStatus: DRAFT, UNPAID, PAID, CANCELLED (default DRAFT) |
+| discount | Int | diskon rupiah (default 0) |
+| total | Int | total rupiah = Σ item − diskon (default 0) |
+| note | String? | catatan |
+| createdById | String | FK → User |
+| paidAt | DateTime? | waktu pembayaran |
+| createdAt / updatedAt | DateTime | |
+
+> **Relasi:** tenant, patient, encounter?, items `InvoiceItem[]`. **Index:** `@@unique([tenantId, invoiceNumber])`, `[tenantId, status]`, `[patientId]`.
+
+### InvoiceItem (Item Biaya)
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| invoiceId | String | FK → Invoice (onDelete Cascade) |
+| category | Enum | BillingCategory: CONSULTATION, DRUG, PROCEDURE, LAB, OTHER (default OTHER) |
+| description | String | uraian item |
+| quantity | Int | jumlah (default 1) |
+| unitPrice | Int | harga satuan rupiah (default 0) |
+| amount | Int | subtotal rupiah = quantity × unitPrice (default 0) |
+
+> **Index:** `[invoiceId]`.
+
+---
+
+## Entitas Jadwal & Janji Temu
+
+### Appointment (Janji Temu) ⭐
+Booking janji temu pasien dengan dokter. Saat "Mulai Kunjungan", sistem membuat Encounter dan mengisi `encounterId`.
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String (cuid) | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| doctorId | String | FK → User (relation `"AppointmentDoctor"`) |
+| scheduledAt | DateTime | waktu janji temu |
+| durationMin | Int | durasi menit (default 30) |
+| status | Enum | AppointmentStatus: SCHEDULED, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW (default SCHEDULED) |
+| reason | String? | keperluan |
+| note | String? | catatan |
+| encounterId | String? | FK → Encounter (terisi saat mulai kunjungan) |
+| createdById | String | FK → User |
+| createdAt / updatedAt | DateTime | |
+
+> **Relasi:** tenant, patient, doctor (User, relation `"AppointmentDoctor"`). **Index:** `[tenantId, scheduledAt]`, `[doctorId, scheduledAt]`.
+
+---
+
+## Entitas Reset Kata Sandi
+
+### PasswordResetToken (Token Reset Kata Sandi) ⭐
+Token untuk alur lupa/reset kata sandi. Token acak 32-byte; yang disimpan adalah **hash SHA-256**, kedaluwarsa 1 jam, token lama dibatalkan saat permintaan baru.
+
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| userId | String | FK → User (onDelete Cascade) |
+| tokenHash | String | hash SHA-256 token (unik) |
+| expiresAt | DateTime | kedaluwarsa (1 jam) |
+| usedAt | DateTime? | waktu token dipakai |
+| createdAt | DateTime | |
+
+> **Relasi:** user. **Index:** `[userId]`.
+
+---
+
 ## Entitas Shared API (Integrasi Pihak Ketiga)
 
 Mendukung fitur API publik per tenant. Detail teknis: lihat `SHARED_API.md`.
@@ -286,6 +376,28 @@ Mendukung fitur API publik per tenant. Detail teknis: lihat `SHARED_API.md`.
 
 ---
 
+## Entitas Antrian (Queue)
+
+Mendukung fitur antrian (kiosk cetak nomor, papan display, panel panggil). Tabel `queue_tickets`.
+
+### QueueTicket
+| Field | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| serviceType | Enum | BPJS, ASURANSI, UMUM |
+| number | Int | nomor urut per tenant + layanan + hari (reset harian) |
+| code | String | mis. `A0001` (BPJS→A, Asuransi→PA, Umum→U) |
+| status | Enum | WAITING, CALLED, SERVED, SKIPPED |
+| counter | String? | counter pemanggil (mis. `A1`, `PA1`) |
+| calledById | String? | user pemanggil |
+| calledAt / servedAt | DateTime? | waktu dipanggil/selesai |
+| createdAt | DateTime | |
+
+> Counter & layanan dikonfigurasi di `src/lib/queue.ts` (BPJS: A1–A3, Asuransi: PA1–PA2, Umum: U1–U2). Kiosk & display bersifat **publik** per tenant (`/antrian/[code]/...`).
+
+---
+
 ## Contoh Skema Prisma (Cuplikan)
 
 ```prisma
@@ -299,6 +411,9 @@ enum OrderStatus {
   REQUESTED  CONFIRMED  PREPARING  SHIPPED
   IN_TRANSIT DELIVERED  RECEIVED   REJECTED  CANCELLED
 }
+enum InvoiceStatus { DRAFT  UNPAID  PAID  CANCELLED }
+enum BillingCategory { CONSULTATION  DRUG  PROCEDURE  LAB  OTHER }
+enum AppointmentStatus { SCHEDULED  CONFIRMED  COMPLETED  CANCELLED  NO_SHOW }
 
 model Tenant {
   id          String       @id @default(cuid())
@@ -350,7 +465,7 @@ model DrugOrder {
 }
 ```
 
-> Cuplikan disederhanakan. Skema lengkap (Patient, Encounter, PatientAccessRequest, TenantPartnership, DrugStock, DrugOrderItem, DrugOrderTracking, AuditLog, dll) dibuat saat implementasi.
+> Cuplikan disederhanakan. Skema lengkap (Patient, Encounter, PatientAccessRequest, TenantPartnership, DrugStock, DrugOrderItem, DrugOrderTracking, Invoice, InvoiceItem, Appointment, PasswordResetToken, AuditLog, dll) dibuat saat implementasi.
 
 ---
 
@@ -359,8 +474,100 @@ model DrugOrder {
 - **Isolasi data:** semua query operasional WAJIB difilter `tenantId` aktif (kecuali pencarian pasien lintas tenant yang sengaja terbatas). Lihat `ARCHITECTURE.md` & `SECURITY.md`.
 - **Penomoran No. RM:** `RM-YYYYMM-XXXXX`, unik **per tenant**, generate via `$transaction`.
 - **Penomoran Order:** `TRF-YYYYMM-XXXXX`, unik global, generate via `$transaction`.
+- **Penomoran Invoice:** `INV-YYYYMM-XXXXX`, unik **per tenant**, generate via `$transaction`. Nilai uang Billing disimpan sebagai **Int rupiah** (lihat `TECH_DEBT.md`).
 - **Soft delete:** data medis pakai `deletedAt` (nullable), bukan hard delete.
 - **Indexing:** `(tenantId, mrNumber)`, `nik`, `(tenantId, drugId)`, `DrugOrder.status`, `DrugOrderTracking.orderId`.
 - **Transfer obat:** validasi rekanan `ACTIVE` + stok cukup sebelum order; kurangi stok penyedia saat dikirim, tambah stok pemohon saat diterima (transaction).
 - **Akses pasien lintas tenant:** default hanya info terbatas; detail butuh `PatientAccessRequest` berstatus `APPROVED` & belum kedaluwarsa.
 - **Timezone:** simpan UTC, tampilkan WIB/WITA/WIT.
+
+### LabOrder (Order Penunjang) ⭐ — Lab & Radiologi
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| patientId | String | FK → Patient |
+| encounterId | String? | FK → Encounter (opsional) |
+| orderNumber | String | `LAB-YYYYMM-XXXXX` / `RAD-YYYYMM-XXXXX`, unik per tenant |
+| category | LabCategory | `LABORATORIUM` \| `RADIOLOGI` |
+| status | LabOrderStatus | `REQUESTED` → `IN_PROGRESS` → `COMPLETED` / `CANCELLED` |
+| clinicalNote | String? | Catatan klinis |
+| orderedById | String | User pembuat order |
+| completedAt | DateTime? | Diisi saat status `COMPLETED` |
+
+> **Relasi:** tenant, patient, encounter?, items `LabOrderItem[]`. **Index:** `@@unique([tenantId, orderNumber])`, `[tenantId, status]`, `[patientId]`.
+
+### LabOrderItem (Pemeriksaan & Hasil)
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| labOrderId | String | FK → LabOrder (onDelete Cascade) |
+| testName | String | Nama pemeriksaan |
+| result | String? | Hasil |
+| unit | String? | Satuan |
+| referenceRange | String? | Nilai rujukan |
+| flag | LabFlag? | `NORMAL` \| `LOW` \| `HIGH` \| `ABNORMAL` |
+| note | String? | Catatan |
+
+> **Enum baru:** `LabCategory`, `LabOrderStatus`, `LabFlag`.
+
+---
+
+## 🔌 Koneksi & Migrasi Database
+
+### Variabel lingkungan
+Prisma memakai **dua** koneksi (lihat `.env.example`):
+
+| Var | Untuk | Catatan |
+|-----|-------|---------|
+| `DATABASE_URL` | Runtime aplikasi | Koneksi yang dipakai Prisma Client |
+| `DIRECT_URL` | Migrasi (`prisma migrate`) | Koneksi non-pooled / session; dipakai `migrate`/`db push` |
+
+`datasource db` di `schema.prisma`:
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+```
+
+### Opsi A — PostgreSQL lokal
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/smaramedika?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/smaramedika?schema=public"
+```
+
+### Opsi B — Supabase (Supavisor pooler)
+Ambil string dari **Supabase Dashboard → Connect → ORMs/Prisma**. Pola:
+```env
+# Runtime: transaction pooler (port 6543) + pgbouncer
+DATABASE_URL="postgresql://postgres.<ref>:<password>@aws-1-<region>.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require"
+# Migrasi: session pooler (port 5432)
+DIRECT_URL="postgresql://postgres.<ref>:<password>@aws-1-<region>.pooler.supabase.com:5432/postgres?sslmode=require"
+```
+Catatan:
+- **URL-encode** karakter spesial pada password (mis. `@` → `%40`).
+- Koneksi **direct** (`db.<ref>.supabase.co`) bersifat **IPv6-only** di free tier → pakai **pooler** (mendukung IPv4).
+- Host pooler memakai prefix **`aws-1-`** (cek region di dashboard).
+- Jangan commit kredensial: `.env` sudah di-`.gitignore`.
+
+### Alur migrasi
+| Situasi | Perintah | Keterangan |
+|---------|----------|-----------|
+| Ubah `schema.prisma` (dev) | `npm run db:migrate -- --name <nama>` | `prisma migrate dev`: buat + terapkan migrasi, regen client |
+| Terapkan migrasi di server/produksi | `npm run db:deploy` | `prisma migrate deploy`: hanya menerapkan migrasi yang ada (tanpa membuat baru) |
+| Isi data contoh | `npm run db:seed` | Menjalankan `prisma/seed.ts` |
+| Cek status migrasi | `npx prisma migrate status` | Membandingkan migrasi lokal vs database |
+| Reset (HATI-HATI, hapus data) | `npm run db:reset` | Drop + migrate ulang + seed |
+| Setup awal lokal (DB baru) | `npm run db:setup` | Buat DB → migrasi → seed |
+
+### Deploy ke Supabase / produksi
+1. Set `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL` di **environment variables** platform (Vercel/dll) — bukan dari `.env`.
+2. Terapkan skema: `npm run db:deploy` (atau jalankan di pipeline rilis).
+3. (Opsional, sekali) Seed data awal: `npm run db:seed`.
+4. Verifikasi: `npx prisma migrate status` → "Database schema is up to date!".
+
+> **Status saat ini:** database produksi di **Supabase** (region `ap-southeast-1`), 6 migrasi terpasang & ter-seed.

@@ -1,18 +1,31 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { useLocale } from "@/lib/use-locale";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authenticate } from "./actions";
 
 export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const { t } = useLocale();
   const [errorCode, formAction, pending] = useActionState(
     authenticate,
     undefined,
   );
+  const resetOk = useSearchParams().get("reset") === "1";
 
   return (
     <div className="grid min-h-full lg:grid-cols-2">
@@ -51,46 +64,45 @@ export default function LoginPage() {
             <h1 className="text-2xl font-bold tracking-tight text-ink">
               {t.login.title}
             </h1>
-            <p className="mt-2 text-sm text-muted">{t.login.subtitle}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t.login.subtitle}</p>
+
+            {resetOk && (
+              <p className="mt-6 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
+                {t.login.resetSuccess}
+              </p>
+            )}
 
             <form action={formAction} className="mt-8 space-y-5">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-ink"
-                >
-                  {t.login.email}
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor="email">{t.login.email}</Label>
+                <Input
                   id="email"
                   name="email"
                   type="email"
                   required
                   defaultValue="andi@sehatsentosa.id"
                   placeholder={t.login.emailPlaceholder}
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  className="h-10"
                 />
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-ink"
+                  <Label htmlFor="password">{t.login.password}</Label>
+                  <Link
+                    href="/forgot-password"
+                    className="text-xs font-medium text-brand transition-colors hover:text-brand-deep"
                   >
-                    {t.login.password}
-                  </label>
-                  <span className="text-xs font-medium text-muted">
                     {t.login.forgot}
-                  </span>
+                  </Link>
                 </div>
-                <input
+                <Input
                   id="password"
                   name="password"
                   type="password"
                   required
                   placeholder={t.login.passwordPlaceholder}
-                  className="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:ring-2 focus:ring-brand/20"
+                  className="h-10"
                 />
               </div>
 
@@ -100,13 +112,14 @@ export default function LoginPage() {
                 </p>
               )}
 
-              <button
+              <Button
                 type="submit"
+                size="lg"
                 disabled={pending}
-                className="w-full rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-deep disabled:opacity-60"
+                className="h-10 w-full"
               >
                 {pending ? "…" : t.login.submit}
-              </button>
+              </Button>
             </form>
 
             <p className="mt-6 rounded-lg bg-mint px-4 py-3 text-xs text-brand-deep">
@@ -115,7 +128,7 @@ export default function LoginPage() {
 
             <Link
               href="/"
-              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+              className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
             >
               <svg
                 viewBox="0 0 24 24"

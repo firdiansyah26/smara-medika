@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import type { IcdCode } from "@/lib/icd10";
 import { interpretVitals } from "@/lib/vitals";
-import { saveEncounter, addDiagnosis, removeDiagnosis } from "../actions";
+import {
+  saveEncounter,
+  addDiagnosis,
+  removeDiagnosis,
+  addPrescriptionItem,
+  removePrescriptionItem,
+} from "../actions";
 
 type Diagnosis = {
   id: string;
@@ -14,6 +20,16 @@ type Diagnosis = {
   icdName: string;
   type: "PRIMER" | "SEKUNDER";
 };
+type RxItem = {
+  id: string;
+  drugName: string;
+  unit: string;
+  dosage: string | null;
+  frequency: string | null;
+  quantity: number;
+  instruction: string | null;
+};
+type DrugOption = { drugId: string; name: string; unit: string };
 type Vital = {
   systolic: number | null;
   diastolic: number | null;
@@ -37,6 +53,8 @@ export type EncounterData = {
   plan: string | null;
   vital: Vital | null;
   diagnoses: Diagnosis[];
+  prescriptionItems: RxItem[];
+  drugOptions: DrugOption[];
 };
 
 const input =
@@ -98,7 +116,7 @@ function DiagnosisSection({
   return (
     <Section title={t.records.editor.diagnosesTitle}>
       {diagnoses.length === 0 ? (
-        <p className="text-sm text-muted">{t.records.editor.noDiagnoses}</p>
+        <p className="text-sm text-muted-foreground">{t.records.editor.noDiagnoses}</p>
       ) : (
         <ul className="space-y-1.5">
           {diagnoses.map((d) => (
@@ -109,13 +127,13 @@ function DiagnosisSection({
               <span className="min-w-0">
                 <span className="font-mono text-xs font-semibold text-brand-deep">{d.icdCode}</span>{" "}
                 <span className="text-ink">{d.icdName}</span>
-                <span className="ml-2 rounded bg-slate-100 px-1.5 text-xs text-muted">
+                <span className="ml-2 rounded bg-slate-100 px-1.5 text-xs text-muted-foreground">
                   {d.type === "PRIMER" ? t.records.editor.primer : t.records.editor.sekunder}
                 </span>
               </span>
               <form action={removeDiagnosis}>
                 <input type="hidden" name="id" value={d.id} />
-                <button type="submit" className="shrink-0 text-muted hover:text-red-600" aria-label="remove">
+                <button type="submit" className="shrink-0 text-muted-foreground hover:text-red-600" aria-label="remove">
                   <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
                     <path d="M18 6 6 18M6 6l12 12" />
                   </svg>
@@ -179,6 +197,98 @@ function DiagnosisSection({
   );
 }
 
+function PrescriptionSection({
+  encounterId,
+  items,
+  drugOptions,
+}: {
+  encounterId: string;
+  items: RxItem[];
+  drugOptions: DrugOption[];
+}) {
+  const { t } = useLocale();
+  return (
+    <Section
+      title={t.records.editor.rxTitle}
+      right={
+        items.length > 0 ? (
+          <a
+            href={`/dashboard/rekam-medis/${encounterId}/resep`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-xs font-semibold text-brand-deep hover:underline"
+          >
+            {t.records.editor.rxPrint}
+          </a>
+        ) : undefined
+      }
+    >
+      {items.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t.records.editor.rxEmpty}</p>
+      ) : (
+        <ul className="space-y-1.5">
+          {items.map((it) => (
+            <li
+              key={it.id}
+              className="flex items-start justify-between gap-2 rounded-md border border-slate-200 px-2.5 py-1.5 text-sm"
+            >
+              <span className="min-w-0">
+                <span className="font-medium text-ink">{it.drugName}</span>{" "}
+                <span className="text-xs text-muted-foreground">× {it.quantity} {it.unit}</span>
+                {(it.dosage || it.frequency || it.instruction) && (
+                  <span className="block text-xs text-muted-foreground">
+                    {[it.dosage, it.frequency, it.instruction].filter(Boolean).join(" · ")}
+                  </span>
+                )}
+              </span>
+              <form action={removePrescriptionItem}>
+                <input type="hidden" name="id" value={it.id} />
+                <button type="submit" className="shrink-0 text-muted-foreground hover:text-red-600" aria-label="remove">
+                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {drugOptions.length === 0 ? (
+        <p className="mt-3 border-t border-slate-100 pt-3 text-xs text-muted-foreground">
+          {t.records.editor.rxNoStock}
+        </p>
+      ) : (
+        <form action={addPrescriptionItem} className="mt-3 space-y-2 border-t border-slate-100 pt-3">
+          <input type="hidden" name="encounterId" value={encounterId} />
+          <select name="drugId" required defaultValue="" className={input}>
+            <option value="" disabled>
+              {t.records.editor.rxSelectDrug}
+            </option>
+            {drugOptions.map((d) => (
+              <option key={d.drugId} value={d.drugId}>
+                {d.name}
+              </option>
+            ))}
+          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <input name="dosage" placeholder={t.records.editor.rxDosage} className={input} />
+            <input name="frequency" placeholder={t.records.editor.rxFrequency} className={input} />
+            <input name="quantity" type="number" min="1" defaultValue={1} placeholder={t.records.editor.rxQty} className={input} />
+            <input name="instruction" placeholder={t.records.editor.rxInstruction} className={input} />
+          </div>
+          <button
+            type="submit"
+            className="w-full rounded-md bg-brand px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-deep"
+          >
+            {t.records.editor.add}
+          </button>
+        </form>
+      )}
+    </Section>
+  );
+}
+
 export function EncounterEditor({ data }: { data: EncounterData }) {
   const { t, locale } = useLocale();
   const [state, formAction, pending] = useActionState(saveEncounter, undefined);
@@ -224,7 +334,7 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
     <div>
       <Link
         href="/dashboard/rekam-medis"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted transition-colors hover:text-ink"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
       >
         <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
           <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -237,7 +347,7 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
           <Link href={`/dashboard/pasien/${data.patientId}`} className="text-lg font-bold text-ink hover:text-brand-deep">
             {data.patientName}
           </Link>
-          <p className="text-xs text-muted">
+          <p className="text-xs text-muted-foreground">
             <span className="font-mono">{data.mrNumber}</span> · {dateFmt.format(new Date(data.visitDate))}
           </p>
         </div>
@@ -258,19 +368,19 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
           >
             <div className="space-y-3">
               <div>
-                <label className="text-xs font-medium text-muted">{t.records.editor.subjective}</label>
+                <label className="text-xs font-medium text-muted-foreground">{t.records.editor.subjective}</label>
                 <textarea name="subjective" defaultValue={data.subjective ?? ""} className={area} />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted">{t.records.editor.objective}</label>
+                <label className="text-xs font-medium text-muted-foreground">{t.records.editor.objective}</label>
                 <textarea name="objective" defaultValue={data.objective ?? ""} className={area} />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted">{t.records.editor.assessment}</label>
+                <label className="text-xs font-medium text-muted-foreground">{t.records.editor.assessment}</label>
                 <textarea name="assessment" defaultValue={data.assessment ?? ""} className={area} />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted">{t.records.editor.plan}</label>
+                <label className="text-xs font-medium text-muted-foreground">{t.records.editor.plan}</label>
                 <textarea name="plan" defaultValue={data.plan ?? ""} className={area} />
               </div>
             </div>
@@ -279,10 +389,10 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
           <Section title={t.records.editor.vitalsTitle}>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <div className="col-span-2 sm:col-span-1">
-                <label className="text-xs font-medium text-muted">{t.records.editor.bloodPressure}</label>
+                <label className="text-xs font-medium text-muted-foreground">{t.records.editor.bloodPressure}</label>
                 <div className="mt-1 flex items-center gap-1">
                   <input name="systolic" type="number" value={vitals.systolic} onChange={setVital("systolic")} className={input} />
-                  <span className="text-muted">/</span>
+                  <span className="text-muted-foreground">/</span>
                   <input name="diastolic" type="number" value={vitals.diastolic} onChange={setVital("diastolic")} className={input} />
                 </div>
               </div>
@@ -297,7 +407,7 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
                 ] as [VitalKey, string][]
               ).map(([name, label]) => (
                 <div key={name}>
-                  <label className="text-xs font-medium text-muted">{label}</label>
+                  <label className="text-xs font-medium text-muted-foreground">{label}</label>
                   <input
                     name={name}
                     type="number"
@@ -349,9 +459,14 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
           </div>
         </form>
 
-        {/* Diagnoses — aksi sendiri, di luar form save */}
-        <div>
+        {/* Diagnosa & resep — aksi sendiri, di luar form save */}
+        <div className="space-y-4">
           <DiagnosisSection encounterId={data.id} diagnoses={data.diagnoses} />
+          <PrescriptionSection
+            encounterId={data.id}
+            items={data.prescriptionItems}
+            drugOptions={data.drugOptions}
+          />
         </div>
       </div>
     </div>

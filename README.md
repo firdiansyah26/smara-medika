@@ -3,21 +3,15 @@
 > **Smara** (Sanskerta: _smṛti_ — ingatan, sesuatu yang tercatat) + **Medika** (medis)
 > — _"Catatan/ingatan medis"_
 
-**SmaraMedika** adalah **platform Rekam Medis Elektronik (RME) multi-tenant** untuk jaringan fasilitas kesehatan — Rumah Sakit, Klinik, dan Apotek. Banyak fasilitas berada dalam satu platform dengan data terisolasi per fasilitas, namun bisa saling terhubung melalui **rekanan** untuk **transfer obat antar-fasilitas (dengan tracking)** dan **berbagi akses pasien** secara terkontrol. Dibangun dengan teknologi web terkini agar cepat, aman, dan mudah digunakan oleh tenaga kesehatan.
+**SmaraMedika** adalah **platform Rekam Medis Elektronik (RME) multi-tenant** untuk jaringan fasilitas kesehatan — Rumah Sakit, Klinik, dan Apotek. Banyak fasilitas berada dalam satu platform dengan data terisolasi per fasilitas, namun bisa saling terhubung melalui **rekanan** untuk **transfer obat antar-fasilitas** dan **berbagi akses pasien** secara terkontrol.
 
 **Sorotan:**
 
 - 🏢 **Multi-tenant** — satu platform, banyak RS/Klinik/Apotek; 1 user bisa tergabung di banyak fasilitas
-- 🔄 **Transfer obat antar rekanan** — pesan obat dari fasilitas rekanan + pelacakan status sampai diterima
-- 👥 **Berbagi pasien terkontrol** — cari pasien lintas fasilitas, detail via persetujuan pemilik
+- 🔢 **Antrian lengkap** — kiosk cetak nomor, papan display bersuara (TTS), panel panggil per counter
+- 🩻 **Rekam medis SOAP** + diagnosa ICD-10 + tanda vital dengan **indikator klinis** otomatis
 
----
-
-## 📖 Deskripsi
-
-SmaraMedika membantu fasilitas kesehatan mengelola data pasien, riwayat kunjungan, diagnosa, resep, hingga laporan secara digital — menggantikan pencatatan manual yang rawan hilang dan sulit dicari. Dengan antarmuka yang bersih dan alur kerja yang sederhana, dokter dan staf dapat fokus pada pelayanan pasien.
-
-Aplikasi ini dirancang dengan mengutamakan **keamanan data medis** dan **kemudahan penggunaan**, sesuai kebutuhan layanan kesehatan di Indonesia.
+> **Status:** MVP selesai (Auth, Multi-tenant, Pasien, Rekam Medis, Dashboard) + Antrian, Farmasi, Rekanan & transfer obat, berbagi pasien lintas tenant, resep elektronik, laporan & export, Billing/Tagihan, Jadwal/Janji Temu, **Lab & Radiologi**, dan **Shared API** publik (API key + `/api/v1`). Hanya integrasi luar yang menyusul (Notifikasi, Telemedicine, SATUSEHAT/BPJS — halaman "Soon"). Lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 
@@ -25,97 +19,56 @@ Aplikasi ini dirancang dengan mengutamakan **keamanan data medis** dan **kemudah
 
 Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 
-| Dokumen                              | Isi                                          |
-| ------------------------------------ | -------------------------------------------- |
-| [Fitur](./docs/FEATURES.md)          | Spesifikasi fitur + prioritas & definisi MVP |
-| [Arsitektur](./docs/ARCHITECTURE.md) | Tech stack, struktur folder, pola            |
-| [Database](./docs/DATABASE.md)       | Skema database & relasi                      |
-| [API](./docs/API.md)                 | Spesifikasi endpoint REST                    |
-| [Roadmap](./docs/ROADMAP.md)         | Rencana pengembangan bertahap                |
-| [Tech Debt](./docs/TECH_DEBT.md)     | Utang teknis & keputusan teknis              |
-| [Keamanan](./docs/SECURITY.md)       | Keamanan & kepatuhan regulasi                |
-| [Kontribusi](./docs/CONTRIBUTING.md) | Panduan kontribusi & konvensi                |
+| Dokumen | Isi |
+| --- | --- |
+| [Fitur](./docs/FEATURES.md) | Spesifikasi fitur + status implementasi |
+| [Arsitektur](./docs/ARCHITECTURE.md) | Tech stack, struktur, pola |
+| [Database](./docs/DATABASE.md) | Skema database & relasi |
+| [API](./docs/API.md) | Endpoint REST internal |
+| [Shared API](./docs/SHARED_API.md) | API publik pihak ketiga (`/api/v1`) |
+| [Roadmap](./docs/ROADMAP.md) | Status & rencana bertahap |
+| [Tech Debt](./docs/TECH_DEBT.md) | Utang teknis & keputusan |
+| [Keamanan](./docs/SECURITY.md) | Keamanan & kepatuhan |
+| [Kontribusi](./docs/CONTRIBUTING.md) | Panduan kontribusi |
 
 ---
 
-## ✨ Fitur Utama
+## ✨ Fitur (✅ selesai · 🔜 rencana)
 
-### 🏢 Multi-Tenant & Keanggotaan
-
-- Banyak fasilitas (RS / Klinik / Apotek) dalam satu platform
-- **1 user bisa tergabung di banyak tenant** dengan peran berbeda per tenant
-- Tenant switcher (pilih fasilitas aktif) & isolasi data per fasilitas
-
-### 🔄 Rekanan & Transfer Obat Antar-Fasilitas
-
-- Manajemen rekanan (partnership) antar fasilitas
-- Order obat ke apotek/RS rekanan saat stok tidak tersedia
-- **Tracking status** order: diajukan → dikonfirmasi → disiapkan → dikirim → diterima
-- Stok bertambah otomatis saat obat diterima
-
-### 👥 Berbagi Pasien Lintas Fasilitas (Terkontrol)
-
-- Pencarian pasien lintas tenant (info terbatas)
-- Permintaan & persetujuan akses detail pasien ke fasilitas pemilik
-
-### 👤 Autentikasi & Manajemen Pengguna
-
-- Login / logout dengan keamanan password ter-hash
-- **Hak akses berbasis peran (Role-Based Access Control)**: Admin, Dokter, Perawat, Resepsionis, Apoteker
-- **Audit log** — mencatat siapa mengakses & mengubah data (wajib untuk data medis)
-
-### 🧑‍🤝‍🧑 Manajemen Pasien
-
-- Registrasi pasien baru (No. Rekam Medis otomatis, NIK, BPJS)
-- Pencarian & daftar pasien
-- Profil lengkap + riwayat kunjungan
-
-### 📋 Rekam Medis (Inti)
-
-- Catatan kunjungan dengan format **SOAP** (Subjective, Objective, Assessment, Plan)
-- Diagnosa dengan kode **ICD-10**
-- Pencatatan tanda vital (tekanan darah, suhu, nadi, BB/TB)
-- Riwayat alergi & penyakit kronis
-- Lampiran hasil pemeriksaan (PDF/gambar)
-
-### 📅 Antrian & Pendaftaran
-
-- Pendaftaran kunjungan / appointment
-- Nomor antrian per poli/dokter
-- Jadwal praktik dokter
-
-### 💊 Resep & Farmasi
-
-- Resep elektronik (e-prescription)
-- Master data & stok obat
-- Riwayat pengobatan pasien
-
-### 💳 Billing & Penunjang
-
-- Tagihan & pembayaran tindakan
-- Order pemeriksaan lab/radiologi + input hasil
-
-### 📊 Dashboard & Laporan
-
-- Statistik kunjungan & diagnosa terbanyak
-- Laporan harian/bulanan
-- Export PDF/Excel
+- ✅ **Multi-Tenant & keanggotaan** — 1 user banyak tenant, tenant switcher, isolasi data per fasilitas; **undang & kelola anggota** (peran inline, keluarkan)
+- ✅ **Autentikasi & RBAC** — login (Auth.js), proteksi route, peran per tenant, audit log, **lupa & reset kata sandi** (mode dev)
+- ✅ **Manajemen Pasien** — registrasi (No. RM otomatis), cari, detail, edit, soft-delete, alergi, **riwayat pengobatan**
+- ✅ **Rekam Medis** — kunjungan, SOAP, diagnosa ICD-10, tanda vital + **indikator klinis**, **resep elektronik + cetak**
+- ✅ **Dashboard** — ringkasan, diagnosa terbanyak, filter periode
+- ✅ **Antrian** — kiosk cetak nomor, papan display + suara, panel panggil per counter (BPJS/Asuransi/Umum)
+- ✅ **Farmasi** — master obat + stok per tenant (indikator stok menipis)
+- ✅ **Rekanan & transfer obat** antar fasilitas — order multi-item, tracking status, penerimaan → stok auto update
+- ✅ **Berbagi pasien lintas tenant** — pencarian info terbatas + permintaan/persetujuan akses
+- ✅ **Laporan & export** — laporan kunjungan & transfer obat, export CSV + cetak/PDF
+- ✅ **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID, cetak
+- ✅ **Jadwal & Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter
+- ✅ **Lab & Radiologi** — order pemeriksaan penunjang, input hasil + tanda (Normal/Rendah/Tinggi/Abnormal), alur status, cetak hasil
+- ✅ **Shared API** publik — API key (LIVE/TEST), endpoint `/api/v1`, scope granular, rate limit + log pemakaian — lihat `docs/SHARED_API.md`
+- ✅ **UI** — komponen **shadcn ui** (tema teal), dwibahasa **ID/EN**
+- 🔜 **Notifikasi**, **Telemedicine**, **Integrasi SATUSEHAT/BPJS** — menu & halaman "Soon" tersedia, integrasi luar menyusul
+- 🔜 **Webhook Shared API** — model siap, butuh worker/queue (HMAC + retry)
 
 ---
 
-## 🛠️ Teknologi (Tech Stack)
+## 🛠️ Tech Stack
 
-| Lapisan         | Teknologi                                                |
-| --------------- | -------------------------------------------------------- |
-| **Framework**   | [Next.js](https://nextjs.org/) (App Router) — full stack |
-| **API**         | Next.js Route Handlers (Node.js)                         |
-| **Database**    | [PostgreSQL](https://www.postgresql.org/)                |
-| **ORM**         | [Prisma](https://www.prisma.io/)                         |
-| **Styling**     | [Tailwind CSS](https://tailwindcss.com/)                 |
-| **Komponen UI** | [shadcn/ui](https://ui.shadcn.com/)                      |
-| **Autentikasi** | [Auth.js (NextAuth)](https://authjs.dev/)                |
-| **Validasi**    | [Zod](https://zod.dev/)                                  |
-| **Bahasa**      | TypeScript                                               |
+| Lapisan | Teknologi |
+| --- | --- |
+| **Framework** | [Next.js 16](https://nextjs.org/) (App Router) + React 19 — full-stack |
+| **Bahasa** | TypeScript |
+| **API** | Route Handlers + Server Actions |
+| **Database** | [PostgreSQL 16](https://www.postgresql.org/) (nama tabel/kolom snake_case) |
+| **ORM** | [Prisma v6](https://www.prisma.io/) |
+| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) |
+| **Komponen UI** | [shadcn/ui](https://ui.shadcn.com/) (base-ui) + lucide-react |
+| **Autentikasi** | [Auth.js v5](https://authjs.dev/) (Credentials + bcryptjs) |
+| **Validasi** | [Zod](https://zod.dev/) |
+| **i18n** | hook ringan + localStorage (ID/EN) |
 
 ---
 
@@ -123,99 +76,127 @@ Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 
 ### Prasyarat
 
-- [Node.js](https://nodejs.org/) v18 atau lebih baru
-- [PostgreSQL](https://www.postgresql.org/) v14 atau lebih baru
-- npm / pnpm / yarn
+- [Node.js](https://nodejs.org/) v18+
+- [PostgreSQL](https://www.postgresql.org/) v14+ (berjalan lokal)
 
 ### Instalasi
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/username/smaramedika.git
-cd smaramedika
+# 1. Clone
+git clone https://github.com/firdiansyah26/smara-medika.git
+cd smara-medika
 
-# 2. Install dependencies
+# 2. Dependencies
 npm install
 
-# 3. Salin file environment & sesuaikan
+# 3. Environment — salin & sesuaikan DATABASE_URL, DIRECT_URL + AUTH_SECRET
 cp .env.example .env
 
-# 4. Jalankan migrasi database
-npx prisma migrate dev
+# 4. Setup database (buat DB jika belum ada → migrasi → seed)
+npm run db:setup
+#   atau manual: npx prisma migrate dev && npm run db:seed
+#   ke server/produksi/Supabase: npm run db:deploy && npm run db:seed
 
-# 5. (Opsional) Isi data awal
-npx prisma db seed
-
-# 6. Jalankan aplikasi
+# 5. Jalankan
 npm run dev
 ```
 
-Aplikasi berjalan di [http://localhost:3000](http://localhost:3000)
+Aplikasi di [http://localhost:3000](http://localhost:3000).
 
-### Contoh Konfigurasi `.env`
+> **Database (lokal & Supabase) + alur migrasi/deploy:** lihat panduan lengkap di
+> [docs/DATABASE.md → Koneksi & Migrasi Database](docs/DATABASE.md#-koneksi--migrasi-database).
+> Prisma butuh `DATABASE_URL` (runtime) **dan** `DIRECT_URL` (migrasi).
+
+**Akun demo (dari seed):** `andi@sehatsentosa.id` / `password123`
+
+**Halaman publik antrian** (ganti `RSSS` dengan kode tenant):
+
+- Kiosk cetak nomor: `/antrian/RSSS/ambil`
+- Papan display: `/antrian/RSSS/display`
+
+### Contoh `.env`
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/smaramedika"
-NEXTAUTH_SECRET="ganti-dengan-secret-acak"
-NEXTAUTH_URL="http://localhost:3000"
+DATABASE_URL="postgresql://user:password@localhost:5432/smaramedika?schema=public"
+AUTH_SECRET="ganti-dengan-secret-acak"   # openssl rand -base64 32
+AUTH_URL="http://localhost:3000"
+```
+
+### Script berguna
+
+```bash
+npm run dev          # dev server (Next.js + Turbopack)
+npm run build        # build produksi
+npm run start        # jalankan hasil build
+npm run lint         # eslint
+npm run db:generate  # prisma generate (Prisma Client)
+npm run db:migrate   # prisma migrate dev
+npm run db:deploy    # prisma migrate deploy (produksi)
+npm run db:seed      # isi data contoh
+npm run db:studio    # Prisma Studio
+npm run db:reset     # reset database (migrate reset)
+npm run db:setup     # buat DB (jika belum ada) → migrasi → seed
 ```
 
 ---
 
-## 📂 Struktur Proyek (Rencana)
+## 📂 Struktur Proyek
 
 ```
-smaramedika/
-├── prisma/              # Skema & migrasi database
-├── src/
-│   ├── app/             # Halaman & API routes (Next.js App Router)
-│   │   ├── (auth)/      # Halaman autentikasi
-│   │   ├── dashboard/   # Dashboard utama
-│   │   ├── pasien/      # Manajemen pasien
-│   │   └── api/         # API endpoints
-│   ├── components/      # Komponen UI reusable
-│   ├── lib/             # Utilitas (db, auth, helpers)
-│   └── types/           # Tipe TypeScript
-├── public/              # Aset statis
-└── README.md
+src/
+├── app/
+│   ├── page.tsx               # landing
+│   ├── login/                 # login (page + actions)
+│   ├── forgot-password/       # lupa kata sandi (page + actions)
+│   ├── reset-password/        # reset kata sandi (page + form + actions)
+│   ├── antrian/[code]/        # kiosk ambil nomor & papan display (publik)
+│   ├── dashboard/             # area terproteksi
+│   │   ├── pasien/  rekam-medis/  antrian/  jadwal/  farmasi/
+│   │   ├── transfer-obat/  rekanan/  akses-pasien/  billing/
+│   │   ├── penunjang/  laporan/  shared-api/  pengaturan/
+│   │   ├── notifikasi/  telemedicine/  integrasi/   # halaman "Soon"
+│   │   └── actions.ts         # server actions (tenant, logout)
+│   └── api/                   # route handlers (auth, icd, antrian, v1/*)
+├── components/                # app-shell, landing, ui/ (shadcn), coming-soon, ...
+├── lib/                       # db, auth-types, tenant-context, audit, i18n,
+│                              #   queue, vitals, icd10, *-number, reset-token,
+│                              #   api-auth, schemas/
+├── auth.ts  auth.config.ts    # Auth.js (Node + edge-safe)
+├── proxy.ts                   # proteksi route (Next 16, gantikan middleware)
+prisma/                        # schema.prisma, migrations/, seed.ts
+docs/                          # dokumentasi markdown
 ```
 
 ---
 
 ## 🔒 Keamanan & Kepatuhan
 
-Data medis bersifat sangat sensitif. SmaraMedika menerapkan:
-
-- 🔐 Password ter-hash (bcrypt/argon2)
-- 📝 Audit trail untuk setiap akses & perubahan rekam medis
-- 🔑 Kontrol akses berbasis peran
-- 💾 Anjuran backup database rutin
-
-Pengembangan mengacu pada regulasi terkait:
-
-- **UU No. 27 Tahun 2022** tentang Pelindungan Data Pribadi (UU PDP)
-- **Permenkes** tentang Rekam Medis Elektronik (RME)
+- 🔐 Password ter-hash (bcrypt) · 📝 audit log · 🔑 RBAC per tenant · 🧱 isolasi data per `tenantId`
+- Mengacu pada **UU No. 27/2022 (PDP)** & **Permenkes** tentang Rekam Medis Elektronik (RME). Lihat [docs/SECURITY.md](./docs/SECURITY.md).
 
 ---
 
 ## 🗺️ Roadmap
 
-- [x] Penentuan fitur & arsitektur
-- [ ] **Fase 1 (MVP)**: Autentikasi + Role → Manajemen Pasien → Rekam Medis SOAP → Dashboard
-- [ ] **Fase 2**: Antrian/Appointment → Resep → Billing
-- [ ] **Fase 3**: Lab, Laporan lanjutan, Notifikasi, Telemedicine
+- [x] Perencanaan + scaffold + fondasi (Next.js 16, Prisma, Auth.js, shadcn)
+- [x] **MVP**: Auth & RBAC, Multi-tenant, Manajemen Pasien, Rekam Medis SOAP (+ indikator vital), Dashboard
+- [x] **Operasional & jaringan**: Antrian (kiosk/display/suara), Farmasi (stok), rekanan & transfer obat (tracking), berbagi pasien lintas tenant, resep elektronik, laporan & export, undang/kelola anggota, lupa/reset kata sandi
+- [x] **Lanjutan**: Billing/Tagihan, Jadwal/Janji Temu, **Lab & Radiologi**, **Shared API publik** (`/api/v1`)
+- [ ] Berikutnya: Notifikasi, Telemedicine, SATUSEHAT/BPJS (halaman "Soon"), webhook Shared API
+
+Status detail: [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 
 ## 🤝 Kontribusi
 
-Kontribusi sangat diterima! Silakan buka _issue_ atau _pull request_.
+Development mengikuti **GitHub issues**; branch fitur → PR ke `develop` → merge. Lihat [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ---
 
 ## 📄 Lisensi
 
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+[MIT License](LICENSE).
 
 ---
 

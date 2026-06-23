@@ -27,6 +27,18 @@ export default async function PatientDetailPage({
   });
   if (!patient) notFound();
 
+  const meds = await db.prescriptionItem.findMany({
+    where: {
+      prescription: { encounter: { patientId: id, tenantId: tenant.tenantId } },
+    },
+    orderBy: { prescription: { createdAt: "desc" } },
+    take: 30,
+    include: {
+      drug: { select: { name: true, unit: true } },
+      prescription: { select: { createdAt: true } },
+    },
+  });
+
   return (
     <PatientDetail
       data={{
@@ -54,6 +66,15 @@ export default async function PatientDetailPage({
           allergen: a.allergen,
           reaction: a.reaction,
           severity: a.severity,
+        })),
+        medications: meds.map((m) => ({
+          id: m.id,
+          drugName: m.drug.name,
+          unit: m.drug.unit,
+          dosage: m.dosage,
+          frequency: m.frequency,
+          quantity: m.quantity,
+          date: m.prescription.createdAt.toISOString(),
         })),
       }}
     />

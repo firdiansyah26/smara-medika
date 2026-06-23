@@ -10,8 +10,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ============================================================
@@ -141,6 +142,77 @@ enum WebhookDeliveryStatus {
   @@map("webhook_delivery_status")
 }
 
+enum ServiceType {
+  BPJS
+  ASURANSI
+  UMUM
+
+  @@map("service_type")
+}
+
+enum QueueStatus {
+  WAITING
+  CALLED
+  SERVED
+  SKIPPED
+
+  @@map("queue_status")
+}
+
+enum InvoiceStatus {
+  DRAFT
+  UNPAID
+  PAID
+  CANCELLED
+
+  @@map("invoice_status")
+}
+
+enum BillingCategory {
+  CONSULTATION
+  DRUG
+  PROCEDURE
+  LAB
+  OTHER
+
+  @@map("billing_category")
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+
+  @@map("appointment_status")
+}
+
+enum LabCategory {
+  LABORATORIUM
+  RADIOLOGI
+
+  @@map("lab_category")
+}
+
+enum LabOrderStatus {
+  REQUESTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+
+  @@map("lab_order_status")
+}
+
+enum LabFlag {
+  NORMAL
+  LOW
+  HIGH
+  ABNORMAL
+
+  @@map("lab_flag")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -173,6 +245,10 @@ model Tenant {
   partnershipsReceived      TenantPartnership[]    @relation("PartnershipAddressee")
   ordersRequested           DrugOrder[]            @relation("OrderRequester")
   ordersSupplied            DrugOrder[]            @relation("OrderSupplier")
+  queueTickets              QueueTicket[]
+  invoices                  Invoice[]
+  appointments              Appointment[]
+  labOrders                 LabOrder[]
 
   @@map("tenants")
 }
@@ -187,9 +263,11 @@ model User {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  memberships Membership[]
-  encounters  Encounter[]  @relation("EncounterDoctor")
-  auditLogs   AuditLog[]
+  memberships         Membership[]
+  encounters          Encounter[]          @relation("EncounterDoctor")
+  auditLogs           AuditLog[]
+  appointments        Appointment[]        @relation("AppointmentDoctor")
+  passwordResetTokens PasswordResetToken[]
 
   @@map("users")
 }
@@ -237,6 +315,9 @@ model Patient {
   encounters     Encounter[]
   allergies      Allergy[]
   accessRequests PatientAccessRequest[]
+  invoices       Invoice[]
+  appointments   Appointment[]
+  labOrders      LabOrder[]
 
   @@unique([tenantId, mrNumber])
   @@index([nik])
@@ -287,6 +368,8 @@ model Encounter {
   vitalSign     VitalSign?
   diagnoses     Diagnosis[]
   prescriptions Prescription[]
+  invoices      Invoice[]
+  labOrders     LabOrder[]
 
   @@index([tenantId, visitDate])
   @@index([patientId])
@@ -550,6 +633,26 @@ model WebhookDelivery {
   @@map("webhook_deliveries")
 }
 
+model QueueTicket {
+  id          String      @id @default(cuid())
+  tenantId    String      @map("tenant_id")
+  serviceType ServiceType @map("service_type")
+  number      Int
+  code        String
+  status      QueueStatus @default(WAITING)
+  counter     String?
+  calledById  String?     @map("called_by_id")
+  calledAt    DateTime?   @map("called_at")
+  servedAt    DateTime?   @map("served_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, status])
+  @@index([tenantId, createdAt])
+  @@map("queue_tickets")
+}
+
 model ApiRequestLog {
   id         String   @id @default(cuid())
   tenantId   String   @map("tenant_id")
@@ -565,4 +668,140 @@ model ApiRequestLog {
 
   @@index([tenantId, createdAt])
   @@map("api_request_logs")
+}
+
+// ============================================================
+// Billing (tagihan & invoice)
+// ============================================================
+
+model Invoice {
+  id            String        @id @default(cuid())
+  tenantId      String        @map("tenant_id")
+  patientId     String        @map("patient_id")
+  encounterId   String?       @map("encounter_id")
+  invoiceNumber String        @map("invoice_number")
+  status        InvoiceStatus @default(DRAFT)
+  discount      Int           @default(0)
+  total         Int           @default(0)
+  note          String?
+  createdById   String        @map("created_by_id")
+  paidAt        DateTime?     @map("paid_at")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient   Patient       @relation(fields: [patientId], references: [id])
+  encounter Encounter?    @relation(fields: [encounterId], references: [id])
+  items     InvoiceItem[]
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId, status])
+  @@index([patientId])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String          @id @default(cuid())
+  invoiceId   String          @map("invoice_id")
+  category    BillingCategory @default(OTHER)
+  description String
+  quantity    Int             @default(1)
+  unitPrice   Int             @default(0) @map("unit_price")
+  amount      Int             @default(0)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@map("invoice_items")
+}
+
+// ============================================================
+// Appointment (jadwal & janji temu)
+// ============================================================
+
+model Appointment {
+  id          String            @id @default(cuid())
+  tenantId    String            @map("tenant_id")
+  patientId   String            @map("patient_id")
+  doctorId    String            @map("doctor_id")
+  scheduledAt DateTime          @map("scheduled_at")
+  durationMin Int               @default(30) @map("duration_min")
+  status      AppointmentStatus @default(SCHEDULED)
+  reason      String?
+  note        String?
+  encounterId String?           @map("encounter_id")
+  createdById String            @map("created_by_id")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient Patient @relation(fields: [patientId], references: [id])
+  doctor  User    @relation("AppointmentDoctor", fields: [doctorId], references: [id])
+
+  @@index([tenantId, scheduledAt])
+  @@index([doctorId, scheduledAt])
+  @@map("appointments")
+}
+
+// ============================================================
+// Reset kata sandi (token)
+// ============================================================
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+// ============================================================
+// Penunjang Diagnostik (Lab & Radiologi)
+// ============================================================
+
+model LabOrder {
+  id           String         @id @default(cuid())
+  tenantId     String         @map("tenant_id")
+  patientId    String         @map("patient_id")
+  encounterId  String?        @map("encounter_id")
+  orderNumber  String         @map("order_number")
+  category     LabCategory    @default(LABORATORIUM)
+  status       LabOrderStatus @default(REQUESTED)
+  clinicalNote String?        @map("clinical_note")
+  orderedById  String         @map("ordered_by_id")
+  completedAt  DateTime?      @map("completed_at")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient   Patient        @relation(fields: [patientId], references: [id])
+  encounter Encounter?     @relation(fields: [encounterId], references: [id])
+  items     LabOrderItem[]
+
+  @@unique([tenantId, orderNumber])
+  @@index([tenantId, status])
+  @@index([patientId])
+  @@map("lab_orders")
+}
+
+model LabOrderItem {
+  id             String   @id @default(cuid())
+  labOrderId     String   @map("lab_order_id")
+  testName       String   @map("test_name")
+  result         String?
+  unit           String?
+  referenceRange String?  @map("reference_range")
+  flag           LabFlag?
+  note           String?
+
+  labOrder LabOrder @relation(fields: [labOrderId], references: [id], onDelete: Cascade)
+
+  @@index([labOrderId])
+  @@map("lab_order_items")
 }

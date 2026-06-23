@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useLocale } from "@/lib/use-locale";
 import { switchTenant, logout } from "@/app/dashboard/actions";
 import type { MembershipInfo } from "@/lib/auth-types";
@@ -27,6 +29,21 @@ const navItems: NavItem[] = [
     icon: <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M9 13h6M9 17h4" />,
   },
   {
+    key: "queue",
+    href: "/dashboard/antrian",
+    icon: <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />,
+  },
+  {
+    key: "appointments",
+    href: "/dashboard/jadwal",
+    icon: <path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 16l2 2 4-4" />,
+  },
+  {
+    key: "pharmacy",
+    href: "/dashboard/farmasi",
+    icon: <path d="M10.5 20.5 3.5 13.5a5 5 0 0 1 7-7l7 7a5 5 0 0 1-7 7zM7 10l7 7" />,
+  },
+  {
     key: "drugTransfer",
     href: "/dashboard/transfer-obat",
     icon: <path d="M3 7h11v8H3zM14 10h4l3 3v2h-7zM7 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />,
@@ -36,7 +53,42 @@ const navItems: NavItem[] = [
     href: "/dashboard/rekanan",
     icon: <path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1" />,
   },
+  {
+    key: "patientAccess",
+    href: "/dashboard/akses-pasien",
+    icon: <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 11l2 2 4-4" />,
+  },
+  {
+    key: "billing",
+    href: "/dashboard/billing",
+    icon: <path d="M6 2h12v20l-3-2-3 2-3-2-3 2zM9 7h6M9 11h6" />,
+  },
+  {
+    key: "diagnostics",
+    href: "/dashboard/penunjang",
+    icon: <path d="M9 2v6l-5 9a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-9V2M9 2h6M7 14h10" />,
+  },
+  {
+    key: "reports",
+    href: "/dashboard/laporan",
+    icon: <path d="M3 3v18h18M8 17V9M13 17V5M18 17v-6" />,
+  },
   { key: "sharedApi", href: "/dashboard/shared-api", icon: <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" /> },
+  {
+    key: "notifications",
+    href: "/dashboard/notifikasi",
+    icon: <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" />,
+  },
+  {
+    key: "telemedicine",
+    href: "/dashboard/telemedicine",
+    icon: <path d="M23 7l-7 5 7 5V7zM1 5h15v14H1zM5 9h2M5 13h6" />,
+  },
+  {
+    key: "integrations",
+    href: "/dashboard/integrasi",
+    icon: <path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M19 5l-4 4M9 15l-4 4" />,
+  },
   {
     key: "settings",
     href: "/dashboard/pengaturan",
@@ -183,12 +235,14 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
           <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
             {/* Hamburger (mobile) */}
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="icon"
               onClick={() =>
                 setOpenMenu(openMenu === "mobile" ? null : "mobile")
               }
-              className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
+              className="lg:hidden"
               aria-label="Menu"
             >
               <svg
@@ -201,7 +255,7 @@ export function AppShell({
               >
                 <path d="M3 12h18M3 6h18M3 18h18" />
               </svg>
-            </button>
+            </Button>
 
             {/* Tenant switcher */}
             {activeTenant && (
@@ -221,13 +275,13 @@ export function AppShell({
                     <span className="block text-sm font-semibold leading-tight text-ink">
                       {activeTenant.tenantName}
                     </span>
-                    <span className="block text-xs leading-tight text-muted">
+                    <span className="block text-xs leading-tight text-muted-foreground">
                       {tenantTypeLabel(activeTenant.tenantType, t)}
                     </span>
                   </span>
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-4 w-4 text-muted"
+                    className="h-4 w-4 text-muted-foreground"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth={2}
@@ -240,7 +294,7 @@ export function AppShell({
 
                 {openMenu === "tenant" && (
                   <div className="absolute left-0 top-full z-30 mt-2 w-64 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
-                    <p className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+                    <p className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                       {t.app.topbar.switchTenant}
                     </p>
                     {tenants.map((tenant) => (
@@ -262,7 +316,7 @@ export function AppShell({
                           <span className="block leading-tight">
                             {tenant.tenantName}
                           </span>
-                          <span className="block text-xs leading-tight text-muted">
+                          <span className="block text-xs leading-tight text-muted-foreground">
                             {tenantTypeLabel(tenant.tenantType, t)}
                           </span>
                         </span>
@@ -288,10 +342,10 @@ export function AppShell({
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
                 </svg>
-                <input
+                <Input
                   type="search"
                   placeholder={t.app.topbar.searchPlaceholder}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-slate-400 focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
+                  className="h-9 bg-slate-50 pl-9"
                 />
               </div>
             </div>
@@ -322,7 +376,7 @@ export function AppShell({
                       <p className="text-sm font-semibold text-ink">
                         {user.name}
                       </p>
-                      <p className="truncate text-xs text-muted">
+                      <p className="truncate text-xs text-muted-foreground">
                         {user.email}
                       </p>
                     </div>

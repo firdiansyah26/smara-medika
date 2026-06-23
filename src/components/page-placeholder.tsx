@@ -29,7 +29,7 @@ export function PagePlaceholder({ navKey }: { navKey: NavKey }) {
           </svg>
         </span>
         <p className="mt-5 text-lg font-semibold text-ink">{title}</p>
-        <p className="mt-1 text-sm capitalize text-muted">
+        <p className="mt-1 text-sm capitalize text-muted-foreground">
           {t.common.comingSoon}
         </p>
       </div>
