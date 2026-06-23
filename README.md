@@ -11,7 +11,7 @@
 - 🔢 **Antrian lengkap** — kiosk cetak nomor, papan display bersuara (TTS), panel panggil per counter
 - 🩻 **Rekam medis SOAP** + diagnosa ICD-10 + tanda vital dengan **indikator klinis** otomatis
 
-> **Status:** MVP selesai (Auth, Multi-tenant, Pasien, Rekam Medis, Dashboard) + Antrian, Farmasi, Rekanan & transfer obat, berbagi pasien lintas tenant, resep elektronik, laporan, Billing/Tagihan, dan Jadwal/Janji Temu. Lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
+> **Status:** MVP selesai (Auth, Multi-tenant, Pasien, Rekam Medis, Dashboard) + Antrian, Farmasi, Rekanan & transfer obat, berbagi pasien lintas tenant, resep elektronik, laporan & export, Billing/Tagihan, Jadwal/Janji Temu, **Lab & Radiologi**, dan **Shared API** publik (API key + `/api/v1`). Hanya integrasi luar yang menyusul (Notifikasi, Telemedicine, SATUSEHAT/BPJS — halaman "Soon"). Lihat [docs/ROADMAP.md](./docs/ROADMAP.md).
 
 ---
 
@@ -25,7 +25,7 @@ Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 | [Arsitektur](./docs/ARCHITECTURE.md) | Tech stack, struktur, pola |
 | [Database](./docs/DATABASE.md) | Skema database & relasi |
 | [API](./docs/API.md) | Endpoint REST internal |
-| [Shared API](./docs/SHARED_API.md) | API publik pihak ketiga (rencana) |
+| [Shared API](./docs/SHARED_API.md) | API publik pihak ketiga (`/api/v1`) |
 | [Roadmap](./docs/ROADMAP.md) | Status & rencana bertahap |
 | [Tech Debt](./docs/TECH_DEBT.md) | Utang teknis & keputusan |
 | [Keamanan](./docs/SECURITY.md) | Keamanan & kepatuhan |
@@ -47,9 +47,11 @@ Dokumentasi lengkap ada di folder [`docs/`](./docs/README.md):
 - ✅ **Laporan & export** — laporan kunjungan & transfer obat, export CSV + cetak/PDF
 - ✅ **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID, cetak
 - ✅ **Jadwal & Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter
-- ✅ **UI** — komponen **shadcn ui**, dwibahasa **ID/EN**
-- 🔜 **Lab/radiologi**, Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS
-- 🔜 **Shared API** publik (API key, scope, webhook) — lihat `docs/SHARED_API.md`
+- ✅ **Lab & Radiologi** — order pemeriksaan penunjang, input hasil + tanda (Normal/Rendah/Tinggi/Abnormal), alur status, cetak hasil
+- ✅ **Shared API** publik — API key (LIVE/TEST), endpoint `/api/v1`, scope granular, rate limit + log pemakaian — lihat `docs/SHARED_API.md`
+- ✅ **UI** — komponen **shadcn ui** (tema teal), dwibahasa **ID/EN**
+- 🔜 **Notifikasi**, **Telemedicine**, **Integrasi SATUSEHAT/BPJS** — menu & halaman "Soon" tersedia, integrasi luar menyusul
+- 🔜 **Webhook Shared API** — model siap, butuh worker/queue (HMAC + retry)
 
 ---
 
@@ -118,12 +120,17 @@ AUTH_URL="http://localhost:3000"
 ### Script berguna
 
 ```bash
-npm run dev          # dev server
+npm run dev          # dev server (Next.js + Turbopack)
 npm run build        # build produksi
+npm run start        # jalankan hasil build
 npm run lint         # eslint
+npm run db:generate  # prisma generate (Prisma Client)
 npm run db:migrate   # prisma migrate dev
+npm run db:deploy    # prisma migrate deploy (produksi)
 npm run db:seed      # isi data contoh
 npm run db:studio    # Prisma Studio
+npm run db:reset     # reset database (migrate reset)
+npm run db:setup     # buat DB (jika belum ada) → migrasi → seed
 ```
 
 ---
@@ -133,19 +140,26 @@ npm run db:studio    # Prisma Studio
 ```
 src/
 ├── app/
-│   ├── login/                 # halaman login
-│   ├── antrian/[code]/        # kiosk & display (publik)
+│   ├── page.tsx               # landing
+│   ├── login/                 # login (page + actions)
+│   ├── forgot-password/       # lupa kata sandi (page + actions)
+│   ├── reset-password/        # reset kata sandi (page + form + actions)
+│   ├── antrian/[code]/        # kiosk ambil nomor & papan display (publik)
 │   ├── dashboard/             # area terproteksi
-│   │   ├── pasien/  rekam-medis/  antrian/  farmasi/  ...
+│   │   ├── pasien/  rekam-medis/  antrian/  jadwal/  farmasi/
+│   │   ├── transfer-obat/  rekanan/  akses-pasien/  billing/
+│   │   ├── penunjang/  laporan/  shared-api/  pengaturan/
+│   │   ├── notifikasi/  telemedicine/  integrasi/   # halaman "Soon"
 │   │   └── actions.ts         # server actions (tenant, logout)
-│   └── api/                   # route handlers (auth, icd, antrian)
-├── components/
-│   ├── ui/                    # komponen shadcn
-│   ├── app-shell.tsx  landing.tsx  logo.tsx  ...
-├── lib/                       # db, auth-types, i18n, queue, vitals, utils
+│   └── api/                   # route handlers (auth, icd, antrian, v1/*)
+├── components/                # app-shell, landing, ui/ (shadcn), coming-soon, ...
+├── lib/                       # db, auth-types, tenant-context, audit, i18n,
+│                              #   queue, vitals, icd10, *-number, reset-token,
+│                              #   api-auth, schemas/
 ├── auth.ts  auth.config.ts    # Auth.js (Node + edge-safe)
 ├── proxy.ts                   # proteksi route (Next 16, gantikan middleware)
-prisma/                        # schema.prisma, migrations, seed.ts
+prisma/                        # schema.prisma, migrations/, seed.ts
+docs/                          # dokumentasi markdown
 ```
 
 ---
@@ -162,8 +176,8 @@ prisma/                        # schema.prisma, migrations, seed.ts
 - [x] Perencanaan + scaffold + fondasi (Next.js 16, Prisma, Auth.js, shadcn)
 - [x] **MVP**: Auth & RBAC, Multi-tenant, Manajemen Pasien, Rekam Medis SOAP (+ indikator vital), Dashboard
 - [x] **Operasional & jaringan**: Antrian (kiosk/display/suara), Farmasi (stok), rekanan & transfer obat (tracking), berbagi pasien lintas tenant, resep elektronik, laporan & export, undang/kelola anggota, lupa/reset kata sandi
-- [x] **Lanjutan (sebagian)**: Billing/Tagihan, Jadwal/Janji Temu
-- [ ] Berikutnya: Lab/radiologi, Notifikasi, Telemedicine, SATUSEHAT/BPJS, Shared API publik
+- [x] **Lanjutan**: Billing/Tagihan, Jadwal/Janji Temu, **Lab & Radiologi**, **Shared API publik** (`/api/v1`)
+- [ ] Berikutnya: Notifikasi, Telemedicine, SATUSEHAT/BPJS (halaman "Soon"), webhook Shared API
 
 Status detail: [docs/ROADMAP.md](./docs/ROADMAP.md).
 

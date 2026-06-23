@@ -9,7 +9,10 @@ Dokumen ini melacak **utang teknis (tech debt)**, **keputusan yang ditunda**, da
 - ✅ **Ditangani sebagian:** audit log dasar pada operasi pasien/farmasi/antrian (TD-001 lanjut);
   No. RM via `$transaction` (TD-006); soft delete pasien (`deletedAt`) (TD-003).
 - 🟡 **Masih relevan:** isolasi tenant bergantung filter `tenantId` manual (TD-008); ICD-10 subset (TD-002);
-  file storage & lampiran (TD-004); test coverage (TD-005); Shared API (TD-012–016, belum dibangun).
+  file storage & lampiran (TD-004); test coverage (TD-005); CI/CD (TD-020); paginasi UI (TD-022).
+- 🆕 **Shared API sudah dibangun** (API key + `/api/v1` + scope + rate limit + log); sisa TD-013 (rate limit → Redis),
+  TD-014 (webhook belum terkirim), TD-015 (volume log), TD-016 (versioning). Reset kata sandi jalan tetapi
+  email belum ada (TD-017, mode dev).
 - 🆕 **Baru — UI:** base-ui **`DropdownMenu`** belum dipakai di topbar (tenant/user) karena belum bisa
   diverifikasi membuka via harness preview otomatis; sementara pakai dropdown custom yang teruji.
   Migrasi DropdownMenu menyusul setelah dicek manual.
@@ -45,9 +48,9 @@ Skema awal mungkin pakai hard delete. Data medis idealnya tidak dihapus permanen
 Lampiran (hasil lab/rontgen) mungkin awalnya disimpan lokal. Tidak skalabel & berisiko.
 **Rencana:** Migrasi ke S3-compatible storage pada Fase 3.
 
-### TD-005 · 🔴 · Dampak: Rendah — Belum ada test coverage
-MVP fokus fitur; test otomatis menyusul.
-**Rencana:** Tambah Vitest untuk service layer & Playwright untuk alur kritis (login, buat pasien, buat rekam medis).
+### TD-005 · 🔴 · Dampak: **Tinggi** — Belum ada test coverage (0 file test)
+MVP fokus fitur; **belum ada satu pun file test** otomatis. Server actions & alur kritis (auth, total billing, transfer stok, status lab) rawan regresi.
+**Rencana:** Tambah **Vitest** untuk unit/integration server actions & helper, **Playwright** untuk alur kritis E2E (login, buat pasien, buat rekam medis, hitung total invoice, transfer obat, status lab). Sertakan test khusus **isolasi tenant** (lihat TD-008).
 
 ### TD-006 · 🔴 · Dampak: Sedang — Penomoran MR & race condition
 Generate No. RM perlu transaction agar tidak duplikat saat registrasi bersamaan.
@@ -104,6 +107,26 @@ Nilai uang di Billing (`Invoice`, `InvoiceItem`) disimpan sebagai **Int rupiah**
 ### TD-019 · 🔴 · Dampak: Rendah — Jadwal dokter belum ada template ketersediaan berulang
 "Jadwal dokter" saat ini berupa **daftar appointment terfilter** (Hari ini/Mendatang/Semua). Belum ada template ketersediaan dokter berulang (recurring availability / jam praktik), sehingga konflik & slot kosong tidak terkelola otomatis.
 **Rencana:** Tambah model jadwal praktik/ketersediaan berulang + validasi slot saat booking.
+
+### TD-020 · 🔴 · Dampak: Sedang — Belum ada CI/CD
+Belum ada pipeline otomatis. Lint/build/test serta validasi Prisma dijalankan manual, rawan regresi terlewat saat merge.
+**Rencana:** GitHub Actions: `lint` + `build` + `test` + `prisma validate` (dan `prisma migrate diff` opsional) pada setiap PR ke `develop`/`main`.
+
+### TD-021 · 🔴 · Dampak: Rendah — Seed data belum mencakup modul baru
+`prisma/seed.ts` belum memuat contoh untuk modul yang lebih baru (billing/invoice, appointment, order lab, API key), sehingga demo kurang lengkap untuk fitur tersebut.
+**Rencana:** Lengkapi seed agar tiap modul punya data contoh (invoice + item, appointment, lab order + hasil, API key TEST) untuk demo & test E2E.
+
+### TD-022 · 🔴 · Dampak: Sedang — Belum ada paginasi UI di sebagian daftar
+Daftar seperti pasien, invoice, dan lab saat ini fetch terbatas (`take`) atau tanpa kontrol halaman. Pada data besar, sebagian record tak terlihat dan tak ada navigasi halaman.
+**Rencana:** Tambah paginasi (cursor/offset) + kontrol halaman pada daftar utama; selaraskan dengan paginasi yang sudah ada di Shared API `/api/v1`.
+
+### TD-023 · 🔴 · Dampak: Rendah — Umpan balik error Server Action terbatas
+Sebagian Server Action `return` diam saat gagal guard (RBAC/validasi), tanpa pesan jelas ke pengguna. Kegagalan bisa tampak seperti "tidak terjadi apa-apa".
+**Rencana:** Standarkan hasil action (sukses/gagal + pesan) dan tampilkan via toast/notifikasi di UI; konsistenkan penanganan error.
+
+### TD-024 · 🔴 · Dampak: Rendah — Belum ada viewer audit log di UI
+Audit log sudah tercatat di database, tetapi belum ada halaman untuk melihat/menelusuri (filter per user/aksi/entitas/waktu) dari UI.
+**Rencana:** Tambah halaman lihat audit log (read-only, terfilter) untuk OWNER/ADMIN; pertimbangkan ekspor.
 
 ---
 
