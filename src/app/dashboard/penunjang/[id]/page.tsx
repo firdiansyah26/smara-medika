@@ -27,9 +27,28 @@ export default async function Page({
   });
   if (!order) notFound();
 
+  const attachments = await db.attachment.findMany({
+    where: { tenantId: tenant.tenantId, entityType: "LAB_ORDER", entityId: id },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      fileName: true,
+      mimeType: true,
+      size: true,
+      createdAt: true,
+    },
+  });
+
   return (
     <LabOrderDetail
       canManage={MANAGE_ROLES.includes(tenant.role)}
+      attachments={attachments.map((a) => ({
+        id: a.id,
+        fileName: a.fileName,
+        mimeType: a.mimeType,
+        size: a.size,
+        createdAt: a.createdAt.toISOString(),
+      }))}
       data={{
         id: order.id,
         orderNumber: order.orderNumber,

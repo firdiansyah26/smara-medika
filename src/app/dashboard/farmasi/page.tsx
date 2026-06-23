@@ -1,8 +1,11 @@
 import { db } from "@/lib/db";
 import { getActiveTenant } from "@/lib/tenant-context";
+import type { AttachmentItem } from "@/components/attachments/attachment-section";
 import { PharmacyTable, type DrugRow } from "./pharmacy-table";
 
 export const dynamic = "force-dynamic";
+
+const PHARMACY_ROLES = ["OWNER", "ADMIN", "APOTEKER"];
 
 export default async function PharmacyPage() {
   const tenant = await getActiveTenant();
@@ -26,5 +29,43 @@ export default async function PharmacyPage() {
     minStock: s.minStock,
   }));
 
-  return <PharmacyTable rows={rows} />;
+  // Lampiran (foto obat) per drug, dikelompokkan.
+  const attachmentsByDrug: Record<string, AttachmentItem[]> = {};
+  if (tenant && rows.length > 0) {
+    const atts = await db.attachment.findMany({
+      where: {
+        tenantId: tenant.tenantId,
+        entityType: "DRUG",
+        entityId: { in: rows.map((r) => r.drugId) },
+      },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        entityId: true,
+        fileName: true,
+        mimeType: true,
+        size: true,
+        createdAt: true,
+      },
+    });
+    for (const a of atts) {
+      (attachmentsByDrug[a.entityId] ??= []).push({
+        id: a.id,
+        fileName: a.fileName,
+        mimeType: a.mimeType,
+        size: a.size,
+        createdAt: a.createdAt.toISOString(),
+      });
+    }
+  }
+
+  const canManage = tenant ? PHARMACY_ROLES.includes(tenant.role) : false;
+
+  return (
+    <PharmacyTable
+      rows={rows}
+      attachmentsByDrug={attachmentsByDrug}
+      canManage={canManage}
+    />
+  );
 }

@@ -13,6 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AttachmentSection,
+  type AttachmentItem,
+} from "@/components/attachments/attachment-section";
 import { STATUS_BADGE } from "../penunjang-table";
 import {
   addLabItem,
@@ -56,9 +60,11 @@ const inputClass =
 export function LabOrderDetail({
   data,
   canManage,
+  attachments,
 }: {
   data: LabOrderDetailData;
   canManage: boolean;
+  attachments: AttachmentItem[];
 }) {
   const { t, locale } = useLocale();
   const dateFmt = new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
@@ -291,6 +297,17 @@ export function LabOrderDetail({
             </Button>
           </form>
         )}
+      </div>
+
+      {/* Lampiran (mis. citra radiologi / hasil di-scan) */}
+      <div className="mt-4 max-w-md">
+        <AttachmentSection
+          entityType="LAB_ORDER"
+          entityId={data.id}
+          items={attachments}
+          revalidate={`/dashboard/penunjang/${data.id}`}
+          canManage={canManage}
+        />
       </div>
     </div>
   );

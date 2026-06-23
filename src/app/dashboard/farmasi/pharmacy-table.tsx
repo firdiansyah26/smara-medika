@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { Fragment, useActionState, useMemo, useState } from "react";
 import { useLocale } from "@/lib/use-locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AttachmentSection,
+  type AttachmentItem,
+} from "@/components/attachments/attachment-section";
 import { addDrug, updateStock } from "./actions";
 
 export type DrugRow = {
@@ -25,9 +29,26 @@ export type DrugRow = {
   minStock: number | null;
 };
 
-export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
+export function PharmacyTable({
+  rows,
+  attachmentsByDrug,
+  canManage,
+}: {
+  rows: DrugRow[];
+  attachmentsByDrug: Record<string, AttachmentItem[]>;
+  canManage: boolean;
+}) {
   const { t, locale } = useLocale();
   const [state, formAction, pending] = useActionState(addDrug, undefined);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+
+  const toggle = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const [query, setQuery] = useState("");
 
   const priceFmt = new Intl.NumberFormat(locale === "id" ? "id-ID" : "en-US");
@@ -113,41 +134,80 @@ export function PharmacyTable({ rows }: { rows: DrugRow[] }) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((r) => (
-                <TableRow key={r.drugId}>
-                  <TableCell>
-                    <div className="font-medium text-ink">{r.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {r.genericName ? `${r.genericName} · ` : ""}
-                      {r.unit}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{r.category ?? "—"}</TableCell>
-                  <TableCell>
-                    <span className={isLow(r) ? "font-semibold text-red-600" : "text-ink"}>
-                      {r.quantity}
-                    </span>
-                    {isLow(r) && (
-                      <span className="ml-1.5 rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
-                        {t.pharmacy.lowStock}
-                      </span>
+              filtered.map((r) => {
+                const photos = attachmentsByDrug[r.drugId] ?? [];
+                const isOpen = expanded.has(r.drugId);
+                return (
+                  <Fragment key={r.drugId}>
+                    <TableRow>
+                      <TableCell>
+                        <div className="font-medium text-ink">{r.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {r.genericName ? `${r.genericName} · ` : ""}
+                          {r.unit}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">{r.category ?? "—"}</TableCell>
+                      <TableCell>
+                        <span className={isLow(r) ? "font-semibold text-red-600" : "text-ink"}>
+                          {r.quantity}
+                        </span>
+                        {isLow(r) && (
+                          <span className="ml-1.5 rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
+                            {t.pharmacy.lowStock}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {r.price != null ? priceFmt.format(r.price) : "—"}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => toggle(r.drugId)}
+                            title={t.attachments.title}
+                            className={
+                              "inline-flex items-center gap-1 rounded-md border px-2 py-1.5 text-xs font-medium transition-colors " +
+                              (isOpen
+                                ? "border-brand bg-mint text-brand-deep"
+                                : "border-slate-200 text-muted-foreground hover:text-ink")
+                            }
+                          >
+                            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                            </svg>
+                            {photos.length > 0 && photos.length}
+                          </button>
+                          <form action={updateStock} className="flex items-center gap-1.5">
+                            <input type="hidden" name="drugId" value={r.drugId} />
+                            <Input name="quantity" type="number" min="0" defaultValue={r.quantity} className="h-8 w-20" />
+                            <Input name="price" type="number" min="0" step="any" defaultValue={r.price ?? ""} placeholder={t.pharmacy.price} className="h-8 w-24" />
+                            <Button type="submit" variant="outline" size="sm">
+                              {t.pharmacy.save}
+                            </Button>
+                          </form>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                    {isOpen && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="bg-slate-50/60">
+                          <div className="max-w-md">
+                            <AttachmentSection
+                              entityType="DRUG"
+                              entityId={r.drugId}
+                              items={photos}
+                              revalidate="/dashboard/farmasi"
+                              canManage={canManage}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {r.price != null ? priceFmt.format(r.price) : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <form action={updateStock} className="flex items-center gap-1.5">
-                      <input type="hidden" name="drugId" value={r.drugId} />
-                      <Input name="quantity" type="number" min="0" defaultValue={r.quantity} className="h-8 w-20" />
-                      <Input name="price" type="number" min="0" step="any" defaultValue={r.price ?? ""} placeholder={t.pharmacy.price} className="h-8 w-24" />
-                      <Button type="submit" variant="outline" size="sm">
-                        {t.pharmacy.save}
-                      </Button>
-                    </form>
-                  </TableCell>
-                </TableRow>
-              ))
+                  </Fragment>
+                );
+              })
             )}
           </TableBody>
         </Table>
