@@ -592,6 +592,16 @@ export type Dictionary = {
       ABNORMAL: string;
     };
   };
+  soon: {
+    badge: string;
+    plannedTitle: string;
+    note: string;
+    features: {
+      notifikasi: { title: string; desc: string; items: string[] };
+      telemedicine: { title: string; desc: string; items: string[] };
+      integrasi: { title: string; desc: string; items: string[] };
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -1241,6 +1251,43 @@ export const dictionaries: Record<Locale, Dictionary> = {
         ABNORMAL: "Abnormal",
       },
     },
+    soon: {
+      badge: "Soon",
+      plannedTitle: "Yang akan hadir",
+      note: "Fitur ini sedang dikembangkan dan akan segera tersedia.",
+      features: {
+        notifikasi: {
+          title: "Notifikasi",
+          desc: "Kirim pengingat & pemberitahuan otomatis ke pasien dan staf via WhatsApp dan email.",
+          items: [
+            "Pengingat janji temu via WhatsApp & email",
+            "Notifikasi hasil lab/radiologi siap",
+            "Pemberitahuan status order obat antar rekanan",
+            "Template pesan & riwayat pengiriman",
+          ],
+        },
+        telemedicine: {
+          title: "Telemedicine",
+          desc: "Konsultasi online antara dokter dan pasien melalui video call dalam aplikasi.",
+          items: [
+            "Video call dokter–pasien terjadwal",
+            "Chat & berbagi dokumen saat konsultasi",
+            "Terhubung ke rekam medis & resep elektronik",
+            "Riwayat sesi telekonsultasi",
+          ],
+        },
+        integrasi: {
+          title: "Integrasi SATUSEHAT & BPJS",
+          desc: "Hubungkan SmaraMedika dengan ekosistem kesehatan nasional.",
+          items: [
+            "Kirim data kunjungan & diagnosa ke SATUSEHAT",
+            "Verifikasi kepesertaan & rujukan BPJS",
+            "Pemetaan kode (ICD-10, SNOMED, dll)",
+            "Sinkronisasi otomatis & log integrasi",
+          ],
+        },
+      },
+    },
   },
   en: {
     common: {
@@ -1885,6 +1932,43 @@ export const dictionaries: Record<Locale, Dictionary> = {
         LOW: "Low",
         HIGH: "High",
         ABNORMAL: "Abnormal",
+      },
+    },
+    soon: {
+      badge: "Soon",
+      plannedTitle: "What's coming",
+      note: "This feature is under development and will be available soon.",
+      features: {
+        notifikasi: {
+          title: "Notifications",
+          desc: "Send automatic reminders & alerts to patients and staff via WhatsApp and email.",
+          items: [
+            "Appointment reminders via WhatsApp & email",
+            "Lab/radiology result-ready notifications",
+            "Inter-partner drug order status alerts",
+            "Message templates & delivery history",
+          ],
+        },
+        telemedicine: {
+          title: "Telemedicine",
+          desc: "Online consultation between doctors and patients via in-app video calls.",
+          items: [
+            "Scheduled doctor–patient video calls",
+            "Chat & document sharing during consults",
+            "Linked to medical records & e-prescriptions",
+            "Teleconsultation session history",
+          ],
+        },
+        integrasi: {
+          title: "SATUSEHAT & BPJS Integration",
+          desc: "Connect SmaraMedika to the national healthcare ecosystem.",
+          items: [
+            "Push visit & diagnosis data to SATUSEHAT",
+            "BPJS membership & referral verification",
+            "Code mapping (ICD-10, SNOMED, etc.)",
+            "Automatic sync & integration logs",
+          ],
+        },
       },
     },
   },
