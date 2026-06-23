@@ -128,6 +128,10 @@ Sebagian Server Action `return` diam saat gagal guard (RBAC/validasi), tanpa pes
 Audit log sudah tercatat di database, tetapi belum ada halaman untuk melihat/menelusuri (filter per user/aksi/entitas/waktu) dari UI.
 **Rencana:** Tambah halaman lihat audit log (read-only, terfilter) untuk OWNER/ADMIN; pertimbangkan ekspor.
 
+### TD-025 · 🟡 · Dampak: Sedang — Lampiran disimpan di DB (`bytea`)
+Modul **Attachment** menyimpan berkas langsung di PostgreSQL (`bytea`), dibatasi 2 MB/berkas. Praktis & transaksional, tetapi memakai kuota DB (Supabase free 500 MB), membebani backup/replikasi, dan tidak ideal untuk volume besar atau file besar (mis. DICOM radiologi).
+**Rencana:** Untuk skala besar, pindah penyimpanan ke **Supabase Storage** (object storage, 1 GB free) — simpan hanya URL/metadata di DB; pertahankan komponen `<AttachmentSection>` sebagai antarmuka agar migrasi transparan.
+
 ---
 
 ## 🧭 Keputusan Teknis (ADR Ringkas)

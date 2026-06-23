@@ -9,6 +9,10 @@ import { addAllergy, softDeletePatient } from "../actions";
 import { createEncounter } from "@/app/dashboard/rekam-medis/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  AttachmentSection,
+  type AttachmentItem,
+} from "@/components/attachments/attachment-section";
 
 type Visit = { id: string; visitDate: string; status: string };
 type Allergy = {
@@ -82,7 +86,13 @@ function Section({
   );
 }
 
-export function PatientDetail({ data }: { data: PatientDetailData }) {
+export function PatientDetail({
+  data,
+  attachments,
+}: {
+  data: PatientDetailData;
+  attachments: AttachmentItem[];
+}) {
   const { t, locale } = useLocale();
   const router = useRouter();
   const [allergyState, allergyAction, allergyPending] = useActionState(
@@ -331,6 +341,14 @@ export function PatientDetail({ data }: { data: PatientDetailData }) {
               )}
             </div>
           </Section>
+
+          {/* Dokumen & lampiran */}
+          <AttachmentSection
+            entityType="PATIENT"
+            entityId={data.id}
+            items={attachments}
+            revalidate={`/dashboard/pasien/${data.id}`}
+          />
         </div>
       </div>
     </div>
