@@ -3,6 +3,12 @@
 import { db } from "@/lib/db";
 import { generateResetToken } from "@/lib/reset-token";
 import { writeAudit } from "@/lib/audit";
+import {
+  isEmailEnabled,
+  sendEmail,
+  siteUrl,
+  passwordResetEmail,
+} from "@/lib/email";
 
 export type ForgotState = { sent?: boolean; devUrl?: string; error?: boolean };
 
@@ -38,6 +44,23 @@ export async function requestPasswordReset(
     changes: { passwordResetRequested: true },
   });
 
-  // Mode dev: tampilkan tautan (tanpa layanan email).
-  return { sent: true, devUrl: `/reset-password?token=${raw}` };
+  const resetUrl = `${siteUrl()}/reset-password?token=${raw}`;
+
+  // Mode dev (tanpa RESEND_API_KEY): tampilkan tautan di layar.
+  if (!isEmailEnabled()) {
+    return { sent: true, devUrl: `/reset-password?token=${raw}` };
+  }
+
+  // Produksi: kirim email reset. Respons tetap generik (anti-enumeration).
+  const tmpl = passwordResetEmail(resetUrl);
+  const res = await sendEmail({
+    to: user.email,
+    subject: tmpl.subject,
+    html: tmpl.html,
+    text: tmpl.text,
+  });
+  if (!res.ok) {
+    console.error("[reset-password] gagal kirim email:", res.error);
+  }
+  return { sent: true };
 }
