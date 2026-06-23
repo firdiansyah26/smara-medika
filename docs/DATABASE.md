@@ -515,6 +515,35 @@ model DrugOrder {
 
 ---
 
+## Entitas Lampiran (Attachment)
+
+### Attachment (Lampiran/Gambar — polymorphic, disimpan di DB) ⭐
+Penyimpanan lampiran **terpadu** (satu tabel) yang dipakai banyak modul. Relasi ke item terkait
+bersifat **polymorphic** via `entityType` + `entityId` (bukan FK), jadi modul mana pun bisa
+menempelkan lampiran tanpa mengubah skema. **File disimpan langsung di DB** (`bytea`), bukan object
+storage/CDN.
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant (isolasi data) |
+| entityType | AttachmentEntity | `DRUG` \| `PATIENT` \| `ENCOUNTER` \| `LAB_ORDER` \| `INVOICE` \| `OTHER` |
+| entityId | String | ID item terkait di modul tujuan |
+| fileName | String | Nama berkas asli |
+| mimeType | String | Tipe (image/png, image/jpeg, …, application/pdf) |
+| size | Int | Ukuran (byte) |
+| data | Bytes | Isi berkas (`bytea`) |
+| uploadedById | String | User pengunggah |
+
+> **Index:** `[tenantId, entityType, entityId]`. **Batas:** maks **2 MB**/berkas, tipe gambar + PDF.
+> **Penyajian:** route `GET /api/attachments/{id}` (wajib sesi + tenant cocok) menyajikan byte dengan
+> `Content-Type` sesuai. **Komponen:** `<AttachmentSection entityType=… entityId=… />` (reusable).
+> **Realisasi pertama:** halaman detail pasien (Dokumen & Lampiran).
+> **Catatan:** menyimpan file di DB memakai kuota Postgres (lebih kecil dari object storage) — lihat
+> `TECH_DEBT.md`; untuk volume besar pertimbangkan Supabase Storage.
+
+---
+
 ## 🔌 Koneksi & Migrasi Database
 
 ### Variabel lingkungan
