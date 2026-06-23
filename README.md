@@ -89,18 +89,23 @@ cd smara-medika
 # 2. Dependencies
 npm install
 
-# 3. Environment — salin & sesuaikan DATABASE_URL + AUTH_SECRET
+# 3. Environment — salin & sesuaikan DATABASE_URL, DIRECT_URL + AUTH_SECRET
 cp .env.example .env
 
 # 4. Setup database (buat DB jika belum ada → migrasi → seed)
 npm run db:setup
 #   atau manual: npx prisma migrate dev && npm run db:seed
+#   ke server/produksi/Supabase: npm run db:deploy && npm run db:seed
 
 # 5. Jalankan
 npm run dev
 ```
 
 Aplikasi di [http://localhost:3000](http://localhost:3000).
+
+> **Database (lokal & Supabase) + alur migrasi/deploy:** lihat panduan lengkap di
+> [docs/DATABASE.md → Koneksi & Migrasi Database](docs/DATABASE.md#-koneksi--migrasi-database).
+> Prisma butuh `DATABASE_URL` (runtime) **dan** `DIRECT_URL` (migrasi).
 
 **Akun demo (dari seed):** `andi@sehatsentosa.id` / `password123`
 

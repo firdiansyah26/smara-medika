@@ -512,3 +512,62 @@ model DrugOrder {
 | note | String? | Catatan |
 
 > **Enum baru:** `LabCategory`, `LabOrderStatus`, `LabFlag`.
+
+---
+
+## 🔌 Koneksi & Migrasi Database
+
+### Variabel lingkungan
+Prisma memakai **dua** koneksi (lihat `.env.example`):
+
+| Var | Untuk | Catatan |
+|-----|-------|---------|
+| `DATABASE_URL` | Runtime aplikasi | Koneksi yang dipakai Prisma Client |
+| `DIRECT_URL` | Migrasi (`prisma migrate`) | Koneksi non-pooled / session; dipakai `migrate`/`db push` |
+
+`datasource db` di `schema.prisma`:
+```prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+```
+
+### Opsi A — PostgreSQL lokal
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/smaramedika?schema=public"
+DIRECT_URL="postgresql://postgres:postgres@localhost:5432/smaramedika?schema=public"
+```
+
+### Opsi B — Supabase (Supavisor pooler)
+Ambil string dari **Supabase Dashboard → Connect → ORMs/Prisma**. Pola:
+```env
+# Runtime: transaction pooler (port 6543) + pgbouncer
+DATABASE_URL="postgresql://postgres.<ref>:<password>@aws-1-<region>.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require"
+# Migrasi: session pooler (port 5432)
+DIRECT_URL="postgresql://postgres.<ref>:<password>@aws-1-<region>.pooler.supabase.com:5432/postgres?sslmode=require"
+```
+Catatan:
+- **URL-encode** karakter spesial pada password (mis. `@` → `%40`).
+- Koneksi **direct** (`db.<ref>.supabase.co`) bersifat **IPv6-only** di free tier → pakai **pooler** (mendukung IPv4).
+- Host pooler memakai prefix **`aws-1-`** (cek region di dashboard).
+- Jangan commit kredensial: `.env` sudah di-`.gitignore`.
+
+### Alur migrasi
+| Situasi | Perintah | Keterangan |
+|---------|----------|-----------|
+| Ubah `schema.prisma` (dev) | `npm run db:migrate -- --name <nama>` | `prisma migrate dev`: buat + terapkan migrasi, regen client |
+| Terapkan migrasi di server/produksi | `npm run db:deploy` | `prisma migrate deploy`: hanya menerapkan migrasi yang ada (tanpa membuat baru) |
+| Isi data contoh | `npm run db:seed` | Menjalankan `prisma/seed.ts` |
+| Cek status migrasi | `npx prisma migrate status` | Membandingkan migrasi lokal vs database |
+| Reset (HATI-HATI, hapus data) | `npm run db:reset` | Drop + migrate ulang + seed |
+| Setup awal lokal (DB baru) | `npm run db:setup` | Buat DB → migrasi → seed |
+
+### Deploy ke Supabase / produksi
+1. Set `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, `AUTH_URL` di **environment variables** platform (Vercel/dll) — bukan dari `.env`.
+2. Terapkan skema: `npm run db:deploy` (atau jalankan di pipeline rilis).
+3. (Opsional, sekali) Seed data awal: `npm run db:seed`.
+4. Verifikasi: `npx prisma migrate status` → "Database schema is up to date!".
+
+> **Status saat ini:** database produksi di **Supabase** (region `ap-southeast-1`), 6 migrasi terpasang & ter-seed.
