@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/page-placeholder";
+import { ComingSoon } from "@/components/coming-soon";
 
 export default function Page() {
-  return <PagePlaceholder navKey="integrations" />;
+  return <ComingSoon feature="integrasi" />;
 }
