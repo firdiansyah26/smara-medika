@@ -39,8 +39,27 @@ export default async function PatientDetailPage({
     },
   });
 
+  const attachments = await db.attachment.findMany({
+    where: { tenantId: tenant.tenantId, entityType: "PATIENT", entityId: id },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      fileName: true,
+      mimeType: true,
+      size: true,
+      createdAt: true,
+    },
+  });
+
   return (
     <PatientDetail
+      attachments={attachments.map((a) => ({
+        id: a.id,
+        fileName: a.fileName,
+        mimeType: a.mimeType,
+        size: a.size,
+        createdAt: a.createdAt.toISOString(),
+      }))}
       data={{
         id: patient.id,
         mrNumber: patient.mrNumber,

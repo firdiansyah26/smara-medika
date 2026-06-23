@@ -602,6 +602,20 @@ export type Dictionary = {
       integrasi: { title: string; desc: string; items: string[] };
     };
   };
+  attachments: {
+    title: string;
+    maxNote: string;
+    upload: string;
+    uploading: string;
+    empty: string;
+    remove: string;
+    removeConfirm: string;
+    download: string;
+    errNotAllowed: string;
+    errNoFile: string;
+    errTooLarge: string;
+    errBadType: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -1288,6 +1302,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
         },
       },
     },
+    attachments: {
+      title: "Dokumen & Lampiran",
+      maxNote: "Maks 2 MB · PNG, JPG, WEBP, GIF, atau PDF",
+      upload: "Unggah",
+      uploading: "Mengunggah…",
+      empty: "Belum ada lampiran.",
+      remove: "Hapus",
+      removeConfirm: "Hapus lampiran ini?",
+      download: "Unduh",
+      errNotAllowed: "Anda tidak memiliki izin untuk mengunggah.",
+      errNoFile: "Pilih berkas terlebih dahulu.",
+      errTooLarge: "Ukuran berkas melebihi 2 MB.",
+      errBadType: "Tipe berkas tidak didukung.",
+    },
   },
   en: {
     common: {
@@ -1970,6 +1998,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
           ],
         },
       },
+    },
+    attachments: {
+      title: "Documents & Attachments",
+      maxNote: "Max 2 MB · PNG, JPG, WEBP, GIF, or PDF",
+      upload: "Upload",
+      uploading: "Uploading…",
+      empty: "No attachments yet.",
+      remove: "Remove",
+      removeConfirm: "Remove this attachment?",
+      download: "Download",
+      errNotAllowed: "You don't have permission to upload.",
+      errNoFile: "Please choose a file first.",
+      errTooLarge: "File exceeds 2 MB.",
+      errBadType: "Unsupported file type.",
     },
   },
 };

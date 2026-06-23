@@ -213,6 +213,17 @@ enum LabFlag {
   @@map("lab_flag")
 }
 
+enum AttachmentEntity {
+  DRUG
+  PATIENT
+  ENCOUNTER
+  LAB_ORDER
+  INVOICE
+  OTHER
+
+  @@map("attachment_entity")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -249,6 +260,7 @@ model Tenant {
   invoices                  Invoice[]
   appointments              Appointment[]
   labOrders                 LabOrder[]
+  attachments               Attachment[]
 
   @@map("tenants")
 }
@@ -804,4 +816,26 @@ model LabOrderItem {
 
   @@index([labOrderId])
   @@map("lab_order_items")
+}
+
+// ============================================================
+// Attachment (lampiran/gambar — disimpan di DB, polymorphic)
+// ============================================================
+
+model Attachment {
+  id           String           @id @default(cuid())
+  tenantId     String           @map("tenant_id")
+  entityType   AttachmentEntity @map("entity_type")
+  entityId     String           @map("entity_id")
+  fileName     String           @map("file_name")
+  mimeType     String           @map("mime_type")
+  size         Int
+  data         Bytes
+  uploadedById String           @map("uploaded_by_id")
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, entityType, entityId])
+  @@map("attachments")
 }
