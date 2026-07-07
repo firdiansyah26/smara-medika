@@ -129,6 +129,14 @@ export function LabOrderDetail({
           )}
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href={`/dashboard/penunjang/${data.id}/pdf`}
+            target="_blank"
+            rel="noreferrer"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            PDF
+          </a>
           <Link
             href={`/dashboard/penunjang/${data.id}/cetak`}
             className={buttonVariants({ variant: "outline", size: "sm" })}
