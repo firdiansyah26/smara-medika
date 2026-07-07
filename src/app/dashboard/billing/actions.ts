@@ -8,6 +8,8 @@ import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
 import { generateInvoiceNumber } from "@/lib/invoice-number";
+import { buildInvoicePdf } from "@/lib/pdf-invoice";
+import { sendEmail, invoiceEmail } from "@/lib/email";
 
 const BILLING_ROLES: Role[] = ["OWNER", "ADMIN", "RESEPSIONIS"];
 const CATEGORIES: BillingCategory[] = [
@@ -23,7 +25,68 @@ async function ctx() {
   if (!session?.user?.id) return null;
   const tenant = await getActiveTenant();
   if (!tenant || !BILLING_ROLES.includes(tenant.role)) return null;
-  return { userId: session.user.id, tenantId: tenant.tenantId };
+  return {
+    userId: session.user.id,
+    tenantId: tenant.tenantId,
+    tenantName: tenant.tenantName,
+  };
+}
+
+export type SendInvoiceState = {
+  ok?: boolean;
+  error?: "notAllowed" | "badEmail" | "notFound" | "emailOff" | "sendFail";
+};
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Kirim invoice (PDF terlampir) ke email penerima. */
+export async function sendInvoiceEmail(
+  _prev: SendInvoiceState | undefined,
+  formData: FormData,
+): Promise<SendInvoiceState> {
+  const c = await ctx();
+  if (!c) return { error: "notAllowed" };
+
+  const invoiceId = String(formData.get("invoiceId") ?? "");
+  const to = String(formData.get("to") ?? "")
+    .trim()
+    .toLowerCase();
+  if (!EMAIL_RE.test(to)) return { error: "badEmail" };
+
+  const inv = await db.invoice.findFirst({
+    where: { id: invoiceId, tenantId: c.tenantId },
+    include: { patient: { select: { name: true } } },
+  });
+  if (!inv) return { error: "notFound" };
+
+  const pdf = await buildInvoicePdf(invoiceId, c.tenantId, c.tenantName);
+  if (!pdf) return { error: "notFound" };
+
+  const tmpl = invoiceEmail({
+    facilityName: c.tenantName,
+    invoiceNumber: inv.invoiceNumber,
+    patientName: inv.patient.name,
+  });
+  const res = await sendEmail({
+    to,
+    subject: tmpl.subject,
+    html: tmpl.html,
+    text: tmpl.text,
+    attachments: [{ filename: `${inv.invoiceNumber}.pdf`, content: pdf.buffer }],
+  });
+
+  if (res.skipped) return { error: "emailOff" };
+  if (!res.ok) return { error: "sendFail" };
+
+  await writeAudit({
+    tenantId: c.tenantId,
+    userId: c.userId,
+    action: "UPDATE",
+    entity: "Invoice",
+    entityId: invoiceId,
+    changes: { emailedTo: to },
+  });
+  return { ok: true };
 }
 
 /** Hitung ulang total = Σ item − diskon (≥ 0). */
