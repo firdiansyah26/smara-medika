@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionState } from "react";
 import Link from "next/link";
 import type { BillingCategory, InvoiceStatus } from "@prisma/client";
 import { useLocale } from "@/lib/use-locale";
@@ -20,6 +21,7 @@ import {
   removeInvoiceItem,
   setDiscount,
   updateInvoiceStatus,
+  sendInvoiceEmail,
 } from "../actions";
 
 type Item = {
@@ -75,6 +77,11 @@ export function InvoiceDetail({
   const editable = isDraft && canManage;
   const hasItems = data.items.length > 0;
 
+  const [emailState, emailAction, emailPending] = useActionState(
+    sendInvoiceEmail,
+    undefined,
+  );
+
   return (
     <div>
       <Link
@@ -116,6 +123,14 @@ export function InvoiceDetail({
           )}
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href={`/dashboard/billing/${data.id}/pdf`}
+            target="_blank"
+            rel="noreferrer"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            {t.billing.pdf}
+          </a>
           <Link
             href={`/dashboard/billing/${data.id}/cetak`}
             className={buttonVariants({ variant: "outline", size: "sm" })}
@@ -157,6 +172,39 @@ export function InvoiceDetail({
           )}
         </div>
       </div>
+
+      {/* Kirim invoice via email (PDF terlampir) */}
+      {canManage && (
+        <form
+          action={emailAction}
+          className="mt-3 flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2"
+        >
+          <input type="hidden" name="invoiceId" value={data.id} />
+          <svg viewBox="0 0 24 24" className="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6" />
+          </svg>
+          <Input
+            name="to"
+            type="email"
+            required
+            placeholder={t.billing.recipient}
+            className="h-8 w-56"
+          />
+          <Button type="submit" size="sm" variant="outline" disabled={emailPending}>
+            {emailPending ? t.billing.sending : t.billing.emailInvoice}
+          </Button>
+          {emailState?.ok && (
+            <span className="text-xs font-medium text-emerald-600">
+              {t.billing.emailSent}
+            </span>
+          )}
+          {emailState?.error && (
+            <span className="text-xs font-medium text-red-600">
+              {t.billing.emailFail}
+            </span>
+          )}
+        </form>
+      )}
 
       <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
         <div className="border-b border-slate-200 bg-slate-50 px-4 py-2.5">
