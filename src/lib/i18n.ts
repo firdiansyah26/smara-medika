@@ -461,6 +461,13 @@ export type Dictionary = {
     paidAt: string;
     invoiceLabel: string;
     billTo: string;
+    pdf: string;
+    emailInvoice: string;
+    recipient: string;
+    send: string;
+    sending: string;
+    emailSent: string;
+    emailFail: string;
     statuses: {
       DRAFT: string;
       UNPAID: string;
@@ -1132,6 +1139,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       paidAt: "Dibayar pada",
       invoiceLabel: "INVOICE",
       billTo: "Ditagihkan kepada",
+      pdf: "PDF",
+      emailInvoice: "Kirim via email",
+      recipient: "email penerima",
+      send: "Kirim",
+      sending: "Mengirim…",
+      emailSent: "Invoice terkirim.",
+      emailFail: "Gagal mengirim email.",
       statuses: {
         DRAFT: "Draf",
         UNPAID: "Belum Bayar",
@@ -1829,6 +1843,13 @@ export const dictionaries: Record<Locale, Dictionary> = {
       paidAt: "Paid at",
       invoiceLabel: "INVOICE",
       billTo: "Bill to",
+      pdf: "PDF",
+      emailInvoice: "Send via email",
+      recipient: "recipient email",
+      send: "Send",
+      sending: "Sending…",
+      emailSent: "Invoice sent.",
+      emailFail: "Failed to send email.",
       statuses: {
         DRAFT: "Draft",
         UNPAID: "Unpaid",

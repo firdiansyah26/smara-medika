@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  // @react-pdf/renderer dirender di server (Node) — jangan di-bundle.
+  serverExternalPackages: ["@react-pdf/renderer"],
 };
 
 export default nextConfig;

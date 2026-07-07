@@ -37,6 +37,7 @@ export async function sendEmail(opts: {
   subject: string;
   html: string;
   text?: string;
+  attachments?: { filename: string; content: Buffer | string }[];
 }): Promise<SendResult> {
   const c = getClient();
   if (!c) return { ok: false, skipped: true };
@@ -47,6 +48,7 @@ export async function sendEmail(opts: {
       subject: opts.subject,
       html: opts.html,
       text: opts.text,
+      attachments: opts.attachments,
     });
     if (error) return { ok: false, error: error.message };
     return { ok: true, id: data?.id };
@@ -87,5 +89,21 @@ export function passwordResetEmail(resetUrl: string): {
      <p style="margin:16px 0 0;font-size:12px;color:#94a3b8">Abaikan email ini jika Anda tidak meminta perubahan kata sandi.</p>`,
   );
   const text = `Atur ulang kata sandi SmaraMedika.\n\nBuka tautan berikut (berlaku 1 jam):\n${resetUrl}\n\nAbaikan jika Anda tidak meminta perubahan.`;
+  return { subject, html, text };
+}
+
+/** Template email pengiriman invoice (PDF terlampir). */
+export function invoiceEmail(opts: {
+  facilityName: string;
+  invoiceNumber: string;
+  patientName: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `Invoice ${opts.invoiceNumber} — ${opts.facilityName}`;
+  const html = layout(
+    "Invoice Anda",
+    `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569">Halo <b>${opts.patientName}</b>, berikut kami lampirkan invoice <b>${opts.invoiceNumber}</b> dari <b>${opts.facilityName}</b> dalam format PDF.</p>
+     <p style="margin:0;font-size:12px;color:#94a3b8">Terima kasih telah menggunakan layanan kami.</p>`,
+  );
+  const text = `Halo ${opts.patientName}, terlampir invoice ${opts.invoiceNumber} dari ${opts.facilityName} (PDF).`;
   return { subject, html, text };
 }
