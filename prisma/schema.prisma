@@ -224,6 +224,23 @@ enum AttachmentEntity {
   @@map("attachment_entity")
 }
 
+enum NotificationType {
+  APPOINTMENT_REMINDER
+  LAB_RESULT_READY
+  INVOICE
+  GENERAL
+
+  @@map("notification_type")
+}
+
+enum NotificationStatus {
+  SENT
+  FAILED
+  SKIPPED
+
+  @@map("notification_status")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -261,6 +278,7 @@ model Tenant {
   appointments              Appointment[]
   labOrders                 LabOrder[]
   attachments               Attachment[]
+  notifications             Notification[]
 
   @@map("tenants")
 }
@@ -311,6 +329,7 @@ model Patient {
   mrNumber         String     @map("mr_number")
   nik              String?
   name             String
+  email            String?
   birthDate        DateTime   @map("birth_date")
   gender           Gender
   bloodType        BloodType? @map("blood_type")
@@ -838,4 +857,28 @@ model Attachment {
 
   @@index([tenantId, entityType, entityId])
   @@map("attachments")
+}
+
+// ============================================================
+// Notifikasi (log pengiriman email/dsb)
+// ============================================================
+
+model Notification {
+  id          String             @id @default(cuid())
+  tenantId    String             @map("tenant_id")
+  type        NotificationType
+  channel     String             @default("EMAIL")
+  recipient   String
+  subject     String
+  status      NotificationStatus @default(SENT)
+  relatedType String?            @map("related_type")
+  relatedId   String?            @map("related_id")
+  error       String?
+  createdById String?            @map("created_by_id")
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@map("notifications")
 }

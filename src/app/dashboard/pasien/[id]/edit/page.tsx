@@ -26,6 +26,7 @@ export default async function EditPatientPage({
         id: patient.id,
         name: patient.name,
         nik: patient.nik ?? "",
+        email: patient.email ?? "",
         birthDate: patient.birthDate.toISOString().slice(0, 10),
         gender: patient.gender,
         bloodType: (patient.bloodType ?? "") as "" | "A" | "B" | "AB" | "O",

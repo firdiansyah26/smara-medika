@@ -121,6 +121,7 @@ export type Dictionary = {
       editTitle: string;
       name: string;
       nik: string;
+      email: string;
       birthDate: string;
       gender: string;
       bloodType: string;
@@ -504,6 +505,7 @@ export type Dictionary = {
     cancel: string;
     noShow: string;
     startVisit: string;
+    remind: string;
     cancelConfirm: string;
     filterToday: string;
     filterUpcoming: string;
@@ -622,6 +624,22 @@ export type Dictionary = {
     errNoFile: string;
     errTooLarge: string;
     errBadType: string;
+  };
+  notifications: {
+    title: string;
+    subtitle: string;
+    colTime: string;
+    colType: string;
+    colRecipient: string;
+    colStatus: string;
+    empty: string;
+    types: {
+      APPOINTMENT_REMINDER: string;
+      LAB_RESULT_READY: string;
+      INVOICE: string;
+      GENERAL: string;
+    };
+    statuses: { SENT: string; FAILED: string; SKIPPED: string };
   };
 };
 
@@ -793,6 +811,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         editTitle: "Edit Pasien",
         name: "Nama lengkap",
         nik: "NIK",
+        email: "Email",
         birthDate: "Tanggal lahir",
         gender: "Jenis kelamin",
         bloodType: "Golongan darah",
@@ -1182,6 +1201,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       cancel: "Batalkan",
       noShow: "Tidak Hadir",
       startVisit: "Mulai Kunjungan",
+      remind: "Pengingat",
       cancelConfirm: "Batalkan janji temu ini?",
       filterToday: "Hari ini",
       filterUpcoming: "Mendatang",
@@ -1329,6 +1349,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
       errNoFile: "Pilih berkas terlebih dahulu.",
       errTooLarge: "Ukuran berkas melebihi 2 MB.",
       errBadType: "Tipe berkas tidak didukung.",
+    },
+    notifications: {
+      title: "Notifikasi",
+      subtitle: "Riwayat pengiriman notifikasi email.",
+      colTime: "Waktu",
+      colType: "Jenis",
+      colRecipient: "Penerima",
+      colStatus: "Status",
+      empty: "Belum ada notifikasi terkirim.",
+      types: {
+        APPOINTMENT_REMINDER: "Pengingat janji temu",
+        LAB_RESULT_READY: "Hasil lab siap",
+        INVOICE: "Invoice",
+        GENERAL: "Umum",
+      },
+      statuses: { SENT: "Terkirim", FAILED: "Gagal", SKIPPED: "Dilewati" },
     },
   },
   en: {
@@ -1497,6 +1533,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         editTitle: "Edit Patient",
         name: "Full name",
         nik: "National ID (NIK)",
+        email: "Email",
         birthDate: "Date of birth",
         gender: "Gender",
         bloodType: "Blood type",
@@ -1886,6 +1923,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       cancel: "Cancel",
       noShow: "No-show",
       startVisit: "Start Visit",
+      remind: "Reminder",
       cancelConfirm: "Cancel this appointment?",
       filterToday: "Today",
       filterUpcoming: "Upcoming",
@@ -2033,6 +2071,22 @@ export const dictionaries: Record<Locale, Dictionary> = {
       errNoFile: "Please choose a file first.",
       errTooLarge: "File exceeds 2 MB.",
       errBadType: "Unsupported file type.",
+    },
+    notifications: {
+      title: "Notifications",
+      subtitle: "Email notification delivery history.",
+      colTime: "Time",
+      colType: "Type",
+      colRecipient: "Recipient",
+      colStatus: "Status",
+      empty: "No notifications sent yet.",
+      types: {
+        APPOINTMENT_REMINDER: "Appointment reminder",
+        LAB_RESULT_READY: "Lab result ready",
+        INVOICE: "Invoice",
+        GENERAL: "General",
+      },
+      statuses: { SENT: "Sent", FAILED: "Failed", SKIPPED: "Skipped" },
     },
   },
 };
