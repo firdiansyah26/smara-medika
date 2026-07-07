@@ -144,6 +144,73 @@ async function main() {
     console.log(`  • Order transfer ${order.orderNumber} dibuat`);
   }
 
+  // --- Billing, Janji Temu & Lab (contoh, milik RSSS) ---
+  const siti = await db.patient.findFirst({
+    where: { tenantId: tenants.RSSS.id, mrNumber: "RM-202606-00011" },
+  });
+  if (siti) {
+    const invNo = "INV-202606-00001";
+    if (!(await db.invoice.findFirst({ where: { tenantId: tenants.RSSS.id, invoiceNumber: invNo } }))) {
+      await db.invoice.create({
+        data: {
+          tenantId: tenants.RSSS.id,
+          patientId: siti.id,
+          invoiceNumber: invNo,
+          status: "UNPAID",
+          total: 185000,
+          createdById: user.id,
+          items: {
+            create: [
+              { category: "CONSULTATION", description: "Konsultasi dokter umum", quantity: 1, unitPrice: 150000, amount: 150000 },
+              { category: "DRUG", description: "Amoxicillin 500mg", quantity: 10, unitPrice: 3500, amount: 35000 },
+            ],
+          },
+        },
+      });
+      console.log(`  • Invoice ${invNo} dibuat`);
+    }
+
+    if (!(await db.appointment.findFirst({ where: { tenantId: tenants.RSSS.id } }))) {
+      const scheduledAt = new Date(today);
+      scheduledAt.setDate(scheduledAt.getDate() + 1);
+      scheduledAt.setHours(9, 30, 0, 0);
+      await db.appointment.create({
+        data: {
+          tenantId: tenants.RSSS.id,
+          patientId: siti.id,
+          doctorId: user.id,
+          scheduledAt,
+          reason: "Kontrol rutin",
+          createdById: user.id,
+        },
+      });
+      console.log("  • Janji temu contoh dibuat");
+    }
+
+    const labNo = "LAB-202606-00001";
+    if (!(await db.labOrder.findFirst({ where: { tenantId: tenants.RSSS.id, orderNumber: labNo } }))) {
+      await db.labOrder.create({
+        data: {
+          tenantId: tenants.RSSS.id,
+          patientId: siti.id,
+          orderNumber: labNo,
+          category: "LABORATORIUM",
+          status: "COMPLETED",
+          completedAt: new Date(),
+          orderedById: user.id,
+          clinicalNote: "Skrining rutin.",
+          items: {
+            create: [
+              { testName: "Hemoglobin", result: "13.5", unit: "g/dL", referenceRange: "13.0-17.0", flag: "NORMAL" },
+              { testName: "Leukosit", result: "11500", unit: "/µL", referenceRange: "4000-10000", flag: "HIGH" },
+            ],
+          },
+        },
+      });
+      console.log(`  • Lab order ${labNo} dibuat`);
+    }
+  }
+
   console.log("✅ Seed selesai.");
 }
 
