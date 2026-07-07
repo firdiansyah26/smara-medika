@@ -18,7 +18,7 @@ export default function ForgotPasswordPage() {
   );
 
   return (
-    <div className="flex min-h-full flex-col bg-white">
+    <div className="flex min-h-dvh flex-col bg-white">
       <div className="flex items-center justify-between p-6">
         <Link href="/">
           <Logo />

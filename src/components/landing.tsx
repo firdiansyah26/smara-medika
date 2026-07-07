@@ -36,7 +36,7 @@ export function Landing() {
   const { t } = useLocale();
 
   return (
-    <div className="flex min-h-full flex-col bg-white text-ink">
+    <div className="flex min-h-dvh flex-col bg-white text-ink">
       {/* Header */}
       <header className="sticky top-0 z-10 border-b border-slate-100 bg-white/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">

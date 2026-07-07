@@ -28,7 +28,7 @@ function LoginForm() {
   const resetOk = useSearchParams().get("reset") === "1";
 
   return (
-    <div className="grid min-h-full lg:grid-cols-2">
+    <div className="grid min-h-dvh lg:grid-cols-2">
       {/* Panel brand (kiri) */}
       <div className="relative hidden overflow-hidden bg-gradient-to-br from-brand to-brand-cyan lg:flex lg:flex-col lg:justify-between lg:p-12">
         <Link href="/" className="inline-flex">
