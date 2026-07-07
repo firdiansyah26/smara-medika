@@ -212,14 +212,24 @@ function PrescriptionSection({
       title={t.records.editor.rxTitle}
       right={
         items.length > 0 ? (
-          <a
-            href={`/dashboard/rekam-medis/${encounterId}/resep`}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs font-semibold text-brand-deep hover:underline"
-          >
-            {t.records.editor.rxPrint}
-          </a>
+          <span className="flex items-center gap-3">
+            <a
+              href={`/dashboard/rekam-medis/${encounterId}/resep/pdf`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-semibold text-brand-deep hover:underline"
+            >
+              PDF
+            </a>
+            <a
+              href={`/dashboard/rekam-medis/${encounterId}/resep`}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-semibold text-brand-deep hover:underline"
+            >
+              {t.records.editor.rxPrint}
+            </a>
+          </span>
         ) : undefined
       }
     >
