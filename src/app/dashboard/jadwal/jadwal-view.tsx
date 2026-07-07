@@ -17,6 +17,7 @@ import {
   createAppointment,
   updateAppointmentStatus,
   startVisit,
+  sendAppointmentReminder,
 } from "./actions";
 
 export type ApptFilter = "today" | "upcoming" | "all";
@@ -235,6 +236,12 @@ export function JadwalView({
                       <TableCell>
                         {open && (
                           <div className="flex items-center justify-end gap-1.5">
+                            <form action={sendAppointmentReminder} title={t.appointments.remind}>
+                              <input type="hidden" name="appointmentId" value={a.id} />
+                              <Button type="submit" size="xs" variant="outline">
+                                {t.appointments.remind}
+                              </Button>
+                            </form>
                             {a.status === "SCHEDULED" && (
                               <form action={updateAppointmentStatus}>
                                 <input type="hidden" name="appointmentId" value={a.id} />

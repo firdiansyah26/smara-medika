@@ -16,8 +16,8 @@ Dokumen ini merinci seluruh fitur SmaraMedika beserta status prioritasnya.
 > **Rekanan**, **Transfer obat antar rekanan + tracking**, **Berbagi pasien lintas tenant**,
 > **Laporan & export (CSV + cetak/PDF)**, **Undang & kelola anggota tenant**, **Billing/Tagihan**,
 > **Jadwal & Janji Temu (Appointment)**, **Shared API (API key + endpoint `/api/v1` + scope + rate limit)**,
-> **Lab & Radiologi (order penunjang + input hasil)**, dan **UI shadcn**. Belum: webhook Shared API,
-> Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS. Detail per fase: lihat `ROADMAP.md`.
+> **Lab & Radiologi**, **Notifikasi email (pengingat janji temu, hasil lab siap) + log**, dan **UI shadcn**.
+> Belum: notifikasi WhatsApp, webhook Shared API, Telemedicine, Integrasi SATUSEHAT/BPJS. Detail per fase: lihat `ROADMAP.md`.
 
 ---
 
@@ -202,7 +202,8 @@ Setiap perubahan status tercatat lengkap (waktu, oleh siapa, catatan) sebagai **
 
 | Fitur | Prioritas | Deskripsi |
 |-------|:---:|-----------|
-| Notifikasi WhatsApp/email | 🟢 P2 | Pengingat jadwal & status order |
+| Notifikasi email | ✅ | Pengingat janji temu, hasil lab siap + log pengiriman (`/dashboard/notifikasi`) |
+| Notifikasi WhatsApp | 🟢 P2 | Kanal WhatsApp (butuh provider) |
 | Telemedicine | 🟢 P2 | Konsultasi online |
 | Cetak surat | 🟢 P2 | Rujukan, ket. sakit, resume medis |
 | Integrasi SATUSEHAT | 🟢 P2 | Interoperabilitas Kemenkes |

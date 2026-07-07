@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
+import { notifyEmail } from "@/lib/notify";
+import { appointmentReminderEmail } from "@/lib/email";
 
 const APPT_ROLES: Role[] = [
   "OWNER",
@@ -21,7 +23,54 @@ async function ctx() {
   if (!session?.user?.id) return null;
   const tenant = await getActiveTenant();
   if (!tenant || !APPT_ROLES.includes(tenant.role)) return null;
-  return { userId: session.user.id, tenantId: tenant.tenantId };
+  return {
+    userId: session.user.id,
+    tenantId: tenant.tenantId,
+    tenantName: tenant.tenantName,
+  };
+}
+
+/** Kirim pengingat janji temu ke email pasien (dicatat di log notifikasi). */
+export async function sendAppointmentReminder(
+  formData: FormData,
+): Promise<void> {
+  const c = await ctx();
+  if (!c) return;
+
+  const appointmentId = String(formData.get("appointmentId") ?? "");
+  const appt = await db.appointment.findFirst({
+    where: { id: appointmentId, tenantId: c.tenantId },
+    include: {
+      patient: { select: { name: true, email: true } },
+      doctor: { select: { name: true } },
+    },
+  });
+  if (!appt) return;
+
+  const scheduledAt = new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "full",
+    timeStyle: "short",
+  }).format(appt.scheduledAt);
+
+  const tmpl = appointmentReminderEmail({
+    facilityName: c.tenantName,
+    patientName: appt.patient.name,
+    doctorName: appt.doctor.name,
+    scheduledAt,
+  });
+  await notifyEmail({
+    tenantId: c.tenantId,
+    type: "APPOINTMENT_REMINDER",
+    to: appt.patient.email,
+    subject: tmpl.subject,
+    html: tmpl.html,
+    text: tmpl.text,
+    relatedType: "Appointment",
+    relatedId: appointmentId,
+    createdById: c.userId,
+  });
+  revalidatePath("/dashboard/jadwal");
+  revalidatePath("/dashboard/notifikasi");
 }
 
 export async function createAppointment(formData: FormData): Promise<void> {

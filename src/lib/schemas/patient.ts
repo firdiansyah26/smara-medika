@@ -9,6 +9,12 @@ const optionalString = z
 export const patientFormSchema = z.object({
   name: z.string().trim().min(1, "Nama wajib diisi"),
   nik: optionalString,
+  email: z
+    .string()
+    .trim()
+    .email("Email tidak valid")
+    .optional()
+    .or(z.literal("").transform(() => undefined)),
   birthDate: z.string().min(1, "Tanggal lahir wajib diisi"),
   gender: z.enum(["LAKI_LAKI", "PEREMPUAN"]),
   bloodType: z

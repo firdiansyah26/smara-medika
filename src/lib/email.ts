@@ -107,3 +107,39 @@ export function invoiceEmail(opts: {
   const text = `Halo ${opts.patientName}, terlampir invoice ${opts.invoiceNumber} dari ${opts.facilityName} (PDF).`;
   return { subject, html, text };
 }
+
+/** Template email pengingat janji temu. */
+export function appointmentReminderEmail(opts: {
+  facilityName: string;
+  patientName: string;
+  doctorName: string;
+  scheduledAt: string; // sudah diformat
+}): { subject: string; html: string; text: string } {
+  const subject = `Pengingat janji temu — ${opts.facilityName}`;
+  const html = layout(
+    "Pengingat Janji Temu",
+    `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569">Halo <b>${opts.patientName}</b>, ini pengingat janji temu Anda di <b>${opts.facilityName}</b>.</p>
+     <p style="margin:0 0 4px;font-size:14px"><b>Dokter:</b> ${opts.doctorName}</p>
+     <p style="margin:0;font-size:14px"><b>Waktu:</b> ${opts.scheduledAt}</p>
+     <p style="margin:16px 0 0;font-size:12px;color:#94a3b8">Mohon datang tepat waktu. Jika berhalangan, silakan hubungi fasilitas kami.</p>`,
+  );
+  const text = `Pengingat janji temu di ${opts.facilityName}.\nDokter: ${opts.doctorName}\nWaktu: ${opts.scheduledAt}`;
+  return { subject, html, text };
+}
+
+/** Template email hasil lab/radiologi siap. */
+export function labResultReadyEmail(opts: {
+  facilityName: string;
+  patientName: string;
+  orderNumber: string;
+  categoryLabel: string;
+}): { subject: string; html: string; text: string } {
+  const subject = `Hasil ${opts.categoryLabel} siap — ${opts.facilityName}`;
+  const html = layout(
+    "Hasil Pemeriksaan Siap",
+    `<p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#475569">Halo <b>${opts.patientName}</b>, hasil pemeriksaan <b>${opts.categoryLabel}</b> Anda (${opts.orderNumber}) di <b>${opts.facilityName}</b> telah selesai.</p>
+     <p style="margin:0;font-size:12px;color:#94a3b8">Silakan hubungi atau kunjungi fasilitas kami untuk mendapatkan hasilnya.</p>`,
+  );
+  const text = `Hasil ${opts.categoryLabel} (${opts.orderNumber}) di ${opts.facilityName} telah selesai. Silakan hubungi fasilitas kami.`;
+  return { subject, html, text };
+}

@@ -544,6 +544,28 @@ storage/CDN.
 
 ---
 
+## Entitas Notifikasi
+
+### Notification (Log Pengiriman) ⭐
+Mencatat setiap notifikasi (email) yang dikirim sistem — untuk audit & tampilan `/dashboard/notifikasi`.
+
+| Kolom | Tipe | Keterangan |
+|-------|------|-----------|
+| id | String | PK |
+| tenantId | String | FK → Tenant |
+| type | NotificationType | `APPOINTMENT_REMINDER` \| `LAB_RESULT_READY` \| `INVOICE` \| `GENERAL` |
+| channel | String | Default `EMAIL` (kanal lain menyusul) |
+| recipient | String | Alamat penerima |
+| subject | String | Subjek pesan |
+| status | NotificationStatus | `SENT` \| `FAILED` \| `SKIPPED` |
+| relatedType / relatedId | String? | Entitas terkait (mis. Appointment, LabOrder) |
+| error | String? | Alasan gagal/dilewati |
+
+> **Index:** `[tenantId, createdAt]`. Dipicu dari event (lab COMPLETED → hasil siap; tombol pengingat janji temu). Ditulis via helper `src/lib/notify.ts` (kirim via Resend + catat).
+> **Catatan:** `Patient` kini punya field opsional **`email`** sebagai penerima notifikasi.
+
+---
+
 ## 🔌 Koneksi & Migrasi Database
 
 ### Variabel lingkungan

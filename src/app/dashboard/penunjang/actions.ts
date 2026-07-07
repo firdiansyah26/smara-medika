@@ -8,6 +8,8 @@ import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
 import { generateLabOrderNumber } from "@/lib/lab-number";
+import { notifyEmail } from "@/lib/notify";
+import { labResultReadyEmail } from "@/lib/email";
 
 const LAB_ROLES: Role[] = ["OWNER", "ADMIN", "DOKTER", "PERAWAT"];
 const FLAGS: LabFlag[] = ["NORMAL", "LOW", "HIGH", "ABNORMAL"];
@@ -17,7 +19,11 @@ async function ctx() {
   if (!session?.user?.id) return null;
   const tenant = await getActiveTenant();
   if (!tenant || !LAB_ROLES.includes(tenant.role)) return null;
-  return { userId: session.user.id, tenantId: tenant.tenantId };
+  return {
+    userId: session.user.id,
+    tenantId: tenant.tenantId,
+    tenantName: tenant.tenantName,
+  };
 }
 
 export async function createLabOrder(formData: FormData): Promise<void> {
@@ -188,6 +194,40 @@ export async function updateLabStatus(formData: FormData): Promise<void> {
     entityId: order.id,
     changes: { from: order.status, to: status },
   });
+
+  // Notifikasi: hasil siap → email ke pasien (bila ada email).
+  if (status === "COMPLETED") {
+    const full = await db.labOrder.findUnique({
+      where: { id: order.id },
+      select: {
+        orderNumber: true,
+        category: true,
+        patient: { select: { name: true, email: true } },
+      },
+    });
+    if (full) {
+      const categoryLabel =
+        full.category === "RADIOLOGI" ? "Radiologi" : "Laboratorium";
+      const tmpl = labResultReadyEmail({
+        facilityName: c.tenantName,
+        patientName: full.patient.name,
+        orderNumber: full.orderNumber,
+        categoryLabel,
+      });
+      await notifyEmail({
+        tenantId: c.tenantId,
+        type: "LAB_RESULT_READY",
+        to: full.patient.email,
+        subject: tmpl.subject,
+        html: tmpl.html,
+        text: tmpl.text,
+        relatedType: "LabOrder",
+        relatedId: order.id,
+        createdById: c.userId,
+      });
+    }
+  }
+
   revalidatePath(`/dashboard/penunjang/${order.id}`);
   revalidatePath("/dashboard/penunjang");
 }
