@@ -12,6 +12,7 @@ export type PatientFormValues = {
   id?: string;
   name: string;
   nik: string;
+  email: string;
   birthDate: string; // yyyy-mm-dd
   gender: "" | "LAKI_LAKI" | "PEREMPUAN";
   bloodType: "" | "A" | "B" | "AB" | "O";
@@ -25,6 +26,7 @@ export type PatientFormValues = {
 const empty: PatientFormValues = {
   name: "",
   nik: "",
+  email: "",
   birthDate: "",
   gender: "",
   bloodType: "",
@@ -113,6 +115,11 @@ export function PatientForm({
           <div className="space-y-1.5">
             <Label htmlFor="phone">{t.patients.form.phone} {optional}</Label>
             <Input id="phone" name="phone" defaultValue={v.phone} className="h-9" />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="email">{t.patients.form.email} {optional}</Label>
+            <Input id="email" name="email" type="email" defaultValue={v.email} className="h-9" />
           </div>
 
           <div className="space-y-1.5">

@@ -47,6 +47,7 @@ export async function createPatient(
         mrNumber,
         name: v.name,
         nik: v.nik,
+        email: v.email,
         birthDate: new Date(v.birthDate),
         gender: v.gender,
         bloodType: v.bloodType,
@@ -96,6 +97,7 @@ export async function updatePatient(
     data: {
       name: v.name,
       nik: v.nik,
+      email: v.email,
       birthDate: new Date(v.birthDate),
       gender: v.gender,
       bloodType: v.bloodType,

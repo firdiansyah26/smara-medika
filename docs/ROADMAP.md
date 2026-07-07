@@ -9,7 +9,7 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 > selesai). Tambahan: **migrasi UI penuh ke shadcn ui** & sistem **antrian** (kiosk cetak nomor, papan
 > display + suara, panel panggil per counter) & **Shared API** (API key + endpoint `/api/v1` + scope +
 > rate limit + log pemakaian; webhook menyusul) & **Lab & Radiologi** (order penunjang + input hasil +
-> cetak). Sisa: webhook Shared API, Notifikasi, Telemedicine, Integrasi SATUSEHAT/BPJS.
+> cetak) & **Notifikasi email** (pengingat + log). Sisa: notifikasi WhatsApp, webhook Shared API, Telemedicine, Integrasi SATUSEHAT/BPJS.
 
 ---
 
@@ -68,7 +68,8 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 - [x] **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID/CANCELLED, cetak (`/dashboard/billing`)
 - [x] **Appointment / Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter (`/dashboard/jadwal`)
 - [x] **Lab & Radiologi** — order penunjang + input hasil + tanda + cetak (`/dashboard/penunjang`)
-- [ ] Notifikasi WhatsApp/email · Telemedicine
+- [x] **Notifikasi email** — pengingat janji temu, hasil lab siap + log (WhatsApp menyusul)
+- [ ] Telemedicine
 - [ ] Integrasi SATUSEHAT & BPJS
 - [x] **Shared API** publik — API key, endpoint `/api/v1`, scope, rate limit, log (lihat `SHARED_API.md`); webhook menyusul
 
@@ -77,8 +78,9 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 ## 🎨 Lintas-fase — UI
 - [x] Migrasi UI penuh ke **shadcn ui** (form, tabel, card, badge, shell, antrian)
 
-## 🧪 Lintas-fase — Kualitas (belum)
-- [ ] Unit test (Vitest) · E2E (Playwright) · CI/CD · backup terjadwal
+## 🧪 Lintas-fase — Kualitas
+- [x] **CI/CD** (GitHub Actions: validate + lint + test + build) · **Unit test** (Vitest, 35 test)
+- [ ] Integration test server actions · E2E (Playwright) · backup terjadwal
 
 ---
 
