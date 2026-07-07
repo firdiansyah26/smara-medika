@@ -216,7 +216,7 @@ export function AppShell({
     .toUpperCase();
 
   return (
-    <div ref={shellRef} className="flex min-h-full bg-slate-50">
+    <div ref={shellRef} className="flex min-h-dvh bg-slate-50">
       {/* Sidebar (desktop) */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-slate-200 bg-white px-4 py-5 lg:flex">
         <div className="px-2">
