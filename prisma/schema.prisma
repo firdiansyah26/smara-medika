@@ -241,6 +241,13 @@ enum NotificationStatus {
   @@map("notification_status")
 }
 
+enum MedicalDocumentType {
+  SICK_NOTE
+  REFERRAL
+
+  @@map("medical_document_type")
+}
+
 // ============================================================
 // Multi-tenant (fondasi)
 // ============================================================
@@ -279,6 +286,7 @@ model Tenant {
   labOrders                 LabOrder[]
   attachments               Attachment[]
   notifications             Notification[]
+  medicalDocuments          MedicalDocument[]
 
   @@map("tenants")
 }
@@ -881,4 +889,28 @@ model Notification {
 
   @@index([tenantId, createdAt])
   @@map("notifications")
+}
+
+// ============================================================
+// Dokumen klinis (surat sakit, rujukan)
+// ============================================================
+
+model MedicalDocument {
+  id          String              @id @default(cuid())
+  tenantId    String              @map("tenant_id")
+  patientId   String              @map("patient_id")
+  encounterId String?             @map("encounter_id")
+  doctorId    String              @map("doctor_id")
+  type        MedicalDocumentType
+  number      String              @map("number")
+  data        Json
+  createdById String              @map("created_by_id")
+  createdAt   DateTime            @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, number])
+  @@index([tenantId, createdAt])
+  @@index([encounterId])
+  @@map("medical_documents")
 }
