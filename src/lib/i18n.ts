@@ -514,6 +514,11 @@ export type Dictionary = {
     noShow: string;
     startVisit: string;
     remind: string;
+    scheduleTitle: string;
+    scheduleHint: string;
+    addSchedule: string;
+    noSchedule: string;
+    days: string[];
     cancelConfirm: string;
     filterToday: string;
     filterUpcoming: string;
@@ -1271,6 +1276,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noShow: "Tidak Hadir",
       startVisit: "Mulai Kunjungan",
       remind: "Pengingat",
+      scheduleTitle: "Jadwal Praktik Dokter",
+      scheduleHint: "Atur jam praktik. Janji temu di luar jam ditolak.",
+      addSchedule: "Tambah Jadwal",
+      noSchedule: "Belum ada jadwal praktik.",
+      days: ["Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"],
       cancelConfirm: "Batalkan janji temu ini?",
       filterToday: "Hari ini",
       filterUpcoming: "Mendatang",
@@ -2054,6 +2064,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noShow: "No-show",
       startVisit: "Start Visit",
       remind: "Reminder",
+      scheduleTitle: "Doctor Practice Schedule",
+      scheduleHint: "Set practice hours. Appointments outside hours are rejected.",
+      addSchedule: "Add Schedule",
+      noSchedule: "No practice schedule yet.",
+      days: ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
       cancelConfirm: "Cancel this appointment?",
       filterToday: "Today",
       filterUpcoming: "Upcoming",

@@ -73,6 +73,58 @@ export async function sendAppointmentReminder(
   revalidatePath("/dashboard/notifikasi");
 }
 
+/** "HH:MM" -> menit sejak 00:00. */
+function toMin(hhmm: string): number {
+  const [h, m] = hhmm.split(":").map((x) => parseInt(x, 10) || 0);
+  return h * 60 + m;
+}
+
+const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
+
+export async function addDoctorSchedule(formData: FormData): Promise<void> {
+  const c = await ctx();
+  if (!c) return;
+
+  const doctorId = String(formData.get("doctorId") ?? "");
+  const dayOfWeek = parseInt(String(formData.get("dayOfWeek") ?? ""), 10);
+  const startTime = String(formData.get("startTime") ?? "");
+  const endTime = String(formData.get("endTime") ?? "");
+  if (
+    !doctorId ||
+    !(dayOfWeek >= 0 && dayOfWeek <= 6) ||
+    !TIME_RE.test(startTime) ||
+    !TIME_RE.test(endTime) ||
+    toMin(startTime) >= toMin(endTime)
+  )
+    return;
+
+  const member = await db.membership.findFirst({
+    where: { userId: doctorId, tenantId: c.tenantId, isActive: true },
+    select: { id: true },
+  });
+  if (!member) return;
+
+  await db.doctorSchedule.create({
+    data: { tenantId: c.tenantId, doctorId, dayOfWeek, startTime, endTime },
+  });
+  revalidatePath("/dashboard/jadwal");
+}
+
+export async function removeDoctorSchedule(formData: FormData): Promise<void> {
+  const c = await ctx();
+  if (!c) return;
+
+  const id = String(formData.get("id") ?? "");
+  const sched = await db.doctorSchedule.findFirst({
+    where: { id, tenantId: c.tenantId },
+    select: { id: true },
+  });
+  if (!sched) return;
+
+  await db.doctorSchedule.delete({ where: { id: sched.id } });
+  revalidatePath("/dashboard/jadwal");
+}
+
 export async function createAppointment(formData: FormData): Promise<void> {
   const c = await ctx();
   if (!c) return;
@@ -101,6 +153,22 @@ export async function createAppointment(formData: FormData): Promise<void> {
     }),
   ]);
   if (!patient || !doctorMembership) return;
+
+  // Validasi terhadap jadwal praktik dokter (bila ada).
+  const schedules = await db.doctorSchedule.findMany({
+    where: { tenantId: c.tenantId, doctorId },
+    select: { dayOfWeek: true, startTime: true, endTime: true },
+  });
+  if (schedules.length > 0) {
+    const mins = scheduledAt.getHours() * 60 + scheduledAt.getMinutes();
+    const fit = schedules.some(
+      (s) =>
+        s.dayOfWeek === scheduledAt.getDay() &&
+        mins >= toMin(s.startTime) &&
+        mins + durationMin <= toMin(s.endTime),
+    );
+    if (!fit) return; // di luar jam praktik dokter
+  }
 
   const appt = await db.appointment.create({
     data: {

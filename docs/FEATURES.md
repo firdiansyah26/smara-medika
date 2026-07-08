@@ -114,7 +114,7 @@ Rekam medis selalu milik tenant tempat kunjungan terjadi.
 | Panel panggil staf | ✅ | Panggil berikutnya per counter, panggil ulang, selesai, lewati |
 | Status kunjungan | ✅ | Menunggu → Diperiksa → Selesai |
 | Pendaftaran kunjungan (tiket → encounter) | ✅ | Daftar tiket dipanggil jadi kunjungan (encounter) |
-| Jadwal praktik dokter | 🟡 P1 | *belum* (lihat §11; saat ini berupa daftar janji temu terfilter) |
+| Jadwal praktik dokter | ✅ | Jam praktik mingguan per dokter; booking di luar jam ditolak |
 | Appointment/janji temu | ✅ | Booking janji temu pasien + dokter, lihat §11 |
 
 ---
