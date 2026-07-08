@@ -131,6 +131,16 @@ export function InvoiceDetail({
           >
             {t.billing.pdf}
           </a>
+          {data.status === "PAID" && (
+            <a
+              href={`/dashboard/billing/${data.id}/kwitansi`}
+              target="_blank"
+              rel="noreferrer"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              {t.billing.receipt}
+            </a>
+          )}
           <Link
             href={`/dashboard/billing/${data.id}/cetak`}
             className={buttonVariants({ variant: "outline", size: "sm" })}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatIDR, calcAge, calcAgeParts, cn } from "@/lib/utils";
+import { formatIDR, calcAge, calcAgeParts, cn, terbilang } from "@/lib/utils";
 
 describe("formatIDR", () => {
   it("format rupiah dengan pemisah ribuan", () => {
@@ -35,6 +35,16 @@ describe("calcAgeParts", () => {
       months: 2,
       days: 14,
     });
+  });
+});
+
+describe("terbilang", () => {
+  it("ejaan angka Indonesia", () => {
+    expect(terbilang(0)).toBe("nol");
+    expect(terbilang(11)).toBe("sebelas");
+    expect(terbilang(21)).toBe("dua puluh satu");
+    expect(terbilang(1000)).toBe("seribu");
+    expect(terbilang(185000)).toBe("seratus delapan puluh lima ribu");
   });
 });
 
