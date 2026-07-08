@@ -123,7 +123,7 @@ Daftar seperti pasien, invoice, dan lab saat ini fetch terbatas (`take`) atau ta
 Sebagian Server Action `return` diam saat gagal guard (RBAC/validasi), tanpa pesan jelas ke pengguna. Kegagalan bisa tampak seperti "tidak terjadi apa-apa".
 **Rencana:** Standarkan hasil action (sukses/gagal + pesan) dan tampilkan via toast/notifikasi di UI; konsistenkan penanganan error.
 
-### TD-024 · 🔴 · Dampak: Rendah — Belum ada viewer audit log di UI
+### TD-024 · ✅ Selesai — Viewer audit log (/dashboard/audit)
 Audit log sudah tercatat di database, tetapi belum ada halaman untuk melihat/menelusuri (filter per user/aksi/entitas/waktu) dari UI.
 **Rencana:** Tambah halaman lihat audit log (read-only, terfilter) untuk OWNER/ADMIN; pertimbangkan ekspor.
 
