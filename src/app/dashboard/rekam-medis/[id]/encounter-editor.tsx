@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import type { IcdCode } from "@/lib/icd10";
 import { interpretVitals } from "@/lib/vitals";
+import { SuratSection, type DocRow } from "./surat-section";
 import {
   saveEncounter,
   addDiagnosis,
@@ -299,7 +300,13 @@ function PrescriptionSection({
   );
 }
 
-export function EncounterEditor({ data }: { data: EncounterData }) {
+export function EncounterEditor({
+  data,
+  documents,
+}: {
+  data: EncounterData;
+  documents: DocRow[];
+}) {
   const { t, locale } = useLocale();
   const [state, formAction, pending] = useActionState(saveEncounter, undefined);
 
@@ -477,6 +484,7 @@ export function EncounterEditor({ data }: { data: EncounterData }) {
             items={data.prescriptionItems}
             drugOptions={data.drugOptions}
           />
+          <SuratSection encounterId={data.id} documents={documents} />
         </div>
       </div>
     </div>

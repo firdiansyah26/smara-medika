@@ -642,6 +642,23 @@ export type Dictionary = {
     };
     statuses: { SENT: string; FAILED: string; SKIPPED: string };
   };
+  surat: {
+    title: string;
+    sickNote: string;
+    referral: string;
+    restDays: string;
+    startDate: string;
+    diagnosis: string;
+    note: string;
+    toFacility: string;
+    toDoctor: string;
+    reason: string;
+    create: string;
+    empty: string;
+    typeSick: string;
+    typeReferral: string;
+    optional: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -1368,6 +1385,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
       },
       statuses: { SENT: "Terkirim", FAILED: "Gagal", SKIPPED: "Dilewati" },
     },
+    surat: {
+      title: "Surat Keterangan",
+      sickNote: "Surat Keterangan Sakit",
+      referral: "Surat Rujukan",
+      restDays: "Lama istirahat (hari)",
+      startDate: "Mulai tanggal",
+      diagnosis: "Diagnosis",
+      note: "Catatan",
+      toFacility: "Faskes tujuan",
+      toDoctor: "Kepada (dokter)",
+      reason: "Alasan rujukan",
+      create: "Buat",
+      empty: "Belum ada surat.",
+      typeSick: "Surat Sakit",
+      typeReferral: "Rujukan",
+      optional: "(opsional)",
+    },
   },
   en: {
     common: {
@@ -2090,6 +2124,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
         GENERAL: "General",
       },
       statuses: { SENT: "Sent", FAILED: "Failed", SKIPPED: "Skipped" },
+    },
+    surat: {
+      title: "Certificates",
+      sickNote: "Sick Leave Certificate",
+      referral: "Referral Letter",
+      restDays: "Rest (days)",
+      startDate: "Start date",
+      diagnosis: "Diagnosis",
+      note: "Note",
+      toFacility: "Referral facility",
+      toDoctor: "To (doctor)",
+      reason: "Referral reason",
+      create: "Create",
+      empty: "No certificates yet.",
+      typeSick: "Sick note",
+      typeReferral: "Referral",
+      optional: "(optional)",
     },
   },
 };

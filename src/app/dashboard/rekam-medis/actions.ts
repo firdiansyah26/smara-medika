@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
 import { encounterSaveSchema, diagnosisSchema } from "@/lib/schemas/encounter";
+import { generateDocNumber } from "@/lib/doc-number";
 
 type ActionState = { error?: string; ok?: boolean } | undefined;
 
@@ -230,4 +231,96 @@ export async function removePrescriptionItem(formData: FormData) {
 
   await db.prescriptionItem.delete({ where: { id } });
   revalidatePath(`/dashboard/rekam-medis/${item.prescription.encounterId}`);
+}
+
+// --- Dokumen klinis (surat sakit / rujukan) ---
+
+async function encounterForDoc(encounterId: string, tenantId: string) {
+  if (!encounterId) return null;
+  return db.encounter.findFirst({
+    where: { id: encounterId, tenantId, deletedAt: null },
+    select: { id: true, patientId: true, doctorId: true },
+  });
+}
+
+export async function createSickNote(formData: FormData) {
+  const ctx = await requireContext(CLINICAL_ROLES);
+  if ("error" in ctx) return;
+
+  const encounterId = String(formData.get("encounterId") ?? "");
+  const enc = await encounterForDoc(encounterId, ctx.tenantId);
+  if (!enc) return;
+
+  const restDays = Math.max(
+    1,
+    parseInt(String(formData.get("restDays") ?? "1"), 10) || 1,
+  );
+  const startDate = String(formData.get("startDate") ?? "").trim();
+  const diagnosis = String(formData.get("diagnosis") ?? "").trim();
+  const note = String(formData.get("note") ?? "").trim();
+
+  const doc = await db.$transaction(async (tx) => {
+    const number = await generateDocNumber(tx, ctx.tenantId);
+    return tx.medicalDocument.create({
+      data: {
+        tenantId: ctx.tenantId,
+        patientId: enc.patientId,
+        encounterId: enc.id,
+        doctorId: enc.doctorId,
+        type: "SICK_NOTE",
+        number,
+        data: { restDays, startDate, diagnosis, note },
+        createdById: ctx.userId,
+      },
+    });
+  });
+  await writeAudit({
+    tenantId: ctx.tenantId,
+    userId: ctx.userId,
+    action: "CREATE",
+    entity: "MedicalDocument",
+    entityId: doc.id,
+    changes: { type: "SICK_NOTE", number: doc.number },
+  });
+  revalidatePath(`/dashboard/rekam-medis/${enc.id}`);
+}
+
+export async function createReferral(formData: FormData) {
+  const ctx = await requireContext(CLINICAL_ROLES);
+  if ("error" in ctx) return;
+
+  const encounterId = String(formData.get("encounterId") ?? "");
+  const enc = await encounterForDoc(encounterId, ctx.tenantId);
+  if (!enc) return;
+
+  const toFacility = String(formData.get("toFacility") ?? "").trim();
+  const toDoctor = String(formData.get("toDoctor") ?? "").trim();
+  const reason = String(formData.get("reason") ?? "").trim();
+  const diagnosis = String(formData.get("diagnosis") ?? "").trim();
+  if (!toFacility) return;
+
+  const doc = await db.$transaction(async (tx) => {
+    const number = await generateDocNumber(tx, ctx.tenantId);
+    return tx.medicalDocument.create({
+      data: {
+        tenantId: ctx.tenantId,
+        patientId: enc.patientId,
+        encounterId: enc.id,
+        doctorId: enc.doctorId,
+        type: "REFERRAL",
+        number,
+        data: { toFacility, toDoctor, reason, diagnosis },
+        createdById: ctx.userId,
+      },
+    });
+  });
+  await writeAudit({
+    tenantId: ctx.tenantId,
+    userId: ctx.userId,
+    action: "CREATE",
+    entity: "MedicalDocument",
+    entityId: doc.id,
+    changes: { type: "REFERRAL", number: doc.number },
+  });
+  revalidatePath(`/dashboard/rekam-medis/${enc.id}`);
 }

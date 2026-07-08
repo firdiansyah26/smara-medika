@@ -68,6 +68,7 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 - [x] **Billing / Tagihan** — invoice per pasien, item berkategori, diskon, status DRAFT→UNPAID→PAID/CANCELLED, cetak (`/dashboard/billing`)
 - [x] **Appointment / Janji Temu** — booking pasien+dokter, status flow, "Mulai Kunjungan" → Encounter (`/dashboard/jadwal`)
 - [x] **Lab & Radiologi** — order penunjang + input hasil + tanda + cetak (`/dashboard/penunjang`)
+- [x] **Dokumen klinis** — surat keterangan sakit & rujukan (PDF) dari rekam medis; kwitansi dari invoice
 - [x] **Notifikasi email** — pengingat janji temu, hasil lab siap + log (WhatsApp menyusul)
 - [ ] Telemedicine
 - [ ] Integrasi SATUSEHAT & BPJS
