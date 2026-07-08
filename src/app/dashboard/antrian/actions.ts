@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import type { Role, ServiceType } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { startOfToday } from "@/lib/queue";
+import { writeAudit } from "@/lib/audit";
 
 const QUEUE_ROLES: Role[] = ["OWNER", "ADMIN", "RESEPSIONIS", "PERAWAT"];
 
@@ -77,4 +79,58 @@ export async function skipTicket(ticketId: string) {
     data: { status: "SKIPPED" },
   });
   revalidatePath("/dashboard/antrian");
+}
+
+/** Daftarkan tiket antrian jadi kunjungan (encounter) + tandai SERVED. */
+export async function registerVisit(formData: FormData): Promise<void> {
+  const c = await ctx();
+  if (!c) return;
+
+  const ticketId = String(formData.get("ticketId") ?? "");
+  const patientId = String(formData.get("patientId") ?? "");
+  if (!ticketId || !patientId) return;
+
+  const ticket = await db.queueTicket.findFirst({
+    where: { id: ticketId, tenantId: c.tenantId },
+    select: { id: true, status: true, encounterId: true },
+  });
+  if (!ticket || ticket.encounterId) return;
+
+  const patient = await db.patient.findFirst({
+    where: { id: patientId, tenantId: c.tenantId, deletedAt: null },
+    select: { id: true },
+  });
+  if (!patient) return;
+
+  const encounter = await db.$transaction(async (tx) => {
+    const enc = await tx.encounter.create({
+      data: {
+        tenantId: c.tenantId,
+        patientId,
+        doctorId: c.userId,
+        status: "DIPERIKSA",
+      },
+    });
+    await tx.queueTicket.update({
+      where: { id: ticket.id },
+      data: {
+        status: "SERVED",
+        servedAt: new Date(),
+        patientId,
+        encounterId: enc.id,
+      },
+    });
+    return enc;
+  });
+
+  await writeAudit({
+    tenantId: c.tenantId,
+    userId: c.userId,
+    action: "CREATE",
+    entity: "Encounter",
+    entityId: encounter.id,
+    changes: { fromTicket: ticket.id },
+  });
+
+  redirect(`/dashboard/rekam-medis/${encounter.id}`);
 }

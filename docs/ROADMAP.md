@@ -49,7 +49,7 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 - [x] **Antrian** — kiosk cetak nomor, papan display + suara (TTS), panel panggil per counter
 - [x] **Farmasi**: master obat + stok per tenant (+ indikator stok menipis)
 - [x] Status kunjungan (Menunggu → Diperiksa → Selesai)
-- [ ] Pendaftaran kunjungan terhubung antrian (tiket → encounter)
+- [x] **Pendaftaran kunjungan** dari antrian (tiket → encounter)
 - [ ] Jadwal praktik dokter (recurring availability) — *belum* (lihat `TECH_DEBT.md`)
 - [x] **Resep elektronik + riwayat pengobatan + cetak resep**
 - [x] **Laporan kunjungan & transfer obat + export CSV + cetak/PDF**

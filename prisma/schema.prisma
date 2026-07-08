@@ -680,6 +680,8 @@ model QueueTicket {
   code        String
   status      QueueStatus @default(WAITING)
   counter     String?
+  patientId   String?     @map("patient_id")
+  encounterId String?     @map("encounter_id")
   calledById  String?     @map("called_by_id")
   calledAt    DateTime?   @map("called_at")
   servedAt    DateTime?   @map("served_at")
