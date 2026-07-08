@@ -104,7 +104,7 @@ Perubahan kontrak `/v1` berisiko merusak integrasi mitra.
 Nilai uang di Billing (`Invoice`, `InvoiceItem`) disimpan sebagai **Int rupiah** (tanpa desimal). Cukup untuk rupiah, tetapi kaku bila ada pembulatan/sen, mata uang lain, atau perhitungan pajak yang butuh presisi.
 **Rencana:** Pertimbangkan tipe `Decimal` / penanganan mata uang khusus bila kebutuhan bertambah.
 
-### TD-019 · 🔴 · Dampak: Rendah — Jadwal dokter belum ada template ketersediaan berulang
+### TD-019 · 🟢 Selesai — Jadwal praktik dokter (recurring) + validasi booking
 "Jadwal dokter" saat ini berupa **daftar appointment terfilter** (Hari ini/Mendatang/Semua). Belum ada template ketersediaan dokter berulang (recurring availability / jam praktik), sehingga konflik & slot kosong tidak terkelola otomatis.
 **Rencana:** Tambah model jadwal praktik/ketersediaan berulang + validasi slot saat booking.
 

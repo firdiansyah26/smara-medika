@@ -6,6 +6,7 @@ import {
   type ApptRow,
   type Option,
   type ApptFilter,
+  type ScheduleRow,
 } from "./jadwal-view";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,7 @@ export default async function Page({
   let appointments: ApptRow[] = [];
   let patients: Option[] = [];
   let doctors: Option[] = [];
+  let schedules: ScheduleRow[] = [];
   let canManage = false;
 
   if (tenant) {
@@ -81,6 +83,20 @@ export default async function Page({
     }));
     patients = pts.map((p) => ({ id: p.id, label: `${p.name} — ${p.mrNumber}` }));
     doctors = docs.map((m) => ({ id: m.user.id, label: m.user.name }));
+
+    const nameById = new Map(doctors.map((d) => [d.id, d.label]));
+    const sched = await db.doctorSchedule.findMany({
+      where: { tenantId: tenant.tenantId },
+      orderBy: [{ doctorId: "asc" }, { dayOfWeek: "asc" }, { startTime: "asc" }],
+    });
+    schedules = sched.map((s) => ({
+      id: s.id,
+      doctorId: s.doctorId,
+      doctor: nameById.get(s.doctorId) ?? "—",
+      dayOfWeek: s.dayOfWeek,
+      startTime: s.startTime,
+      endTime: s.endTime,
+    }));
   }
 
   return (
@@ -89,6 +105,7 @@ export default async function Page({
       appointments={appointments}
       patients={patients}
       doctors={doctors}
+      schedules={schedules}
       canManage={canManage}
     />
   );
