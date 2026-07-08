@@ -75,6 +75,7 @@ export type Dictionary = {
       telemedicine: string;
       integrations: string;
       settings: string;
+      audit: string;
     };
     topbar: {
       searchPlaceholder: string;
@@ -661,6 +662,24 @@ export type Dictionary = {
     typeReferral: string;
     optional: string;
   };
+  audit: {
+    title: string;
+    subtitle: string;
+    colTime: string;
+    colUser: string;
+    colAction: string;
+    colEntity: string;
+    empty: string;
+    all: string;
+    allEntities: string;
+    actions: {
+      CREATE: string;
+      READ: string;
+      UPDATE: string;
+      DELETE: string;
+      LOGIN: string;
+    };
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -779,6 +798,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         telemedicine: "Telemedicine",
         integrations: "Integrasi",
         settings: "Pengaturan",
+        audit: "Audit Log",
       },
       topbar: {
         searchPlaceholder: "Cari pasien, No. RM…",
@@ -1406,6 +1426,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
       typeReferral: "Rujukan",
       optional: "(opsional)",
     },
+    audit: {
+      title: "Audit Log",
+      subtitle: "Riwayat aktivitas & perubahan data sensitif.",
+      colTime: "Waktu",
+      colUser: "Pengguna",
+      colAction: "Aksi",
+      colEntity: "Entitas",
+      empty: "Belum ada aktivitas.",
+      all: "Semua",
+      allEntities: "Semua entitas",
+      actions: {
+        CREATE: "Buat",
+        READ: "Lihat",
+        UPDATE: "Ubah",
+        DELETE: "Hapus",
+        LOGIN: "Masuk",
+      },
+    },
   },
   en: {
     common: {
@@ -1521,6 +1559,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         telemedicine: "Telemedicine",
         integrations: "Integrations",
         settings: "Settings",
+        audit: "Audit Log",
       },
       topbar: {
         searchPlaceholder: "Search patients, MR no…",
@@ -2147,6 +2186,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
       typeSick: "Sick note",
       typeReferral: "Referral",
       optional: "(optional)",
+    },
+    audit: {
+      title: "Audit Log",
+      subtitle: "Activity history & sensitive data changes.",
+      colTime: "Time",
+      colUser: "User",
+      colAction: "Action",
+      colEntity: "Entity",
+      empty: "No activity yet.",
+      all: "All",
+      allEntities: "All entities",
+      actions: {
+        CREATE: "Create",
+        READ: "Read",
+        UPDATE: "Update",
+        DELETE: "Delete",
+        LOGIN: "Login",
+      },
     },
   },
 };
