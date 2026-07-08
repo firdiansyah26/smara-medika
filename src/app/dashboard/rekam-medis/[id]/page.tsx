@@ -49,8 +49,21 @@ export default async function EncounterPage({
     })),
   );
 
+  const docs = await db.medicalDocument.findMany({
+    where: { tenantId: tenant.tenantId, encounterId: id },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, type: true, number: true, createdAt: true },
+  });
+  const documents = docs.map((d) => ({
+    id: d.id,
+    type: d.type,
+    number: d.number,
+    createdAt: d.createdAt.toISOString(),
+  }));
+
   return (
     <EncounterEditor
+      documents={documents}
       data={{
         id: encounter.id,
         patientId: encounter.patient.id,
