@@ -50,7 +50,7 @@ Lampiran (hasil lab/rontgen) mungkin awalnya disimpan lokal. Tidak skalabel & be
 
 ### TD-005 · 🟡 · Sebagian — Test coverage (Vitest terpasang)
 **Vitest sudah terpasang** dengan 35 unit test untuk helper murni (`utils`, `vitals` indikator klinis, `queue`, `api-auth`, `reset-token`, `attachments`, `icd10`). Jalankan dengan `npm test`.
-**Sisa:** integration test untuk **server actions** (total billing, transfer stok, status lab) + **Playwright** E2E (login, buat pasien/rekam medis) + test **isolasi tenant** (TD-008). Integration test butuh DB uji / mock Prisma.
+**Ditambah:** integration test (generator nomor, real DB di CI Postgres) + **Playwright E2E** (login demo -> dashboard, kredensial salah). **Sisa:** integration test server actions (billing/stok/lab) + test isolasi tenant (TD-008).
 
 ### TD-006 · 🔴 · Dampak: Sedang — Penomoran MR & race condition
 Generate No. RM perlu transaction agar tidak duplikat saat registrasi bersamaan.
