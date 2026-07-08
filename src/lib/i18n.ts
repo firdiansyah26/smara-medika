@@ -463,6 +463,7 @@ export type Dictionary = {
     invoiceLabel: string;
     billTo: string;
     pdf: string;
+    receipt: string;
     emailInvoice: string;
     recipient: string;
     send: string;
@@ -1159,6 +1160,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       invoiceLabel: "INVOICE",
       billTo: "Ditagihkan kepada",
       pdf: "PDF",
+      receipt: "Kwitansi",
       emailInvoice: "Kirim via email",
       recipient: "email penerima",
       send: "Kirim",
@@ -1881,6 +1883,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       invoiceLabel: "INVOICE",
       billTo: "Bill to",
       pdf: "PDF",
+      receipt: "Receipt",
       emailInvoice: "Send via email",
       recipient: "recipient email",
       send: "Send",
