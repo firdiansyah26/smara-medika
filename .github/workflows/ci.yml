@@ -35,14 +35,19 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Prisma generate, validate & migrate
+      - name: Prisma generate, validate, migrate & seed
         run: |
           npx prisma generate
           npx prisma validate
           npx prisma migrate deploy
+          npm run db:seed
       - name: Lint
         run: npm run lint
       - name: Test (unit + integration)
         run: npm test
       - name: Build
         run: npm run build
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: E2E (Playwright)
+        run: npm run test:e2e
