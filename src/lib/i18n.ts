@@ -79,6 +79,7 @@ export type Dictionary = {
       integrations: string;
       settings: string;
       audit: string;
+      profile: string;
     };
     topbar: {
       searchPlaceholder: string;
@@ -683,6 +684,24 @@ export type Dictionary = {
       LOGIN: string;
     };
   };
+  profile: {
+    title: string;
+    subtitle: string;
+    account: string;
+    name: string;
+    email: string;
+    activeTenant: string;
+    memberships: string;
+    changePassword: string;
+    current: string;
+    newPassword: string;
+    confirm: string;
+    save: string;
+    saved: string;
+    errWrong: string;
+    errWeak: string;
+    errMismatch: string;
+  };
 };
 
 export const dictionaries: Record<Locale, Dictionary> = {
@@ -805,6 +824,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         integrations: "Integrasi",
         settings: "Pengaturan",
         audit: "Audit Log",
+        profile: "Profil",
       },
       topbar: {
         searchPlaceholder: "Cari pasien, No. RM…",
@@ -1450,6 +1470,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         LOGIN: "Masuk",
       },
     },
+    profile: {
+      title: "Profil Saya",
+      subtitle: "Kelola akun & kata sandi Anda.",
+      account: "Informasi Akun",
+      name: "Nama",
+      email: "Email",
+      activeTenant: "Fasilitas aktif",
+      memberships: "Keanggotaan",
+      changePassword: "Ganti Kata Sandi",
+      current: "Kata sandi saat ini",
+      newPassword: "Kata sandi baru",
+      confirm: "Ulangi kata sandi baru",
+      save: "Simpan",
+      saved: "Kata sandi berhasil diubah.",
+      errWrong: "Kata sandi saat ini salah.",
+      errWeak: "Kata sandi baru minimal 8 karakter.",
+      errMismatch: "Konfirmasi kata sandi tidak cocok.",
+    },
   },
   en: {
     common: {
@@ -1569,6 +1607,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         integrations: "Integrations",
         settings: "Settings",
         audit: "Audit Log",
+        profile: "Profile",
       },
       topbar: {
         searchPlaceholder: "Search patients, MR no…",
@@ -2213,6 +2252,24 @@ export const dictionaries: Record<Locale, Dictionary> = {
         DELETE: "Delete",
         LOGIN: "Login",
       },
+    },
+    profile: {
+      title: "My Profile",
+      subtitle: "Manage your account & password.",
+      account: "Account Info",
+      name: "Name",
+      email: "Email",
+      activeTenant: "Active facility",
+      memberships: "Memberships",
+      changePassword: "Change Password",
+      current: "Current password",
+      newPassword: "New password",
+      confirm: "Repeat new password",
+      save: "Save",
+      saved: "Password changed successfully.",
+      errWrong: "Current password is incorrect.",
+      errWeak: "New password must be at least 8 characters.",
+      errMismatch: "Password confirmation does not match.",
     },
   },
 };

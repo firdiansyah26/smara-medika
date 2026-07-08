@@ -45,7 +45,7 @@ Konsep fondasi platform. Lihat strategi teknis di `ARCHITECTURE.md`.
 |-------|:---:|-----------|
 | Login / Logout | 🔴 P0 | Autentikasi dengan email + password |
 | Lupa password | ✅ | Reset kata sandi via token (mode dev: tautan tampil di layar; email menyusul) |
-| Profil & ganti password | 🟡 P1 | User mengelola akun sendiri |
+| Profil & ganti password | ✅ | Halaman profil + ganti kata sandi (`/dashboard/profil`) |
 | Audit log | 🔴 P0 | Catat akses & perubahan data sensitif (per tenant) |
 
 **Peran per tenant (Roles):**
@@ -113,7 +113,7 @@ Rekam medis selalu milik tenant tempat kunjungan terjadi.
 | Papan display + suara | ✅ | `/antrian/[code]/display` — now serving + TTS "harap menuju counter…" |
 | Panel panggil staf | ✅ | Panggil berikutnya per counter, panggil ulang, selesai, lewati |
 | Status kunjungan | ✅ | Menunggu → Diperiksa → Selesai |
-| Pendaftaran kunjungan (tiket → encounter) | 🟡 P1 | *belum* |
+| Pendaftaran kunjungan (tiket → encounter) | ✅ | Daftar tiket dipanggil jadi kunjungan (encounter) |
 | Jadwal praktik dokter | 🟡 P1 | *belum* (lihat §11; saat ini berupa daftar janji temu terfilter) |
 | Appointment/janji temu | ✅ | Booking janji temu pasien + dokter, lihat §11 |
 
