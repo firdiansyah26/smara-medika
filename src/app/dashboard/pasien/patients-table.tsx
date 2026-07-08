@@ -1,12 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/lib/use-locale";
 import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Pagination } from "@/components/pagination";
 import {
   Table,
   TableBody,
@@ -26,21 +27,23 @@ export type PatientRow = {
   lastVisit: string | null; // ISO date
 };
 
-export function PatientsTable({ rows }: { rows: PatientRow[] }) {
+export function PatientsTable({
+  rows,
+  q,
+  page,
+  pageCount,
+}: {
+  rows: PatientRow[];
+  q: string;
+  page: number;
+  pageCount: number;
+}) {
   const { t, locale } = useLocale();
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(q);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return rows;
-    return rows.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.mrNumber.toLowerCase().includes(q) ||
-        (p.phone ?? "").toLowerCase().includes(q),
-    );
-  }, [query, rows]);
+  const submitSearch = () =>
+    router.push(`/dashboard/pasien?q=${encodeURIComponent(query.trim())}`);
 
   const dateFmt = new Intl.DateTimeFormat(locale === "id" ? "id-ID" : "en-US", {
     day: "numeric",
@@ -77,15 +80,22 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
       </div>
 
       {/* Search */}
-      <div className="mt-6 max-w-md">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          submitSearch();
+        }}
+        className="mt-6 max-w-md"
+      >
         <Input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          onBlur={() => query.trim() !== q && submitSearch()}
           placeholder={t.patients.searchPlaceholder}
           className="h-9"
         />
-      </div>
+      </form>
 
       {/* Table */}
       <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
@@ -105,7 +115,7 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filtered.map((p) => (
+            {rows.map((p) => (
               <TableRow
                 key={p.mrNumber}
                 onClick={() => router.push(`/dashboard/pasien/${p.id}`)}
@@ -140,6 +150,12 @@ export function PatientsTable({ rows }: { rows: PatientRow[] }) {
           </TableBody>
         </Table>
       </div>
+
+      <Pagination
+        page={page}
+        pageCount={pageCount}
+        hrefFor={(p) => `/dashboard/pasien?q=${encodeURIComponent(q)}&page=${p}`}
+      />
     </div>
   );
 }

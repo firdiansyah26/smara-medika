@@ -6,13 +6,14 @@ import type { AuditAction } from "@prisma/client";
 import { AuditView, type AuditRow } from "./audit-view";
 
 export const dynamic = "force-dynamic";
+const PAGE_SIZE = 30;
 
 const ACTIONS: AuditAction[] = ["CREATE", "READ", "UPDATE", "DELETE", "LOGIN"];
 
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ action?: string; entity?: string }>;
+  searchParams: Promise<{ action?: string; entity?: string; page?: string }>;
 }) {
   await auth();
   const tenant = await getActiveTenant();
@@ -25,6 +26,7 @@ export default async function Page({
     ? (sp.action as AuditAction)
     : undefined;
   const entity = sp.entity && sp.entity !== "all" ? sp.entity : undefined;
+  const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
 
   const where = {
     tenantId: tenant.tenantId,
@@ -32,11 +34,13 @@ export default async function Page({
     ...(entity ? { entity } : {}),
   };
 
-  const [logs, entityGroups] = await Promise.all([
+  const [total, logs, entityGroups] = await Promise.all([
+    db.auditLog.count({ where }),
     db.auditLog.findMany({
       where,
       orderBy: { createdAt: "desc" },
-      take: 100,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
       include: { user: { select: { name: true } } },
     }),
     db.auditLog.groupBy({
@@ -61,6 +65,8 @@ export default async function Page({
       entities={entityGroups.map((e) => e.entity)}
       action={action ?? "all"}
       entity={entity ?? "all"}
+      page={page}
+      pageCount={Math.max(1, Math.ceil(total / PAGE_SIZE))}
     />
   );
 }
