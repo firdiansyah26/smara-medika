@@ -81,7 +81,8 @@ Roadmap bertahap. Status diperbarui mengikuti implementasi nyata (branch `develo
 
 ## 🧪 Lintas-fase — Kualitas
 - [x] **CI/CD** (GitHub Actions: validate + lint + test + build) · **Unit test** (Vitest, 35 test)
-- [ ] Integration test server actions · E2E (Playwright) · backup terjadwal
+- [x] **Integration test** (generator nomor, real DB; CI Postgres service)
+- [ ] E2E (Playwright) · backup terjadwal
 
 ---
 
