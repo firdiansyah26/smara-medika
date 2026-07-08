@@ -13,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Pagination } from "@/components/pagination";
 import { createInvoice } from "./actions";
 
 export type InvoiceRow = {
@@ -37,10 +38,14 @@ export function BillingTable({
   invoices,
   patients,
   canManage,
+  page,
+  pageCount,
 }: {
   invoices: InvoiceRow[];
   patients: PatientOption[];
   canManage: boolean;
+  page: number;
+  pageCount: number;
 }) {
   const { t, locale } = useLocale();
   const router = useRouter();
@@ -140,6 +145,12 @@ export function BillingTable({
           </Table>
         )}
       </div>
+
+      <Pagination
+        page={page}
+        pageCount={pageCount}
+        hrefFor={(p) => `/dashboard/billing?page=${p}`}
+      />
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { AuditAction } from "@prisma/client";
 import { useLocale } from "@/lib/use-locale";
+import { Pagination } from "@/components/pagination";
 import {
   Table,
   TableBody,
@@ -42,11 +43,15 @@ export function AuditView({
   entities,
   action,
   entity,
+  page,
+  pageCount,
 }: {
   rows: AuditRow[];
   entities: string[];
   action: string;
   entity: string;
+  page: number;
+  pageCount: number;
 }) {
   const { t, locale } = useLocale();
   const router = useRouter();
@@ -150,6 +155,14 @@ export function AuditView({
           </Table>
         )}
       </div>
+
+      <Pagination
+        page={page}
+        pageCount={pageCount}
+        hrefFor={(p) =>
+          `/dashboard/audit?action=${action}&entity=${encodeURIComponent(entity)}&page=${p}`
+        }
+      />
     </div>
   );
 }

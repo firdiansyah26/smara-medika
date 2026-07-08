@@ -10,6 +10,9 @@ export type Dictionary = {
   common: {
     search: string;
     comingSoon: string;
+    page: string;
+    prev: string;
+    next: string;
     demoNotice: string;
     viewAll: string;
   };
@@ -687,6 +690,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
     common: {
       search: "Cari",
       comingSoon: "segera hadir",
+      page: "Halaman",
+      prev: "Sebelumnya",
+      next: "Berikutnya",
       demoNotice:
         "Data di bawah ini adalah contoh (mock). Akan terhubung ke database saat PostgreSQL & autentikasi disiapkan.",
       viewAll: "Lihat semua",
@@ -1449,6 +1455,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
     common: {
       search: "Search",
       comingSoon: "coming soon",
+      page: "Page",
+      prev: "Previous",
+      next: "Next",
       demoNotice:
         "The data below is sample (mock) data. It will connect to the database once PostgreSQL & authentication are set up.",
       viewAll: "View all",

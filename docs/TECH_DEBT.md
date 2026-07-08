@@ -115,7 +115,7 @@ Pipeline **`.github/workflows/ci.yml`** berjalan pada setiap push/PR ke `develop
 ### TD-021 · 🟢 · Sebagian — Seed modul baru
 `prisma/seed.ts` kini memuat contoh **invoice + item**, **janji temu**, dan **lab order + hasil** (idempotent). **Sisa:** contoh **API key TEST** & attachment bila perlu.
 
-### TD-022 · 🔴 · Dampak: Sedang — Belum ada paginasi UI di sebagian daftar
+### TD-022 · 🟢 · Sebagian — Paginasi UI (pasien, tagihan, audit)
 Daftar seperti pasien, invoice, dan lab saat ini fetch terbatas (`take`) atau tanpa kontrol halaman. Pada data besar, sebagian record tak terlihat dan tak ada navigasi halaman.
 **Rencana:** Tambah paginasi (cursor/offset) + kontrol halaman pada daftar utama; selaraskan dengan paginasi yang sudah ada di Shared API `/api/v1`.
 
