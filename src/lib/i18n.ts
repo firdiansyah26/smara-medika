@@ -256,6 +256,8 @@ export type Dictionary = {
       recall: string;
       serve: string;
       skip: string;
+      register: string;
+      selectPatient: string;
       waiting: string;
       called: string;
       noWaiting: string;
@@ -969,6 +971,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
         recall: "Panggil ulang",
         serve: "Selesai",
         skip: "Lewati",
+        register: "Daftar Kunjungan",
+        selectPatient: "Pilih pasien…",
         waiting: "Menunggu",
         called: "Dipanggil",
         noWaiting: "Tidak ada antrian menunggu.",
@@ -1709,6 +1713,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
         recall: "Recall",
         serve: "Done",
         skip: "Skip",
+        register: "Register Visit",
+        selectPatient: "Select patient…",
         waiting: "Waiting",
         called: "Called",
         noWaiting: "No waiting queue.",
