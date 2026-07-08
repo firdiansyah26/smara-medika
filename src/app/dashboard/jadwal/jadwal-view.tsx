@@ -18,10 +18,20 @@ import {
   updateAppointmentStatus,
   startVisit,
   sendAppointmentReminder,
+  addDoctorSchedule,
+  removeDoctorSchedule,
 } from "./actions";
 
 export type ApptFilter = "today" | "upcoming" | "all";
 export type Option = { id: string; label: string };
+export type ScheduleRow = {
+  id: string;
+  doctorId: string;
+  doctor: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+};
 export type ApptRow = {
   id: string;
   scheduledAt: string;
@@ -51,12 +61,14 @@ export function JadwalView({
   appointments,
   patients,
   doctors,
+  schedules,
   canManage,
 }: {
   filter: ApptFilter;
   appointments: ApptRow[];
   patients: Option[];
   doctors: Option[];
+  schedules: ScheduleRow[];
   canManage: boolean;
 }) {
   const { t, locale } = useLocale();
@@ -288,6 +300,81 @@ export function JadwalView({
           </Table>
         )}
       </div>
+
+      {/* Jadwal praktik dokter */}
+      {canManage && (
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-ink">
+            {t.appointments.scheduleTitle}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t.appointments.scheduleHint}
+          </p>
+
+          <form
+            action={addDoctorSchedule}
+            className="mt-3 flex flex-wrap items-end gap-2 rounded-2xl border border-slate-200 bg-white p-3"
+          >
+            <select name="doctorId" required defaultValue="" className={inputClass}>
+              <option value="" disabled>
+                {t.appointments.selectDoctor}
+              </option>
+              {doctors.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label}
+                </option>
+              ))}
+            </select>
+            <select name="dayOfWeek" defaultValue="1" className={inputClass}>
+              {t.appointments.days.map((d, i) => (
+                <option key={i} value={i}>
+                  {d}
+                </option>
+              ))}
+            </select>
+            <Input name="startTime" type="time" defaultValue="08:00" className="h-9" />
+            <span className="text-muted-foreground">–</span>
+            <Input name="endTime" type="time" defaultValue="12:00" className="h-9" />
+            <Button type="submit" size="sm">
+              {t.appointments.addSchedule}
+            </Button>
+          </form>
+
+          <div className="mt-3 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            {schedules.length === 0 ? (
+              <p className="px-4 py-6 text-center text-sm text-muted-foreground">
+                {t.appointments.noSchedule}
+              </p>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {schedules.map((s) => (
+                  <li
+                    key={s.id}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm"
+                  >
+                    <span className="font-medium text-ink">{s.doctor}</span>
+                    <span className="rounded bg-mint px-2 py-0.5 text-xs font-semibold text-brand-deep">
+                      {t.appointments.days[s.dayOfWeek]}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {s.startTime}–{s.endTime}
+                    </span>
+                    <form action={removeDoctorSchedule} className="ml-auto">
+                      <input type="hidden" name="id" value={s.id} />
+                      <button
+                        type="submit"
+                        className="text-xs font-medium text-red-600 hover:underline"
+                      >
+                        {t.appointments.cancel}
+                      </button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
