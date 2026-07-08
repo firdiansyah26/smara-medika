@@ -7,7 +7,13 @@ import { useLocale } from "@/lib/use-locale";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { callNext, recallTicket, serveTicket, skipTicket } from "./actions";
+import {
+  callNext,
+  recallTicket,
+  serveTicket,
+  skipTicket,
+  registerVisit,
+} from "./actions";
 
 type ServiceInfo = {
   type: ServiceType;
@@ -16,6 +22,7 @@ type ServiceInfo = {
   nextCode: string | null;
 };
 type Called = { id: string; code: string; counter: string | null };
+type PatientOpt = { id: string; label: string };
 
 const selectClass =
   "h-9 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -24,10 +31,12 @@ export function QueuePanel({
   tenantCode,
   services,
   called,
+  patients,
 }: {
   tenantCode: string;
   services: ServiceInfo[];
   called: Called[];
+  patients: PatientOpt[];
 }) {
   const { t } = useLocale();
   const router = useRouter();
@@ -141,7 +150,8 @@ export function QueuePanel({
         ) : (
           <ul className="divide-y divide-slate-100">
             {called.map((tk) => (
-              <li key={tk.id} className="flex items-center gap-3 px-5 py-3">
+              <li key={tk.id} className="px-5 py-3">
+               <div className="flex items-center gap-3">
                 <span className="text-2xl font-black tracking-tight text-ink">
                   {tk.code}
                 </span>
@@ -175,6 +185,17 @@ export function QueuePanel({
                     {t.queue.panel.skip}
                   </Button>
                 </div>
+               </div>
+               <form action={registerVisit} className="mt-2 flex items-center gap-2">
+                 <input type="hidden" name="ticketId" value={tk.id} />
+                 <select name="patientId" required defaultValue="" className={selectClass + " max-w-xs"}>
+                   <option value="" disabled>{t.queue.panel.selectPatient}</option>
+                   {patients.map((p) => (
+                     <option key={p.id} value={p.id}>{p.label}</option>
+                   ))}
+                 </select>
+                 <Button type="submit" size="sm">{t.queue.panel.register}</Button>
+               </form>
               </li>
             ))}
           </ul>

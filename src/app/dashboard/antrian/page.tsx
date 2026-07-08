@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic";
 export default async function QueuePage() {
   const tenant = await getActiveTenant();
   if (!tenant) {
-    return <QueuePanel tenantCode="" services={[]} called={[]} />;
+    return (
+      <QueuePanel tenantCode="" services={[]} called={[]} patients={[]} />
+    );
   }
 
   const tenantId = tenant.tenantId;
@@ -44,11 +46,23 @@ export default async function QueuePage() {
     }),
   ]);
 
+  const patientRows = await db.patient.findMany({
+    where: { tenantId, deletedAt: null },
+    orderBy: { name: "asc" },
+    take: 200,
+    select: { id: true, name: true, mrNumber: true },
+  });
+  const patients = patientRows.map((p) => ({
+    id: p.id,
+    label: `${p.name} — ${p.mrNumber}`,
+  }));
+
   return (
     <QueuePanel
       tenantCode={tenantRow?.code ?? ""}
       services={services}
       called={called}
+      patients={patients}
     />
   );
 }
