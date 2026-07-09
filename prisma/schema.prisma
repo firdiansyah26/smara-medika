@@ -289,6 +289,7 @@ model Tenant {
   medicalDocuments          MedicalDocument[]
   doctorSchedules           DoctorSchedule[]
   teleconsults              TeleconsultSession[]
+  whatsappTemplates         WhatsappTemplate[]
 
   @@map("tenants")
 }
@@ -939,6 +940,23 @@ model DoctorSchedule {
 
   @@index([tenantId, doctorId])
   @@map("doctor_schedules")
+}
+
+/// Template pesan WhatsApp per tenant per keperluan (purpose). Body memakai
+/// placeholder {patient} {facility} {doctor} {datetime} {amount} {invoice}.
+model WhatsappTemplate {
+  id          String           @id @default(cuid())
+  tenantId    String           @map("tenant_id")
+  purpose     NotificationType
+  body        String
+  updatedById String?          @map("updated_by_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, purpose])
+  @@map("whatsapp_templates")
 }
 
 enum TeleconsultStatus {

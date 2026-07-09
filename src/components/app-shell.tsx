@@ -80,6 +80,11 @@ const navItems: NavItem[] = [
     icon: <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0" />,
   },
   {
+    key: "whatsapp",
+    href: "/dashboard/whatsapp",
+    icon: <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-4-1L3 20l1-5.5a8.5 8.5 0 0 1-1-4 8.38 8.38 0 0 1 8.5-8.5 8.5 8.5 0 0 1 8.5 8.5zM9 9.5c0 3 2.5 5.5 5.5 5.5" />,
+  },
+  {
     key: "telemedicine",
     href: "/dashboard/telemedicine",
     icon: <path d="M23 7l-7 5 7 5V7zM1 5h15v14H1zM5 9h2M5 13h6" />,

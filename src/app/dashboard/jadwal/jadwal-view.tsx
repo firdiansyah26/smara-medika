@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import type { AppointmentStatus } from "@prisma/client";
 import { useLocale } from "@/lib/use-locale";
+import { renderTemplate, waLink } from "@/lib/wa-templates";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -38,6 +39,7 @@ export type ApptRow = {
   durationMin: number;
   patient: string;
   mrNumber: string;
+  phone: string | null;
   doctor: string;
   reason: string | null;
   status: AppointmentStatus;
@@ -63,6 +65,8 @@ export function JadwalView({
   doctors,
   schedules,
   canManage,
+  facilityName,
+  waReminderTemplate,
 }: {
   filter: ApptFilter;
   appointments: ApptRow[];
@@ -70,6 +74,8 @@ export function JadwalView({
   doctors: Option[];
   schedules: ScheduleRow[];
   canManage: boolean;
+  facilityName: string;
+  waReminderTemplate: string;
 }) {
   const { t, locale } = useLocale();
   const router = useRouter();
@@ -254,6 +260,29 @@ export function JadwalView({
                                 {t.appointments.remind}
                               </Button>
                             </form>
+                            {a.phone &&
+                              (() => {
+                                const msg = renderTemplate(waReminderTemplate, {
+                                  patient: a.patient,
+                                  facility: facilityName,
+                                  doctor: a.doctor,
+                                  datetime: dtFmt.format(new Date(a.scheduledAt)),
+                                });
+                                const link = waLink(a.phone, msg);
+                                if (!link) return null;
+                                return (
+                                  <a
+                                    href={link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    title="Kirim pengingat via WhatsApp"
+                                  >
+                                    <Button type="button" size="xs" variant="outline">
+                                      WA
+                                    </Button>
+                                  </a>
+                                );
+                              })()}
                             {a.status === "SCHEDULED" && (
                               <form action={updateAppointmentStatus}>
                                 <input type="hidden" name="appointmentId" value={a.id} />
