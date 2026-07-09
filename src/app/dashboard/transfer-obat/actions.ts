@@ -2,29 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import type { OrderStatus, Role } from "@prisma/client";
+import type { Role } from "@prisma/client";
 import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
 import { generateOrderNumber } from "@/lib/order-number";
+import {
+  nextStatus,
+  canReceive,
+  canReject,
+  canCancel,
+  decrementsStockOnTransition,
+} from "@/lib/order-flow";
 
 const ORDER_ROLES: Role[] = ["OWNER", "ADMIN", "APOTEKER", "DOKTER"];
-
-// Urutan proses oleh penyedia (supplier).
-const SUPPLIER_FLOW: OrderStatus[] = [
-  "REQUESTED",
-  "CONFIRMED",
-  "PREPARING",
-  "SHIPPED",
-  "IN_TRANSIT",
-  "DELIVERED",
-];
-
-function nextStatus(cur: OrderStatus): OrderStatus | null {
-  const i = SUPPLIER_FLOW.indexOf(cur);
-  return i >= 0 && i < SUPPLIER_FLOW.length - 1 ? SUPPLIER_FLOW[i + 1] : null;
-}
 
 async function ctx() {
   const session = await auth();
@@ -99,7 +91,7 @@ export async function advanceOrder(orderId: string) {
   if (!next) return;
 
   await db.$transaction(async (tx) => {
-    if (next === "SHIPPED") {
+    if (decrementsStockOnTransition(next)) {
       // Kurangi stok penyedia.
       for (const it of order.items) {
         await tx.drugStock.updateMany({
@@ -129,10 +121,10 @@ export async function receiveOrder(orderId: string) {
   const c = await ctx();
   if (!c) return;
   const order = await db.drugOrder.findFirst({
-    where: { id: orderId, requesterTenantId: c.tenantId, status: "DELIVERED" },
+    where: { id: orderId, requesterTenantId: c.tenantId },
     include: { items: true },
   });
-  if (!order) return;
+  if (!order || !canReceive(order.status)) return;
 
   await db.$transaction(async (tx) => {
     for (const it of order.items) {
@@ -163,9 +155,9 @@ export async function rejectOrder(orderId: string) {
   const c = await ctx();
   if (!c) return;
   const order = await db.drugOrder.findFirst({
-    where: { id: orderId, supplierTenantId: c.tenantId, status: "REQUESTED" },
+    where: { id: orderId, supplierTenantId: c.tenantId },
   });
-  if (!order) return;
+  if (!order || !canReject(order.status)) return;
   await db.drugOrder.update({ where: { id: orderId }, data: { status: "REJECTED" } });
   await db.drugOrderTracking.create({
     data: { orderId, status: "REJECTED", changedById: c.userId },
@@ -178,13 +170,9 @@ export async function cancelOrder(orderId: string) {
   const c = await ctx();
   if (!c) return;
   const order = await db.drugOrder.findFirst({
-    where: {
-      id: orderId,
-      requesterTenantId: c.tenantId,
-      status: { in: ["REQUESTED", "CONFIRMED", "PREPARING"] },
-    },
+    where: { id: orderId, requesterTenantId: c.tenantId },
   });
-  if (!order) return;
+  if (!order || !canCancel(order.status)) return;
   await db.drugOrder.update({ where: { id: orderId }, data: { status: "CANCELLED" } });
   await db.drugOrderTracking.create({
     data: { orderId, status: "CANCELLED", changedById: c.userId },

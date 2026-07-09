@@ -288,6 +288,8 @@ model Tenant {
   notifications             Notification[]
   medicalDocuments          MedicalDocument[]
   doctorSchedules           DoctorSchedule[]
+  teleconsults              TeleconsultSession[]
+  whatsappTemplates         WhatsappTemplate[]
 
   @@map("tenants")
 }
@@ -307,6 +309,7 @@ model User {
   auditLogs           AuditLog[]
   appointments        Appointment[]        @relation("AppointmentDoctor")
   passwordResetTokens PasswordResetToken[]
+  teleconsults        TeleconsultSession[] @relation("TeleconsultDoctor")
 
   @@map("users")
 }
@@ -358,6 +361,7 @@ model Patient {
   invoices       Invoice[]
   appointments   Appointment[]
   labOrders      LabOrder[]
+  teleconsults   TeleconsultSession[]
 
   @@unique([tenantId, mrNumber])
   @@index([nik])
@@ -779,6 +783,7 @@ model Appointment {
   tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   patient Patient @relation(fields: [patientId], references: [id])
   doctor  User    @relation("AppointmentDoctor", fields: [doctorId], references: [id])
+  teleconsult TeleconsultSession?
 
   @@index([tenantId, scheduledAt])
   @@index([doctorId, scheduledAt])
@@ -935,4 +940,59 @@ model DoctorSchedule {
 
   @@index([tenantId, doctorId])
   @@map("doctor_schedules")
+}
+
+/// Template pesan WhatsApp per tenant per keperluan (purpose). Body memakai
+/// placeholder {patient} {facility} {doctor} {datetime} {amount} {invoice}.
+model WhatsappTemplate {
+  id          String           @id @default(cuid())
+  tenantId    String           @map("tenant_id")
+  purpose     NotificationType
+  body        String
+  updatedById String?          @map("updated_by_id")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, purpose])
+  @@map("whatsapp_templates")
+}
+
+enum TeleconsultStatus {
+  SCHEDULED
+  ONGOING
+  ENDED
+  CANCELLED
+
+  @@map("teleconsult_status")
+}
+
+/// Sesi telekonsultasi (video). Skema + alur status siap; integrasi
+/// penyedia video (WebRTC/pihak ketiga) menyusul — lihat joinUrl/roomCode.
+model TeleconsultSession {
+  id            String            @id @default(cuid())
+  tenantId      String            @map("tenant_id")
+  patientId     String            @map("patient_id")
+  doctorId      String            @map("doctor_id")
+  appointmentId String?           @unique @map("appointment_id")
+  roomCode      String            @unique @map("room_code")
+  status        TeleconsultStatus @default(SCHEDULED)
+  scheduledAt   DateTime          @map("scheduled_at")
+  startedAt     DateTime?         @map("started_at")
+  endedAt       DateTime?         @map("ended_at")
+  joinUrl       String?           @map("join_url") // diisi saat integrasi video aktif
+  note          String?
+  createdById   String            @map("created_by_id")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  doctor      User         @relation("TeleconsultDoctor", fields: [doctorId], references: [id])
+  appointment Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@index([tenantId, scheduledAt])
+  @@index([doctorId, scheduledAt])
+  @@map("teleconsult_sessions")
 }

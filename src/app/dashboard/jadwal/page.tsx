@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getActiveTenant } from "@/lib/tenant-context";
+import { DEFAULT_WA_TEMPLATES } from "@/lib/wa-templates";
 import {
   JadwalView,
   type ApptRow,
@@ -31,6 +32,8 @@ export default async function Page({
   let doctors: Option[] = [];
   let schedules: ScheduleRow[] = [];
   let canManage = false;
+  let facilityName = "";
+  let waReminderTemplate = DEFAULT_WA_TEMPLATES.APPOINTMENT_REMINDER;
 
   if (tenant) {
     canManage = MANAGE_ROLES.includes(tenant.role);
@@ -51,7 +54,7 @@ export default async function Page({
         where,
         orderBy: { scheduledAt: filter === "all" ? "desc" : "asc" },
         include: {
-          patient: { select: { name: true, mrNumber: true } },
+          patient: { select: { name: true, mrNumber: true, phone: true } },
           doctor: { select: { name: true } },
         },
       }),
@@ -77,6 +80,7 @@ export default async function Page({
       durationMin: a.durationMin,
       patient: a.patient.name,
       mrNumber: a.patient.mrNumber,
+      phone: a.patient.phone,
       doctor: a.doctor.name,
       reason: a.reason,
       status: a.status,
@@ -97,6 +101,18 @@ export default async function Page({
       startTime: s.startTime,
       endTime: s.endTime,
     }));
+
+    facilityName = tenant.tenantName;
+    const waTmpl = await db.whatsappTemplate.findUnique({
+      where: {
+        tenantId_purpose: {
+          tenantId: tenant.tenantId,
+          purpose: "APPOINTMENT_REMINDER",
+        },
+      },
+      select: { body: true },
+    });
+    if (waTmpl) waReminderTemplate = waTmpl.body;
   }
 
   return (
@@ -107,6 +123,8 @@ export default async function Page({
       doctors={doctors}
       schedules={schedules}
       canManage={canManage}
+      facilityName={facilityName}
+      waReminderTemplate={waReminderTemplate}
     />
   );
 }

@@ -75,6 +75,7 @@ export type Dictionary = {
       reports: string;
       sharedApi: string;
       notifications: string;
+      whatsapp: string;
       telemedicine: string;
       integrations: string;
       settings: string;
@@ -825,6 +826,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         reports: "Laporan",
         sharedApi: "Shared API",
         notifications: "Notifikasi",
+        whatsapp: "WhatsApp",
         telemedicine: "Telemedicine",
         integrations: "Integrasi",
         settings: "Pengaturan",
@@ -1613,6 +1615,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         reports: "Reports",
         sharedApi: "Shared API",
         notifications: "Notifications",
+        whatsapp: "WhatsApp",
         telemedicine: "Telemedicine",
         integrations: "Integrations",
         settings: "Settings",
