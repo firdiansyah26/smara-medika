@@ -1,7 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import type { ApiKeyMode, ApiKeyStatus } from "@prisma/client";
+import type {
+  ApiKeyMode,
+  ApiKeyStatus,
+  WebhookDeliveryStatus,
+} from "@prisma/client";
 import { useLocale } from "@/lib/use-locale";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +17,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { createApiKey, revokeApiKey } from "./actions";
+import {
+  createApiKey,
+  revokeApiKey,
+  createWebhookEndpoint,
+  toggleWebhookEndpoint,
+  deleteWebhookEndpoint,
+  resendWebhookDelivery,
+} from "./actions";
 
 export type KeyRow = {
   id: string;
@@ -30,6 +41,34 @@ export type RequestRow = {
   path: string;
   statusCode: number;
   createdAt: string;
+};
+export type EndpointRow = {
+  id: string;
+  url: string;
+  events: string[];
+  isActive: boolean;
+  createdAt: string;
+};
+export type DeliveryRow = {
+  id: string;
+  event: string;
+  status: WebhookDeliveryStatus;
+  attempts: number;
+  responseCode: number | null;
+  createdAt: string;
+};
+
+// Event webhook (statis di klien, cocok dengan WEBHOOK_EVENTS di lib server).
+const WEBHOOK_EVENTS = [
+  "encounter.created",
+  "invoice.created",
+  "lab_result.ready",
+];
+const DELIVERY_BADGE: Record<WebhookDeliveryStatus, string> = {
+  PENDING: "bg-slate-100 text-slate-600",
+  SUCCESS: "bg-emerald-50 text-emerald-700",
+  FAILED: "bg-amber-50 text-amber-700",
+  DEAD_LETTER: "bg-red-50 text-red-600",
 };
 
 // Daftar scope & endpoint (statis, agar tidak mengimpor lib server ke klien).
@@ -52,11 +91,15 @@ export function SharedApiView({
   keys,
   requests,
   totalRequests,
+  endpoints,
+  deliveries,
 }: {
   canManage: boolean;
   keys: KeyRow[];
   requests: RequestRow[];
   totalRequests: number;
+  endpoints: EndpointRow[];
+  deliveries: DeliveryRow[];
 }) {
   const { t, locale } = useLocale();
   const [state, action, pending] = useActionState(createApiKey, undefined);
@@ -334,6 +377,145 @@ export function SharedApiView({
                 {t.sharedApi.endpointsHint}
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Webhooks */}
+      <div className="mt-8">
+        <h2 className="text-lg font-bold text-ink">Webhook</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Kirim notifikasi event ke URL Anda. Body ditandatangani HMAC-SHA256
+          (header <code>x-smara-signature</code>). Retry otomatis terjadwal
+          menyusul; sementara tersedia kirim ulang manual.
+        </p>
+
+        <div className="mt-4 grid gap-6 lg:grid-cols-2">
+          {/* Kelola endpoint */}
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="border-b border-slate-100 p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Endpoint
+              </h3>
+              {canManage && (
+                <form action={createWebhookEndpoint} className="mt-3 space-y-2">
+                  <Input name="url" type="url" placeholder="https://contoh.com/webhook" required />
+                  <div className="flex flex-wrap gap-3">
+                    {WEBHOOK_EVENTS.map((ev) => (
+                      <label key={ev} className="flex items-center gap-1.5 text-xs text-ink">
+                        <input type="checkbox" name="events" value={ev} />
+                        <code>{ev}</code>
+                      </label>
+                    ))}
+                  </div>
+                  <Button type="submit" size="sm">
+                    Tambah endpoint
+                  </Button>
+                </form>
+              )}
+            </div>
+            <div className="p-2">
+              {endpoints.length === 0 ? (
+                <p className="p-3 text-sm text-muted-foreground">Belum ada endpoint.</p>
+              ) : (
+                <ul className="space-y-2">
+                  {endpoints.map((e) => (
+                    <li key={e.id} className="rounded-lg border border-slate-100 p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <code className="block truncate text-xs text-ink">{e.url}</code>
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {e.events.map((ev) => (
+                              <span key={ev} className="rounded bg-brand/10 px-1.5 py-0.5 text-[10px] font-mono text-brand">
+                                {ev}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <span
+                          className={
+                            "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold " +
+                            (e.isActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500")
+                          }
+                        >
+                          {e.isActive ? "Aktif" : "Nonaktif"}
+                        </span>
+                      </div>
+                      {canManage && (
+                        <div className="mt-2 flex gap-1.5">
+                          <form action={toggleWebhookEndpoint}>
+                            <input type="hidden" name="id" value={e.id} />
+                            <Button type="submit" size="xs" variant="outline">
+                              {e.isActive ? "Nonaktifkan" : "Aktifkan"}
+                            </Button>
+                          </form>
+                          <form action={deleteWebhookEndpoint}>
+                            <input type="hidden" name="id" value={e.id} />
+                            <Button type="submit" size="xs" variant="outline">
+                              Hapus
+                            </Button>
+                          </form>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {/* Riwayat pengiriman */}
+          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+            <div className="border-b border-slate-100 p-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                Riwayat Pengiriman
+              </h3>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Event</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Kode</TableHead>
+                  <TableHead>Coba</TableHead>
+                  {canManage && <TableHead />}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {deliveries.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={canManage ? 5 : 4} className="py-6 text-center text-sm text-muted-foreground">
+                      Belum ada pengiriman.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  deliveries.map((d) => (
+                    <TableRow key={d.id}>
+                      <TableCell className="font-mono text-xs">{d.event}</TableCell>
+                      <TableCell>
+                        <span className={"rounded-full px-2 py-0.5 text-xs font-medium " + DELIVERY_BADGE[d.status]}>
+                          {d.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-xs">{d.responseCode ?? "—"}</TableCell>
+                      <TableCell className="text-xs">{d.attempts}</TableCell>
+                      {canManage && (
+                        <TableCell className="text-right">
+                          {d.status !== "SUCCESS" && (
+                            <form action={resendWebhookDelivery}>
+                              <input type="hidden" name="id" value={d.id} />
+                              <Button type="submit" size="xs" variant="outline">
+                                Kirim ulang
+                              </Button>
+                            </form>
+                          )}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
         </div>
       </div>

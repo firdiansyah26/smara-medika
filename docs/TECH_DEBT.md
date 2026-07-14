@@ -84,9 +84,10 @@ Secret key wajib di-hash & hanya tampil sekali; kebocoran key = risiko akses dat
 Rate limit in-memory tidak konsisten di multi-instance (skala horizontal).
 **Rencana:** Mulai in-memory (single instance), pindah ke **Redis** (token bucket/sliding window) saat scale-out.
 
-### TD-014 · 🔴 · Dampak: Sedang — Keandalan webhook
+### TD-014 · 🟡 · Dampak: Sedang — Keandalan webhook
 Pengiriman webhook bisa gagal (consumer down). Tanpa retry/dead-letter, event hilang.
 **Rencana:** Queue + retry exponential backoff + dead-letter + halaman status pengiriman (`WebhookDelivery`). HMAC signature wajib.
+**Progres:** ✅ Delivery aktif — `src/lib/webhooks.ts` (`dispatchWebhook`, HMAC-SHA256 signature header `x-smara-signature`, `eventMatches` + wildcard, `backoffDelayMs`, status `SUCCESS`/`FAILED`/`DEAD_LETTER` setelah `MAX_ATTEMPTS`). Event `encounter.created`/`invoice.created`/`lab_result.ready` di-fire non-blocking. CRUD endpoint + riwayat pengiriman + **kirim ulang manual** di `/dashboard/shared-api`. **Sisa:** retry otomatis terjadwal (butuh cron/worker — infra).
 
 ### TD-015 · 🔴 · Dampak: Rendah — Volume ApiRequestLog
 Log pemakaian API bisa tumbuh sangat besar.

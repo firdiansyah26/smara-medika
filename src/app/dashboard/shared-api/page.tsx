@@ -6,6 +6,8 @@ import {
   SharedApiView,
   type KeyRow,
   type RequestRow,
+  type EndpointRow,
+  type DeliveryRow,
 } from "./shared-api-view";
 
 export const dynamic = "force-dynamic";
@@ -17,7 +19,7 @@ export default async function Page() {
 
   const canManage = tenant.role === "OWNER" || tenant.role === "ADMIN";
 
-  const [keys, logs, totalRequests] = await Promise.all([
+  const [keys, logs, totalRequests, endpoints, deliveries] = await Promise.all([
     db.apiKey.findMany({
       where: { tenantId: tenant.tenantId },
       orderBy: { createdAt: "desc" },
@@ -28,6 +30,15 @@ export default async function Page() {
       take: 10,
     }),
     db.apiRequestLog.count({ where: { tenantId: tenant.tenantId } }),
+    db.webhookEndpoint.findMany({
+      where: { tenantId: tenant.tenantId },
+      orderBy: { createdAt: "desc" },
+    }),
+    db.webhookDelivery.findMany({
+      where: { endpoint: { tenantId: tenant.tenantId } },
+      orderBy: { createdAt: "desc" },
+      take: 15,
+    }),
   ]);
 
   const keyRows: KeyRow[] = keys.map((k) => ({
@@ -46,6 +57,21 @@ export default async function Page() {
     statusCode: l.statusCode,
     createdAt: l.createdAt.toISOString(),
   }));
+  const endpointRows: EndpointRow[] = endpoints.map((e) => ({
+    id: e.id,
+    url: e.url,
+    events: e.events,
+    isActive: e.isActive,
+    createdAt: e.createdAt.toISOString(),
+  }));
+  const deliveryRows: DeliveryRow[] = deliveries.map((d) => ({
+    id: d.id,
+    event: d.event,
+    status: d.status,
+    attempts: d.attempts,
+    responseCode: d.responseCode,
+    createdAt: d.createdAt.toISOString(),
+  }));
 
   return (
     <SharedApiView
@@ -53,6 +79,8 @@ export default async function Page() {
       keys={keyRows}
       requests={requestRows}
       totalRequests={totalRequests}
+      endpoints={endpointRows}
+      deliveries={deliveryRows}
     />
   );
 }

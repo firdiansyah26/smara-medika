@@ -10,6 +10,7 @@ import { writeAudit } from "@/lib/audit";
 import { generateLabOrderNumber } from "@/lib/lab-number";
 import { notifyEmail } from "@/lib/notify";
 import { labResultReadyEmail } from "@/lib/email";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 const LAB_ROLES: Role[] = ["OWNER", "ADMIN", "DOKTER", "PERAWAT"];
 const FLAGS: LabFlag[] = ["NORMAL", "LOW", "HIGH", "ABNORMAL"];
@@ -225,6 +226,13 @@ export async function updateLabStatus(formData: FormData): Promise<void> {
         relatedId: order.id,
         createdById: c.userId,
       });
+      try {
+        await dispatchWebhook(c.tenantId, "lab_result.ready", {
+          labOrderId: order.id,
+          orderNumber: full.orderNumber,
+          category: full.category,
+        });
+      } catch {}
     }
   }
 
