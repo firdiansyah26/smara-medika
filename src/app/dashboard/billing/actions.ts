@@ -10,6 +10,7 @@ import { writeAudit } from "@/lib/audit";
 import { generateInvoiceNumber } from "@/lib/invoice-number";
 import { buildInvoicePdf } from "@/lib/pdf-invoice";
 import { sendEmail, invoiceEmail } from "@/lib/email";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 const BILLING_ROLES: Role[] = ["OWNER", "ADMIN", "RESEPSIONIS"];
 const CATEGORIES: BillingCategory[] = [
@@ -137,6 +138,13 @@ export async function createInvoice(formData: FormData): Promise<void> {
     entityId: invoice.id,
     changes: { invoiceNumber: invoice.invoiceNumber, patientId },
   });
+  try {
+    await dispatchWebhook(c.tenantId, "invoice.created", {
+      invoiceId: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      patientId,
+    });
+  } catch {}
 
   redirect(`/dashboard/billing/${invoice.id}`);
 }

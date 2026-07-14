@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/auth";
 import { getActiveTenant } from "@/lib/tenant-context";
 import { writeAudit } from "@/lib/audit";
+import { dispatchWebhook } from "@/lib/webhooks";
 import { encounterSaveSchema, diagnosisSchema } from "@/lib/schemas/encounter";
 import { generateDocNumber } from "@/lib/doc-number";
 
@@ -51,6 +52,12 @@ export async function createEncounter(formData: FormData) {
     entity: "Encounter",
     entityId: encounter.id,
   });
+  try {
+    await dispatchWebhook(ctx.tenantId, "encounter.created", {
+      encounterId: encounter.id,
+      patientId,
+    });
+  } catch {}
 
   redirect(`/dashboard/rekam-medis/${encounter.id}`);
 }
